@@ -1,20 +1,28 @@
-source("~/Dropbox/LIB_Rscript/LIB_misc.r")
-source("~/Dropbox/LIB_Rscript/LIB_dailytimeseries2.r")
-source("~/Dropbox/LIB_Rscript/LIB_hydro.r")
-source("~/Dropbox/LIB_Rscript/LIB_RHESSys_modelBehavior_6_working.r")
-source("~/Dropbox/LIB_Rscript/LIB_RHESSys_modelFit_6_working.r")
-source("~/Dropbox/LIB_Rscript/LIB_RHESSys_toKillDevil.r")
-source("~/Dropbox/LIB_Rscript/LIB_RHESSys_outputFormat.r")
+source("~/LIB_Rscript/LIB_misc.r")
+source("~/LIB_Rscript/LIB_dailytimeseries2.r")
+source("~/LIB_Rscript/LIB_hydro.r")
+source("~/LIB_Rscript/LIB_RHESSys_modelBehavior_6_working.r")
+source("~/LIB_Rscript/LIB_RHESSys_modelFit_6_working.r")
+source("~/LIB_Rscript/LIB_RHESSys_toKillDevil.r")
+source("~/LIB_Rscript/LIB_RHESSys_outputFormat.r")
 library(MASS)
 
 
 arg=commandArgs(T)
 if(length(arg)<1){
 	arg=c(
-		"/Volumes/storage/RHESSys_watershed/NY_ShelterCreek/workflows10m",
-		"USGS01434092_19921001_20070930.csv",
-		"2", "2", "10", "1992-10-1","1995-9-30","rhessys_veg_stream","output_mcmc_corTime8","rhessy_veg_stream_strshortmcmc8",
-		"2","8398"
+		"project directory",
+		"observation file",
+		"session ID", 
+		"starting iternation", 
+		"ending iternation", 
+		"beginning of date for fitting",
+		"ending of date for fitting",
+		"RHESSys model directory",
+		"model output directory",
+		"prefix of fittness table",
+		"number of CPU cores",
+		"cluster job ID"
 	);paste(arg,collapse=" ")
 }
 
@@ -32,6 +40,8 @@ append = F
 	
 #====================================================================================================================#	
 CURRENTWD = getwd()
+
+	## ---- need to be customized (below)
 precmd = paste(
 		paste("./rhessys5.20.0.nighttime-evapFinal_debug2Final2_bioN_growthseason",sep=""),
 		"-st 1988 1 3 1 -ed 1995 10 1 1",
@@ -41,11 +51,9 @@ precmd = paste(
 		paste("-r ", "flow/world_riparian_strshort.flow",sep=""),
 		"-gwtoriparian"
 		)
+
+	## ---- listing all RHESSys paramters, included optional / customized ones
 RHESSYS_PARAMS = c('s1','s2','s3','sv1','sv2','gw1','gw2','pondz','snowT','RTz','CAPr')
-
-
-param.fittingNames =c('s1','sv1','snowT','CAPr')# gw1 and gw2 have little change in calibration (session 5)
-
 iniParam = rep(1, length(RHESSYS_PARAMS)); names(iniParam)= RHESSYS_PARAMS
 iniParam['s1'] = 0.3933646 #M --> control the water table depth; inital satz=0 and M control the lateral v vertical profile.
 iniParam['s2'] = 193.873 #K
@@ -59,9 +67,12 @@ iniParam['snowT'] = 0.28
 iniParam['RTz'] = 1
 iniParam['CAPr'] = 0.01
 
+	## ---- selected parameters for calibration
+param.fittingNames =c('s1','sv1','snowT','CAPr')
 
+	## ---- fittness metrics 
 FITTNESS_NAMES = c('bias','wbias','sbias','inversedweeklyNSE','weeklyNSE','monthlyNSE','yearlyNSE','weeklyCDFfitr2','weeklyLogNSE','ETbias','dailyNSE','dailyLogNSE','flashCOMP')
-#exp and gamma based
+	## ---- likelihood probability distribution: exp. / gamma
 betaShape1 = rep(NA,length(FITTNESS_NAMES) ); names(betaShape1)= FITTNESS_NAMES
 betaShape1['bias'] = 1/5
 betaShape1['wbias'] = 1/3
@@ -76,52 +87,50 @@ betaShape1['ETbias'] = 1/2
 betaShape1['dailyNSE'] = 5
 betaShape1['dailyLogNSE'] = 5
 betaShape1['flashCOMP'] = 1/5
-
-# xx = seq(0.001,1,0.001); plot(xx, dgamma(xx,shape=1/2,scale=1), type='l' ); lines(xx,dgamma(xx,shape=1/5,scale=1),col='red')
-# xx = seq(0.001,1,0.001); plot(xx, dexp(1-xx,rate=6), type='l' )
-
+	## ---- control which fittness metrics to use (set it T; otherwise set it F)
 fittnessChoice=rep(T, length(betaShape1)); names(fittnessChoice)= FITTNESS_NAMES
 fittnessChoice['flashCOMP']=F
 	
-#====================================================================================================================#
+	## ---- parameter boundaries
 paramBoundary = matrix(NA,1+length(RHESSYS_PARAMS),2); rownames(paramBoundary)=c('itr', RHESSYS_PARAMS); colnames(paramBoundary)=c('min','max')
-# ...... default
-paramBoundary['s1',]=c(0.01,20.0) 
-paramBoundary['s2',]=c(1.0,300.0) 
-paramBoundary['s3',]=c(0.01,20) 
-paramBoundary['sv1',]=c(0.01,20.0) 
-paramBoundary['sv2',]=c(1.0,300.0) 
-paramBoundary['gw1',]=c(0.001,0.5)
-paramBoundary['gw2',]=c(0.01,0.3) 
-paramBoundary['pondz',]=c(0.01,5) 
-paramBoundary['snowT',]=c(0.001,5) 
-paramBoundary['RTz',]=c(0.001,5)
-paramBoundary['CAPr',]=c(0,1) 
+	# ...... default
+	paramBoundary['s1',]=c(0.01,20.0) 
+	paramBoundary['s2',]=c(1.0,300.0) 
+	paramBoundary['s3',]=c(0.01,20) 
+	paramBoundary['sv1',]=c(0.01,20.0) 
+	paramBoundary['sv2',]=c(1.0,300.0) 
+	paramBoundary['gw1',]=c(0.001,0.5)
+	paramBoundary['gw2',]=c(0.01,0.3) 
+	paramBoundary['pondz',]=c(0.01,5) 
+	paramBoundary['snowT',]=c(0.001,5) 
+	paramBoundary['RTz',]=c(0.001,5)
+	paramBoundary['CAPr',]=c(0,1) 
 
-# ...... special << over-written default above >>
-paramBoundary['s1',]=c(0.001,10.0) #s1 upper 0.7
-paramBoundary['s2',]=c(1.0,300.0) #s2
-paramBoundary['s3',]=c(0.25,20) #s3
-paramBoundary['sv1',]=c(0.001,10.0) #sv1
-paramBoundary['sv2',]=c(1.0,300.0) #sv2
-paramBoundary['gw1',]=c(0.001,0.2) #gw1
-paramBoundary['gw2',]=c(0.003703704, 0.01666667) #gw2 from 9 months to 2 months average resident time
-paramBoundary['snowT',]=c(0.001,1)
+	# ...... special << over-written default above >>
+	paramBoundary['s1',]=c(0.001,10.0) #s1 upper 0.7
+	paramBoundary['s2',]=c(1.0,300.0) #s2
+	paramBoundary['s3',]=c(0.25,20) #s3
+	paramBoundary['sv1',]=c(0.001,10.0) #sv1
+	paramBoundary['sv2',]=c(1.0,300.0) #sv2
+	paramBoundary['gw1',]=c(0.001,0.2) #gw1
+	paramBoundary['gw2',]=c(0.003703704, 0.01666667) #gw2 from 9 months to 2 months average resident time
+	paramBoundary['snowT',]=c(0.001,1)
 
 
 paramRange = paramBoundary[,2]-paramBoundary[,1]
 paramBaseSD = paramRange*0.1
 paraminSD = paramRange*0.01
 
-## reading obs
+	## ---- reading observation file
 calobs_ = read.csv(paste(proj,"/obs/", obsfile,sep=""),stringsAsFactors=F);
 calobsNonZero = !is.na(calobs_[,2]) & calobs_[,2]>0 & calobs_[,2]<= quantile(calobs_[,2],0.9)  # correct 0 value
 calobs= calobs_[calobsNonZero,]
 calobs.date0 = convertDateExcelMDY(calobs[,1])
 
-
-
-## setup structure
+### ------------------------------------------------------------------------------------------------------
+### ---------------------- Do not modified any thing below this line unless you know what you are doing
+### ------------------------------------------------------------------------------------------------------
+	## ----- setup structure (don't change this)
 for(i in 1:length(Itr)){ system(paste("mkdir ",proj,"/",arg[8],"/",arg[9],"/SESSION_",sessionID,"_world_ITR_", Itr[i],sep="") ) }
 
 
@@ -134,7 +143,7 @@ param[1,(1:length(RHESSYS_PARAMS))+1]= iniParam
 param.fitting = match(param.fittingNames,colnames(param)) #c(7,2,4,5,8)#index the param
 
 
-##------------------ c('s1','s2','s3','sv1','sv2','gw1','gw2','pondz','snowT','RTz','CAPr')
+##------------------ 
 i=1; 
 output = paste(proj,"/",arg[8],"/",arg[9],"/SESSION_", sessionID,"_world_ITR_",Itr[i],sep="")
 RHESSysoutput = paste(arg[9],"/SESSION_", sessionID,"_world_ITR_",Itr[i],sep="")
