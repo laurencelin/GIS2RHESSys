@@ -76,10 +76,6 @@ for(i in 1:length(mukey)){
 	mukeyHold[i,] = c(mukey[i], soilID_, soilID_name, icokeyWeight %*% icokeyHold)
 }#i
 
- # [44,] 14786956 183.3500 23.063670 44.033952 32.738444
- # [45,] 14786953 183.0000 21.235273 45.129344 33.391940
- # [46,] 14786957   0.0000  0.000000  0.000000  0.000000
-
 write.csv(mukeyHold,'VA113_ssurgo_extract.csv',row.names=F)# change output file name here !!
 
 
