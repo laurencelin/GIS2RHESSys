@@ -5,7 +5,7 @@ chtexgrpTitle=c('texture','stratextsflag','rvindicator','texdesc','chkey','chtgk
 chtexturTitle=c('texcl','lieutex','chtgkey','chtkey')
 extractVar = c('permeability','H2Ocapacity','bulkdensity','SHC','erodibility','FC','porosity','thickness','OM')
 
-target = 'VA113/tabular' ## change folder name here!!
+target = 'VA113/tabular'
 
 mapunit = read.table(paste(target,'/mapunit.txt',sep=''),sep='|') #mukey
 colnames(mapunit) = mapunitTitle
@@ -40,7 +40,7 @@ soilscoreNames = c('Clay','Silty clay','Silty clay loam','Sandy clay','Sandy cla
 soilscore = c(1,2,3,4,5,6,7,8,9,10,11,12); names(soilscore)=soilscoreNames
 	
 mukey = mapunit[,'mukey']	
-mukeyHold = matrix(NA,length(mukey), 1+3+7); 
+mukeyHold = matrix(NA,length(mukey), 3+1+7); 
 colnames(mukeyHold) = c('mukey','texture','soilname','depth','sand','slit','clay','ksat','porosity','fc','awc')
 for(i in 1:length(mukey)){
 	
@@ -50,6 +50,7 @@ for(i in 1:length(mukey)){
 	icokeyWeight = icokeyPercent/sum(icokeyPercent)
 	
 	icokeyHold = matrix(NA,length(icokey),1+7)
+	colnames(icokeyHold)=c('jchkeyThinkness','sandtotal_r','silttotal_r','claytotal_r','ksat_r','wsatiated_r','wthirdbar_r','awc_r')
 	for(j in 1:length(icokey)){
 		cond2 = chorizon[,'cokey']==icokey[j]
 			# chorizon[cond2,]
@@ -74,9 +75,21 @@ for(i in 1:length(mukey)){
 	soilID_ = ifelse(length(tmp)>0, as.numeric(names(which.max(tmp))), NA)
 	soilID_name = ifelse(length(tmp)>0, soilscoreNames[soilID_], NA) 
 	mukeyHold[i,] = c(mukey[i], soilID_, soilID_name, icokeyWeight %*% icokeyHold)
+	
+	# https://water.usgs.gov/GIS/metadata/usgswrd/XML/ds866_ssurgo_variables.xml
+	# https://github.com/selimnairb/EcohydroLib/blob/bde84bb7c5839781038484ffc2159755b60ffb1e/ecohydrolib/ssurgo/attributequery.py#L95
+	# 'depth' = 'jchkeyThinkness'
+	# 'sand' = 'sandtotal_r'
+	# 'slit' = 'silttotal_r'
+	# 'clay' = 'claytotal_r'
+	# 'ksat' = 'ksat_r'
+	# 'porosity' = 'wsatiated_r'
+	# 'fc' = 'wthirdbar_r'
+	# 'awc' = 'awc_r'
+	
 }#i
 
-write.csv(mukeyHold,'VA113_ssurgo_extract.csv',row.names=F)# change output file name here !!
+write.csv(mukeyHold,'VA113_ssurgo_extract.csv',row.names=F)
 
 
 
