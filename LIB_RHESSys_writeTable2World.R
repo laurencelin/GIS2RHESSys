@@ -1,4 +1,4 @@
-source("~/Dropbox/LIB_Rscript/LIB_misc.R")
+source("~/LIB_misc.R")
 options(scipen=999)
 
 arg=commandArgs(T)
