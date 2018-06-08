@@ -1,6 +1,7 @@
 ## single basin
 
 #----------------------------------------------------------------------------------------------
+	arg=commandArgs(T)
 	DtoR = pi/180
 	RtoD = 1/DtoR
 	defaultWorldName = c('worldID')
@@ -13,9 +14,9 @@
 	
 #----------------------------------------------------------------------------------------------
 	# /Users/laurencelin/Downloads/GIS2RHESSys-master
-	projectFolder = '/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs/Workspace/R_rhessys_tool/g2w'
+	projectFolder = arg[1]
 	outWorldFile = 'worldfile.csv'
-	climateStationID = 101
+	climateStationID = arg[2] 
 	
 	param = read.csv(paste(projectFolder,'/','rhessys_veg_default.csv',sep=''),skip=4,header=T,stringsAsFactors=F)
 	plantcol = cbind(as.numeric(unique(param[1,3:ncol(param)])), 3:ncol(param)); 
@@ -30,9 +31,9 @@
 	
 	# bounded by GIS mask
 	basinMap = 'basin'
-	hillslopeMap = 'hill1000'
-	zoneMAP = 'patch_cwt'
-	patchMAP = 'patch_cwt'
+	hillslopeMap = 'hill'
+	zoneMAP = 'patch'
+	patchMAP = 'patch'
 
 	# extract RHESSys structural IDs 
 	rast0 = readRAST(c(basinMap, hillslopeMap, zoneMAP, patchMAP),NODATA=0)
@@ -44,7 +45,7 @@
 	# extract patch def IDs
 	soilidMAP = 'soil_texture'
 	lulcidMAP = 'landuse'
-	VegidMAP = 'Bolstad_veg'
+	VegidMAP = 'stratum'
 	
 	rast1 = readRAST(c(soilidMAP, lulcidMAP, VegidMAP),NODATA=0)
 		soil = rast1@data[[1]]
@@ -78,13 +79,13 @@
 	slopeMap = 'slope' ##<<---- r.slope.aspect elevation="dem" slope="slope" aspect="aspect" format="degrees" prec="float" zfactor=1.0 min_slp_allowed=0.0 
 	aspectMAP = 'aspect' ##<<----- 90=north, 360=east, 180=west 270=south
 	twiMAP = 'wetness_index' ##<<---- r.topidx
-	whorizonMAP = 'west_0' ##<<----[0 or higher]: r.horizon -d elevin="dem" direction=180 horizon="west" dist=1.0 --> sin()
-	ehorizonMAP = 'east_0' ##<<----[0 or higher]: r.horizon -d elevin="dem" direction=0 horizon="east" dist=1.0 --> sin()
-	isohyetMAP = 'isohyet' ##<<--------- [can it be 0 or negative?] <------ "precipitation" mm/m
+	whorizonMAP = 'west_180' ##<<----[0 or higher]: r.horizon -d elevin="dem" direction=180 output="west" distance=1.0 --> sin()
+	ehorizonMAP = 'east_0' ##<<----[0 or higher]: r.horizon -d elevin="dem" direction=0 output="east" distance=1.0 --> sin()
+	isohyetMAP = 'ZERO' ##<<--------- [can it be 0 or negative?] <------ "precipitation" mm/m
 	imperviousMAP = 'impervious' ##<<---- from USGS [0-100]
 	laiMAP = 'lai' ##<<---- remote sensing or LULC reclass
-	VegCoverMAP = '' ##<<---- default is 1 everywhere [fractioning the patch by vegetations]
-	VegGapMAP = '' ##<<---- default is 0 everywhere [this variable is for light canopy penetration]
+	VegCoverMAP = 'ONE' ##<<---- default is 1 everywhere [fractioning the patch by vegetations]
+	VegGapMAP = 'ZERO' ##<<---- default is 0 everywhere [this variable is for light canopy penetration]
 	
 	rast2 = readRAST(c(xMAP, yMAP, demMAP, slopeMap, aspectMAP, twiMAP, whorizonMAP, ehorizonMAP, isohyetMAP, imperviousMAP, laiMAP), NODATA=-1)
 		xx = rast2@data[[1]]
