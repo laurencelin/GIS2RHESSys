@@ -1,12 +1,34 @@
-source("~/LIB_misc.R")
+source("~/Dropbox/LIB_Rscript/LIB_misc.R")
 options(scipen=999)
 
 arg=commandArgs(T)
 
-# arg=c(
-	# "NA",
-	# "/Users/laurencelin/Dropbox/Myself/UNC/WS14_dynamicNdep/setup_rhessys_5_20_bolstad/rhessys/worldfiles/modify_bolstad_add.csv",
-	# "/Users/laurencelin/Dropbox/Myself/UNC/WS14_dynamicNdep/setup_rhessys_5_20_bolstad/rhessys/worldfiles/world_vegBolstad_add2")
+
+LIBfirstEach2GrpAt=function(x){
+	#getting x at the beginning of each group
+	each = as.matrix((table(x)))#<<---------issue
+	if(length(each)==1){return <- c(1)}
+	else{
+		each.name = as.numeric(rownames(each)) ## order got messed up
+		sortOrder = unique(x); ## this is the order of the file
+		
+		#.... slow threashold here
+		# tmp=c(1)
+		# for(i in 1:(length(sortOrder)-1)){
+			# tmp=append(tmp,each[each.name== sortOrder[i]])
+		# }#i
+		tmp = c(1,each[LIBmatchOrder(each.name, sortOrder)])
+		
+		return <- accumulate(tmp[1:(length(tmp)-1)])
+	}#else
+}
+
+LIBnrow=function(x){
+	# asssume x is a matrix or dataframe or vector
+	if(is.null(nrow(x))){return <- 1}
+	else{return <- nrow(x)}
+}
+
 
 header = arg[1]
 basefile = arg[2]
