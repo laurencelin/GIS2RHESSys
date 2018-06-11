@@ -10,8 +10,6 @@ stratum=''
 gageUTMx='277826.68'
 gageUTMy='3881430.28'
 thres='1000'
-## need to pre-process the DEM for pits
-## r.lake
 #########
 cd $PROJDIR
 g.region raster=$DEM
@@ -44,7 +42,7 @@ r.mapcalc expression="ONE = 1"
 # continue in R scripts.
 Rscript g2w_patch_grid_default.R $PROJDIR $ClimateStationID
 Rscript LIB_RHESSys_writeTable2World.R
-Rscript
+Rscript flow_table.R
 
 
 
