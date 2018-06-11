@@ -33,4 +33,4 @@ RHESSys github: https://github.com/RHESSys/RHESSys
 
 RHESSys wiki: https://github.com/RHESSys/RHESSys/wiki
 
-RHESSys tools by Will from west coast U.S. https://github.com/RHESSys/RHESSys/tree/master/RHESSysPreprocessing
+RHESSys tools by Will from U.S. west coast https://github.com/RHESSys/RHESSys/tree/master/RHESSysPreprocessing
