@@ -19,8 +19,11 @@ step 5:   cf_default.R (already listed in the end of the grass_cmd.sh) to calcul
 
                
 Future directions:
+
 a) extend the functionality grass_cmd.sh to help users to setup and project elevation and LULC once user provide these information in RAW form.
+
 b) merge this tool set to UVA Jupyter Notebook, interact with RHESSys workflows (python)
+
 c) add in SSURGO soil tool (R script: https://github.com/laurencelin/ssurgo_extraction)
 
 
