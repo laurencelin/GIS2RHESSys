@@ -28,5 +28,6 @@ c) add in SSURGO soil tool (R script: https://github.com/laurencelin/ssurgo_extr
 
 
 Other links:
-https://github.com/RHESSys/RHESSys
-https://github.com/RHESSys/RHESSys/tree/master/RHESSysPreprocessing
+RHESSys github: https://github.com/RHESSys/RHESSys
+RHESSys wiki: https://github.com/RHESSys/RHESSys/wiki
+RHESSys tools by Will from west coast U.S. https://github.com/RHESSys/RHESSys/tree/master/RHESSysPreprocessing
