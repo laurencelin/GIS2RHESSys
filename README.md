@@ -1,6 +1,6 @@
 # GIS2RHESSys
 
-Two major functions: 1) extracting spatial information from GIS to RHESSys worldfile (RHESSys input file) and 2) calculating subsurface and surface D-inf flow distribution.
+This tool set is a beta version with limited automation. Two major functions for this tool set: 1) extracting spatial information from GIS to RHESSys worldfile (RHESSys input file) and 2) calculating subsurface and surface D-inf flow distribution. This tool set will continuously receive updates for fixing issues and providing more functionality/automation.  More importantly, the shell/R scripts here serve as templates for advanced/highly-customized RHESSys setup.
 
 step 1:   setup/create GRASS 7.x database with downloadeded and processed elevation data. 
           elevation has to be projected to UTM and depression filled. 
@@ -15,7 +15,7 @@ step 3:   user needs to provide the following information:
           
 step 4:   g2w_default.R (already listed in the end of the grass_cmd.sh) to extracting spatial information from GIS to RHESSys worldfile ;
 
-step 5:   cf_default.R (already listed in the end of the grass_cmd.sh) to calculate drinage directions and weights
+step 5:   cf_default.R (already listed in the end of the grass_cmd.sh) to calculate subsurface drinage directions and weights (with limited surface flow routing). urban surface flow routing R script will be released as a seperate tool in the future.
 
                
 
