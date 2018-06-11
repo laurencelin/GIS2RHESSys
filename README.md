@@ -18,6 +18,9 @@ step 4:   g2w_default.R (already listed in the end of the grass_cmd.sh) to extra
 step 5:   cf_default.R (already listed in the end of the grass_cmd.sh) to calculate subsurface drinage directions and weights (with limited surface flow routing). urban surface flow routing R script will be released as a seperate tool in the future.
 
                
-
+Future directions:
+a) extend the functionality grass_cmd.sh to help users to setup and project elevation and LULC once user provide these information in RAW form.
+b) merge this tool set to UVA Jupyter Notebook, interact with RHESSys workflows (python)
+c) add in SSURGO soil tool (R script: https://github.com/laurencelin/ssurgo_extraction)
 
 
