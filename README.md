@@ -27,3 +27,6 @@ b) merge this tool set to UVA Jupyter Notebook, interact with RHESSys workflows 
 c) add in SSURGO soil tool (R script: https://github.com/laurencelin/ssurgo_extraction)
 
 
+Other links:
+https://github.com/RHESSys/RHESSys
+https://github.com/RHESSys/RHESSys/tree/master/RHESSysPreprocessing
