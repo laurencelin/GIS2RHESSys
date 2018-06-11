@@ -9,10 +9,13 @@ step 2:   grass_cmd.sh to delinearate catchment with user provided gage location
 
 step 3:   user needs to provide the following information:
           a)soil type (USDA classes); often based on SSURGO dataset
-          b)
+          b)LAI (Leaf Area Index)
+          c)RHESSys vegetation types/IDs (please refers to rhessys_veg_default.csv) 
+          d)REHSSys LU settings (e.g., fertilizing rate and surface water detention storage size; please refers to "defs_workflows"
+          
+step 4:   g2w_default.R (already listed in the end of the grass_cmd.sh) to extracting spatial information from GIS to RHESSys worldfile ;
 
-
-g2w_default:    extracting spatial information from GIS to RHESSys worldfile ;
+step 5:   cf_default.R (already listed in the end of the grass_cmd.sh) to calculate drinage directions and weights
 
                
 
