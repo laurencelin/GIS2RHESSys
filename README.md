@@ -34,3 +34,4 @@ RHESSys github: https://github.com/RHESSys/RHESSys
 RHESSys wiki: https://github.com/RHESSys/RHESSys/wiki
 
 RHESSys tools by Will from U.S. west coast https://github.com/RHESSys/RHESSys/tree/master/RHESSysPreprocessing
+Will's RHESSys tools are also written in R with R-studio. Major difference between GIS2RHESSys and Will's is that GIS2RHESSys is designed to simplify the existing code and be friendly to command line/Jupyter notebook/server-client environment.
