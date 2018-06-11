@@ -37,12 +37,19 @@ r.mapcalc expression="rowmap = row()"
 r.mapcalc expression="colmap = col()"
 r.mapcalc expression="ZERO = 0"
 r.mapcalc expression="ONE = 1"
+
+# --------------------------------------------
+# user needs to provide the "maps" for the following:
 # soil (from SSURGO)
 # roads, landuse, stratum, lai (could be assigned by NLCD)
+# may provide some automations in this part int he future. 
+# --------------------------------------------
+
+
 # continue in R scripts.
-Rscript g2w_default.R $PROJDIR $ClimateStationID
-Rscript LIB_RHESSys_writeTable2World.R
-Rscript cf_default.R
+# Rscript g2w_default.R $PROJDIR $ClimateStationID
+# Rscript LIB_RHESSys_writeTable2World.R
+# Rscript cf_default.R
 
 
 
