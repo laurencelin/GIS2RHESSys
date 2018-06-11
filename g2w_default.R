@@ -13,7 +13,6 @@
 	title = c(defaultWorldName, defaultBasinName, defaultHillName, defaultZoneName, defaultPatchName, defaultStratumName)
 	
 #----------------------------------------------------------------------------------------------
-	# /Users/laurencelin/Downloads/GIS2RHESSys-master
 	projectFolder = arg[1]
 	outWorldFile = 'worldfile.csv'
 	climateStationID = arg[2] 
@@ -52,26 +51,6 @@
 		lu = rast1@data[[2]]
 		veg = rast1@data[[3]]
 	
-	##-------------------------------- scratch --------------------------------##
-	# table(veg[mask])
-		# # 4 = ridge = 805 = oak
-		# # 2 = mix = 803 = mix
-		# # 3 = cove = c(801,804)[1+as.numeric(runif(sum(veg[mask]==3))>0.2)] = hemlock,tulip
-		# # 10 = pine = 807 = pine
-		# build_vegID = rep(NA,sum(mask))
-		# build_vegID[veg[mask]==4] = 805
-		# build_vegID[veg[mask]==2] = 803
-		# build_vegID[veg[mask]==3] = c(801,804)[1+as.numeric(runif(sum(veg[mask]==3))>0.2)]
-		# build_vegID[veg[mask]==10] = 807
-		
-	# rast1$Bolstad_vegID = rep(NA,length(veg))
-	# rast1$Bolstad_vegID[mask] = build_vegID
-	# writeRAST(rast1,'Bolstad_vegID',zcol='Bolstad_vegID',overwrite=T)
-	
-	# veg = rast1$Bolstad_vegID
-	##-------------------------------- scratch --------------------------------##
-	
-	
 	# extract patch positive numerical values [0 -> +X]
 	xMAP = 'xmap' 	##<<---- use raster calculator
 	yMAP = 'ymap'	##<<---- use raster calculator
@@ -80,7 +59,7 @@
 	aspectMAP = 'aspect' ##<<----- 90=north, 360=east, 180=west 270=south
 	twiMAP = 'wetness_index' ##<<---- r.topidx
 	whorizonMAP = 'west_180' ##<<----[0 or higher]: r.horizon -d elevin="dem" direction=180 output="west" distance=1.0 --> sin()
-	ehorizonMAP = 'east_0' ##<<----[0 or higher]: r.horizon -d elevin="dem" direction=0 output="east" distance=1.0 --> sin()
+	ehorizonMAP = 'east_000' ##<<----[0 or higher]: r.horizon -d elevin="dem" direction=0 output="east" distance=1.0 --> sin()
 	isohyetMAP = 'ZERO' ##<<--------- [can it be 0 or negative?] <------ "precipitation" mm/m
 	imperviousMAP = 'impervious' ##<<---- from USGS [0-100]
 	laiMAP = 'lai' ##<<---- remote sensing or LULC reclass
@@ -234,7 +213,7 @@
 	patchColumn = cbind(
 		patchID, patchX, patchY, patchZ, patchSOIL, patchLAND, patchArea,
 		patchSLOPE, patchTWI, 1-patchIMP, 
-		rep(1, numpatch) %o% c(0.12, 0,0,0, 0,28, 0, -10, 0, -0.5,1,0,0,0,0,0,0, 0,0,0, 0,0,0)
+		rep(1, numpatch) %o% c(0.12, 0,0,0, 0.28, 0, -10, 0, -0.5,1,0, 0.0000001,0.0000001,0.0000002,0.0000003,0.0000004,0.0000001, 0,0, 0.0000002,0.0000003,4e-9,0)
 		)[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
 						
 	stratumColumn = matrix(0, sum(patchVegnum),length(defaultStratumName))	
