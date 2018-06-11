@@ -40,9 +40,9 @@ r.mapcalc expression="ONE = 1"
 # soil (from SSURGO)
 # roads, landuse, stratum, lai (could be assigned by NLCD)
 # continue in R scripts.
-Rscript g2w_patch_grid_default.R $PROJDIR $ClimateStationID
+Rscript g2w_default.R $PROJDIR $ClimateStationID
 Rscript LIB_RHESSys_writeTable2World.R
-Rscript flow_table.R
+Rscript cf_default.R
 
 
 
