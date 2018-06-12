@@ -180,7 +180,8 @@ projectFolder = '/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs
 			return <- islope*shared_perimeter; 
 		})); ## it has different order than neighbor_patch_info
 		neighbor_gamma = gamma[match(neighbor_patch_info[,'patchID'],names(gamma))];
-		neighbor_frac_gamma = neighbor_gamma/sum(neighbor_gamma);
+		total_gamma = sum(neighbor_gamma)
+		neighbor_frac_gamma = neighbor_gamma/ifelse(total_gamma>0, total_gamma,1);
 		total_gamma = sum(neighbor_gamma)/total_perimeter*current_patch_info['grid']*cellarea; # currrent CF calculation
 		
 		if(drainage_type==1) total_gamma = current_patch_info['mslope']*current_patch_info['grid']*cellarea; # special for stream
@@ -189,7 +190,7 @@ projectFolder = '/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs
 		flow_table_buff <<- c(flow_table_buff, paste(
 			paste(current_patch_info[c('patchID','zone','hill')], collapse=' '),
 			paste(sprintf('%.1f',current_patch_info[c('rr','cc','dem')]), collapse=' '),
-			paste(current_patch_info[c('accgrid','grid')], collapse=' '),
+			paste(sprintf('%.1f',current_patch_info[c('accgrid','grid')]), collapse=' '),
 			drainage_type, 
 			total_gamma,length(neighbor_patch) ));
 		
