@@ -48,8 +48,8 @@ r.mapcalc expression="ONE = 1"
 
 # continue in R scripts.
 # Rscript g2w_default.R $PROJDIR $ClimateStationID
-# Rscript LIB_RHESSys_writeTable2World.R
-# Rscript cf_default.R
+# Rscript LIB_RHESSys_writeTable2World.R na $PROJDIR/worldfile.csv $PROJDIR/worldfile
+# Rscript cf_default.R $PROJDIR
 
 
 
