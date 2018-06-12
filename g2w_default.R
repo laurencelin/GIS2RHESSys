@@ -15,7 +15,7 @@
 #----------------------------------------------------------------------------------------------
 	projectFolder = arg[1]
 	outWorldFile = 'worldfile.csv'
-	climateStationID = arg[2] 
+	climateStationID = as.numeric(arg[2])
 	
 	param = read.csv(paste(projectFolder,'/','rhessys_veg_default.csv',sep=''),skip=4,header=T,stringsAsFactors=F)
 	plantcol = cbind(as.numeric(unique(param[1,3:ncol(param)])), 3:ncol(param)); 
@@ -26,7 +26,8 @@
 	# read in rast
 	library(rgrass7)
 	library(rgdal)
-	gmeta()
+	gis = gmeta()
+	gridarea = gis$nsres * gis$ewres
 	
 	# bounded by GIS mask
 	basinMap = 'basin'
@@ -116,7 +117,7 @@
 	zoneX = tapply(xx[mask],INDEX=zone[mask], FUN=mean)
 	zoneY = tapply(yy[mask],INDEX=zone[mask], FUN=mean)
 	zoneZ = tapply(dem[mask],INDEX=zone[mask], FUN=mean)
-	zoneArea = tapply(rep(1,len),INDEX=zone[mask], FUN=mean)
+	zoneArea = tapply(rep(1,len),INDEX=zone[mask], FUN=mean)*gridarea
 		zoneID = as.numeric(names(zoneX))
 		numzone = length(zoneID)
 		zoneIDrhessysOrder = match(idMatrix[,'zoneList'], zoneID) 
@@ -129,7 +130,7 @@
 	patchX = tapply(xx[mask],INDEX=patch[mask], FUN=mean)
 	patchY = tapply(yy[mask],INDEX=patch[mask], FUN=mean)
 	patchZ = tapply(dem[mask],INDEX=patch[mask], FUN=mean)
-	patchArea = tapply(rep(1,len),INDEX=patch[mask], FUN=mean)
+	patchArea = tapply(rep(1,len),INDEX=patch[mask], FUN=mean)*gridarea
 	patchSOIL = tapply(soil[mask],INDEX=patch[mask], FUN=function(x){hold=table(x); as.numeric(names(hold)[which.max(hold)])} )
 	patchLAND = tapply(lu[mask],INDEX=patch[mask], FUN=function(x){hold=table(x); as.numeric(names(hold)[which.max(hold)])} )
 	patchIMP = tapply(impervious[mask],INDEX=patch[mask], FUN=mean)
@@ -221,7 +222,7 @@
 	stratumColumn[,2] = patchVegID # stratePlantID
 	stratumColumn[,3] = patchVegCover # stratecfrac -->affect precipitation intercept 
 	stratumColumn[,4] = 0 # strateGap -->affect sunlight intercept 
-	stratumColumn[,5] = 1 # strateRZ
+	stratumColumn[,5] = 1 # strateRZ 1m by default
 	stratumColumn[,c(9,13,16,19,22,25,29,31,35,38,41,44,47)] = stratumMass
 	
 	
