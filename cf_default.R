@@ -1,6 +1,6 @@
 ## flow table
 
-
+arg=commandArgs(T)
 library(rgrass7)
 library(rgdal)
 gis = gmeta()
@@ -9,19 +9,19 @@ DtoR = pi/180
 RtoD = 1/DtoR
 roadWidth = 5; # meter
 
-projectFolder = '/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs/Workspace/R_rhessys_tool/g2w'
+projectFolder = arg[1]
 # bounded by GIS mask
 	basinMap = 'basin'
-	hillslopeMap = 'hill1000'
-	zoneMAP = 'patch_cwt'
+	hillslopeMap = 'hill'
+	zoneMAP = 'patch'
 	xMap = 'xmap'
 	yMap = 'ymap'
-	patchMAP = 'patch_cwt'
+	patchMAP = 'patch'
 	rowMap = 'rowmap' ##<<--- raster calculator row()
 	colMap = 'colmap' ##<<--- raster calculator col()
 	demMap = 'dem'
 	roadMap = 'roads'
-	streamMap = 'str1000'
+	streamMap = 'str'
 	slopeMap = 'slope' ## unit in degree
 	
 	rast0 = readRAST(c(basinMap, hillslopeMap, zoneMAP, patchMAP, rowMap, colMap),NODATA=0)
@@ -208,7 +208,7 @@ projectFolder = '/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs
 	
 	
 	
-	write(flow_table_buff, paste(projectFolder,'/tmp.txt',sep=''), ncolumns=1)
+	write(flow_table_buff, paste(projectFolder,'/flowtable_sub.txt',sep=''), ncolumns=1)
 	
 	
 	
