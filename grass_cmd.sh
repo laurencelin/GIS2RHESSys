@@ -10,7 +10,7 @@ stratum=''
 gageUTMx='277826.68'
 gageUTMy='3881430.28'
 thres='1000'
-#########
+#############---------- no edits below this line
 cd $PROJDIR
 g.region raster=$DEM
 r.mask -r
