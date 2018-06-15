@@ -1,15 +1,17 @@
 #!/bin/bash
 export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/Library/Frameworks/R.framework/Resources
-PROJDIR='~'
-ClimateStationID='101'
-DEM='dem'
+########################################################################
+### Please customizing information below
+PROJDIR='~' # full path to the project location;
+gageUTMx='277826.68' # UTM coordinates of catchment outlet
+gageUTMy='3881430.28'
+thres='1000'
+ClimateStationID='101' 
+DEM='dem' 
 LandUSE=''
 LAI=''
 stratum=''
-gageUTMx='277826.68'
-gageUTMy='3881430.28'
-thres='1000'
 #############---------- no edits below this line
 cd $PROJDIR
 g.region raster=$DEM
