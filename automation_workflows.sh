@@ -1,4 +1,5 @@
 #!/bin/bash
+# path setup below is for Mac OS
 # adding R paths
 export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/Library/Frameworks/R.framework/Resources
@@ -10,11 +11,11 @@ export PATH=$PATH:~/Library/GRASS/7.4/Modules/bin:~/Library/GRASS/7.4/Modules/sc
 export GDAL_DATA=/Applications/GRASS-7.4.0.app/Contents/Resources/share/gdal
 ########################################################################
 ### Please customizing information below
-PROJDIR='/Users/laurencelin/Downloads/Laurence_example' # full path to the project location;
-CATCHMENTNAME='test'
+PROJDIR='proj_folder' # full path to the project location;
+CATCHMENTNAME='catchment_name'
 #          << boundaries of the DEM, LULC, SSURGO should be sufficient large to cover the catchment area >>
-downloadedDEMfile='/Users/laurencelin/Downloads/Laurence_example/downloaddem.tiff' # full path to the downloaded file
-downloadedLULCfile='/Users/laurencelin/Downloads/Laurence_example/lulc.tiff' # full path to the downloaded file
+downloadedDEMfile='downloaddem.tiff' # full path to the downloaded file
+downloadedLULCfile='lulc.tiff' # full path to the downloaded file
 #downloadedSSURGOfile='' #developing
 #          << user needs to provide outlet location and projection information  >>
 gageLat='38.444565' # catchment outlet WSG84 Lat (decimal degree)
