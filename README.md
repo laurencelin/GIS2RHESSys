@@ -8,7 +8,8 @@ step 1:   downloaded and process elevation and LULC data;
           
 step 2:   edit automation_workflows.sh with the information above, and run the script in terminals at the location of the script.
 
-  
+automation_workflows.sh is designed to create the GRASS GIS database, delineate catchment, setup watershed model variables (e.g., impervious, lai, and vegetation type based on NLCD classification and default rules), and generate RHESSys model input files (worldfile and flowtable).
+
                
 Future directions:
 
