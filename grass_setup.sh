@@ -1,60 +1,31 @@
 #!/bin/bash
-export PATH=$PATH:/usr/local/bin
-export PATH=$PATH:/Library/Frameworks/R.framework/Resources
-########################################################################
-### Please customizing information below
-PROJDIR='~' # full path to the project location;
-gageUTMx='277826.68' # UTM coordinates of catchment outlet
-gageUTMy='3881430.28'
-thres='1000'
-ClimateStationID='101' 
-DEM='dem' 
-LandUSE=''
-LAI=''
-stratum=''
-#############---------- no edits below this line
-cd $PROJDIR
-g.region raster=$DEM
+PROJDIR=$1
+gageLong=$2
+gageLat=$3
+#m.proj -i coordinates=-83.43599,35.05
+#m.proj -i coordinates=-83.43599,35.05 separator=space | awk '!($3="")'
+declare $(m.proj -i coordinates=$gageLong,$gageLat separator=space | awk '{print "xyCoord=" $1 "," $2}')
+g.region raster=dem
 r.mask -r
-declare $(r.info map=$DEM | awk 'NR==13{print "maxcol="$3}')
-r.watershed -s --overwrite elevation=$DEM accumulation=uaa drainage=drain tci=wettness_index
-r.slope.aspect --overwrite elevation=$DEM slope=slope aspect=aspect
-r.water.outlet input=drain output=basin coordinates=$gageUTMx,$gageUTMy
-r.horizon -d elevation=$DEM direction=180 output="west" distance=1.0
-r.horizon -d elevation=$DEM direction=0 output="east" distance=1.0
-g.region raster=$DEM
+declare $(r.info map=dem | awk 'NR==13{print "maxcol="$3}')
+r.watershed -s --overwrite elevation=dem accumulation=uaa drainage=drain tci=wetness_index
+r.slope.aspect --overwrite elevation=dem slope=slope aspect=aspect
+r.horizon -d elevation=dem direction=180 output="west" distance=1.0
+r.horizon -d elevation=dem direction=0 output="east" distance=1.0
+r.water.outlet input=drain output=basin coordinates=$xyCoord
 g.region zoom=basin
-r.mask -r
 r.mask raster=basin
-r.watershed -s --overwrite elevation=$DEM threshold=$thres basin=sub stream=str half_basin=hill
+r.watershed -s --overwrite elevation=dem threshold=$4 basin=sub stream=str half_basin=hill
 r.mapcalc expression="basin = if(isnull(hill),null(),1)" --overwrite
-g.region raster=$DEM
+g.region raster=dem
 g.region zoom=basin
 r.mask -r
 r.mask raster=basin
-r.mapcalc expression="patch = row()*$maxcol+col()"
-r.mapcalc expression="xmap = x()"
-r.mapcalc expression="ymap = y()"
-r.mapcalc expression="rowmap = row()"
-r.mapcalc expression="colmap = col()"
-r.mapcalc expression="ZERO = 0"
-r.mapcalc expression="ONE = 1"
-
-# --------------------------------------------
-# user needs to provide the "maps" for the following:
-# soil (from SSURGO)
-# roads, landuse, stratum, lai (could be assigned by NLCD)
-# may provide some automations in this part int he future. 
-# --------------------------------------------
-
-
-# continue in R scripts.
-# Rscript g2w_default.R $PROJDIR $ClimateStationID
-# Rscript LIB_RHESSys_writeTable2World.R na $PROJDIR/worldfile.csv $PROJDIR/worldfile
-# Rscript cf_default.R $PROJDIR
-
-
-
-
-
-
+r.mapcalc --overwrite expression="patch = row()*$maxcol+col()"
+r.mapcalc --overwrite expression="zone = patch"
+r.mapcalc --overwrite expression="xmap = x()"
+r.mapcalc --overwrite expression="ymap = y()"
+r.mapcalc --overwrite expression="rowmap = row()"
+r.mapcalc --overwrite expression="colmap = col()"
+r.mapcalc --overwrite expression="ZERO = 0"
+r.mapcalc --overwrite expression="ONE = 1"
