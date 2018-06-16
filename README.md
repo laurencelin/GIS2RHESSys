@@ -10,7 +10,7 @@ step 2:   edit automation_workflows.sh with the information above, and run the s
 
 automation_workflows.sh is designed to create the GRASS GIS database, delineate catchment, setup watershed model variables (e.g., impervious, lai, and vegetation type based on NLCD classification and default rules), and generate RHESSys model input files (worldfile and flowtable).
 
-grass_setup.sh is a script containing all grass commands to delinear catchment, and it is called by the automation_workflows.sh.  Regular users have no need to modify it.
+grass_setup.sh is a script containing all grass commands to delineate catchment, and it is called by the automation_workflows.sh.  Regular users have no need to modify it.
 
 g2w_default.R and cf_default.R are R scripts to replace the C-coded old programs used for GRASS 6.4 to generate RHESSys input files. Regular users have no need to modify them. However, they are excellent templates for advanced users to highly customize the RHESSys setup.  
                
