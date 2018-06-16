@@ -37,7 +37,7 @@ grass74 $LOCATION/$MAPSET --exec sh grass_setup.sh $PROJDIR $gageLong $gageLat $
 # command below will set loam as the soil type for the whole catchment (as a place holder for now)
 grass74 $LOCATION/$MAPSET --exec r.mapcalc --overwrite expression="soil_texture = 9"
 ########### import LULC(e.g., NLCD) ###############
-### edit the locations and file names (full paths)
+### simply use NLCD LULC to setup roads, stratum, landuse, lai, and impervious (see rules)
 grass74 $LOCATION/$MAPSET --exec r.import -o --overwrite input=$downloadedLULCfile output=lulc
 grass74 $LOCATION/$MAPSET --exec r.reclass --overwrite input=lulc output=roads rules=rules/default_road_reclass.txt
 grass74 $LOCATION/$MAPSET --exec r.reclass --overwrite input=lulc output=stratum rules=rules/default_stratum_reclass.txt
