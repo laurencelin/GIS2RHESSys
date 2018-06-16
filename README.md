@@ -2,7 +2,7 @@
 
 This tool set is a beta version with limited automation. Two major functions for this tool set: 1) extracting spatial information from GIS to RHESSys worldfile (RHESSys input file) and 2) calculating subsurface and surface D-inf flow distribution. This tool set will continuously receive updates for fixing issues and providing more functionality/automation.  More importantly, the shell/R scripts here serve as templates for advanced/highly-customized RHESSys setup.
 
-step 1:   downloaded and process elevation data;
+step 1:   downloaded and process elevation and LULC data;
           identify the Lat/Long of the catchment outlet;
           find the NAD83 UTM zone and the corresponding EPSG code for the catchment.
           
