@@ -198,7 +198,8 @@
 	write( title, outWorldFile, ncolumns=length(title), append=F, sep=',')
 		
 		
-	WorldBasinColumn = rep(1, numpatch) %o% c(1,1, mean(xx[mask]), mean(yy[mask]), mean(dem[mask]), 1, latitude, 0)
+	WorldBasinColumn = rep(1, sum(patchVegnum)) %o% c(1,1, mean(xx[mask]), mean(yy[mask]), mean(dem[mask]), 1, latitude, 0)
+	
 	hillColumn = cbind(
 		hillID,hillX, hillY, hillZ,
 		rep(1, numhill) %o% c(1,0,0,0)
