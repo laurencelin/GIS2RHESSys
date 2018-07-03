@@ -40,30 +40,14 @@ print( paste('outputfile = ', outputfile,sep='') )
 dd = as.matrix(read.csv(basefile))
 keytable=cbind(colnames(dd),1:ncol(dd))
 
-### ... assume everything is globally unqiue and grop-wise ajcent
+	## this indexing system here is not efficient! maybe future updates
+worldIndex = 1
+basinID = unique(dd[,'basinID']); basinIndex = t(simplify2array(tapply(LEN, INDEX=match(dd[,'basinID'],basinID),function(ii){return<-c(dd[ii,'worldID'][1],dd[ii,'basinID'][1], ii[1]); })))
+hillID = unique(dd[,'hillID']); hillIndex = t(simplify2array(tapply(LEN, INDEX=match(dd[,'hillID'],hillID),function(ii){return<-c(dd[ii,'worldID'][1],dd[ii,'basinID'][1],dd[ii,'hillID'][1], ii[1]); })))
+zoneID = unique(dd[,'zoneID']); zoneIndex = t(simplify2array(tapply(LEN, INDEX=match(dd[,'zoneID'],zoneID),function(ii){return<-c(dd[ii,'worldID'][1],dd[ii,'basinID'][1],dd[ii,'hillID'][1], dd[ii,'zoneID'][1], ii[1]); })))
+patchID = unique(dd[,'patchID']); patchIndex = t(simplify2array(tapply(LEN, INDEX=match(dd[,'patchID'],patchID),function(ii){return<-c(dd[ii,'worldID'][1],dd[ii,'basinID'][1],dd[ii,'hillID'][1], dd[ii,'zoneID'][1],dd[ii,'patchID'][1], ii[1]); })))
+stratumID = unique(dd[,'strateID']); stratumIndex = t(simplify2array(tapply(LEN, INDEX=match(dd[,'strateID'],stratumID),function(ii){return<-c(dd[ii,'worldID'][1],dd[ii,'basinID'][1],dd[ii,'hillID'][1], dd[ii,'zoneID'][1],dd[ii,'patchID'][1],dd[ii,'strateID'][1], ii[1]); })))
 
-#.... world
-worldIndex=LIBfirstEach2GrpAt(dd[,1]) #world
-
-#.... basin
-w = LIBfirstEach2GrpAt(dd[,2]) #world basin
-if(length(w)==1){basinIndex = t(as.matrix(c(dd[w,1:2],w))) }else{ basinIndex = cbind(dd[w,c(1,2)],w) }
-
-#.... hill
-w=LIBfirstEach2GrpAt(dd[,9]) #world basin hill
-if(length(w)==1){hillIndex = t(as.matrix(c(dd[w,c(1,2,9)],w))) }else{ hillIndex = cbind(dd[w,c(1,2,9)],w) }
-
-#.... zone-patch
-w=LIBfirstEach2GrpAt(dd[,17]) #world basin hill zone 
-if(length(w)==1){zoneIndex = t(as.matrix(c(dd[w,c(1,2,9,17)],w))) }else{ zoneIndex = cbind(dd[w,c(1,2,9,17)],w) }
-
-#.... patch
-w=LIBfirstEach2GrpAt(dd[,30]) #world basin hill zone patch
-if(length(w)==1){patchIndex = t(as.matrix(c(dd[w,c(1,2,9,17,30)],w))) }else{ patchIndex = cbind(dd[w,c(1,2,9,17,30)],w) }
-
-#....strate
-w=LIBfirstEach2GrpAt( dd[,63] ) # world basin hill zone patch strate 
-if(length(w)==1){strateIndex = t(as.matrix(c(dd[w,c(1,2,9,17,30,63)],w))) }else{ strateIndex = cbind(dd[w,c(1,2,9,17,30,63)],w) }
 
 
 
