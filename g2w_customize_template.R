@@ -1,5 +1,5 @@
 ## single basin
-
+## sub-patch/grid setting
 #----------------------------------------------------------------------------------------------
 	arg=commandArgs(T)
 	DtoR = pi/180
@@ -13,10 +13,11 @@
 	title = c(defaultWorldName, defaultBasinName, defaultHillName, defaultZoneName, defaultPatchName, defaultStratumName)
 	
 #----------------------------------------------------------------------------------------------
-	projectFolder = '/Users/laurencelin/Downloads/hold'
+	projectFolder = './'
 	outWorldFile = 'worldfile.csv'
 	climateStationID = 101 #as.numeric(arg[2])
-	
+		
+	## user provides a customized vegetation.csv containing all vegetation parameters.
 	param = read.csv(paste(projectFolder,'/','SLB_Veg.csv',sep=''),skip=4,header=T,stringsAsFactors=F) #<<------
 	plantcol = cbind(as.numeric(unique(param[1,3:ncol(param)])), 3:ncol(param)); 
 	colnames(plantcol) = c('vegID','vegDefIndex')
@@ -147,7 +148,6 @@
 	# rep(patchIDrhessysOrder, times=patchVegnum) in below is expending the idMatrix order by Vegnum
 	
 	
-	##----------------------- does not pak all veg into worldfile (even in the default g2w script).
 	## sub-patch/grid setting
 		
 	subGridAssignment = matrix(NA,3,3)
