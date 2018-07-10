@@ -12,6 +12,15 @@ export GDAL_DATA=/Applications/GRASS-7.4.0.app/Contents/Resources/share/gdal
 ########################################################################
 ### Please customizing information below
 PROJDIR='proj_folder' # full path to the project location;
+mkdir $PROJDIR/obs
+mkdir $PROJDIR/rhessys
+mkdir $PROJDIR/rhessys/flow
+mkdir $PROJDIR/rhessys/worldfiles
+mkdir $PROJDIR/rhessys/tecfiles
+mkdir $PROJDIR/rhessys/output
+mkdir $PROJDIR/rhessys/clim
+mkdir $PROJDIR/rhessys/defs
+mkdir $PROJDIR/grassdata
 CATCHMENTNAME='catchment_name'
 #          << boundaries of the DEM, LULC, SSURGO should be sufficient large to cover the catchment area >>
 downloadedDEMfile='downloaddem.tiff' # full path to the downloaded file
