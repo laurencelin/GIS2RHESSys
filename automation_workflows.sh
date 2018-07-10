@@ -23,9 +23,9 @@ mkdir $PROJDIR/rhessys/defs
 mkdir $PROJDIR/grassdata
 CATCHMENTNAME='catchment_name'
 #          << boundaries of the DEM, LULC, SSURGO should be sufficient large to cover the catchment area >>
-downloadedDEMfile='downloaddem.tiff' # full path to the downloaded file
-downloadedLULCfile='lulc.tiff' # full path to the downloaded file
-#downloadedSSURGOfile='' #developing
+downloadedDEMfile='downloaddem.tiff' # full path to the downloaded <file>
+downloadedLULCfile='lulc.tiff' # full path to the downloaded <file>
+downloadedSSURGO='' # full path to the downloaded ssurgo <folder>
 #          << user needs to provide outlet location and projection information  >>
 gageLat='38.444565' # catchment outlet WSG84 Lat (decimal degree)
 gageLong='-78.371133' # catchment outlet WSG84 Long (decimal degree; includes the negative sign if applied)
@@ -40,11 +40,15 @@ LOCATION=$GISDBASE/$LOCATION_NAME
 MAPSET=PERMANENT
 grass74 -c $EPSGCODE -e $LOCATION # debug: it yields an error but it still works
 grass74 $LOCATION/$MAPSET --exec r.import -o --overwrite input=$downloadedDEMfile output=dem
+grass74 $LOCATION/$MAPSET --exec v.import -o --overwrite input=$downloadedSSURGO/xx.shp output=ssurgo ## check this line
 grass74 $LOCATION/$MAPSET --exec sh grass_setup.sh $PROJDIR $gageLong $gageLat $thres
 ########### import SSURGO soil vector mukey_a_xxx.shp ###############
 # developing ...
+grass74 $LOCATION/$MAPSET --exec v.to.rast --overwrite input=ssurgo output=soil_ssurgo #(working on...)
+grass74 $LOCATION/$MAPSET --exec v #extract attri table
+# <run r-script>
 # command below will set loam as the soil type for the whole catchment (as a place holder for now)
-grass74 $LOCATION/$MAPSET --exec r.mapcalc --overwrite expression="soil_texture = 9"
+#grass74 $LOCATION/$MAPSET --exec r.mapcalc --overwrite expression="soil_texture = 9"
 ########### import LULC(e.g., NLCD) ###############
 ### simply use NLCD LULC to setup roads, stratum, landuse, lai, and impervious (see rules)
 grass74 $LOCATION/$MAPSET --exec r.import -o --overwrite input=$downloadedLULCfile output=lulc
