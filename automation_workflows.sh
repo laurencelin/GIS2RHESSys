@@ -42,12 +42,12 @@ LOCATION=$GISDBASE/$LOCATION_NAME
 MAPSET=PERMANENT
 grass74 -c $EPSGCODE -e $LOCATION # debug: it yields an error but it still works
 grass74 $LOCATION/$MAPSET --exec r.import -o --overwrite input=$downloadedDEMfile output=dem
-grass74 $LOCATION/$MAPSET --exec v.import -o --overwrite input=$downloadedSSURGO/xx.shp output=ssurgo ## check this line
+grass74 $LOCATION/$MAPSET --exec v.import -o --overwrite input=$downloadedSSURGO/spatial/soilmu_a_xxx.shp output=ssurgo
 grass74 $LOCATION/$MAPSET --exec sh grass_setup.sh $PROJDIR $gageLong $gageLat $thres
-########### import SSURGO soil vector mukey_a_xxx.shp ###############
+########### import SSURGO soil vector soilmu_a_xxx.shp ###############
 # developing ...
-grass74 $LOCATION/$MAPSET --exec v.to.rast --overwrite input=ssurgo output=soil_ssurgo #(working on...)
-grass74 $LOCATION/$MAPSET --exec v #extract attri table
+grass74 $LOCATION/$MAPSET --exec v.to.rast --overwrite input=ssurgo use=cat output=soil_ssurgo
+grass74 $LOCATION/$MAPSET --exec v.db.select map=ssurgo separator=comma file=$PROJDIR/rhessys/ssurgo_cat_mukey.csv 
 # <run r-script>
 # command below will set loam as the soil type for the whole catchment (as a place holder for now)
 #grass74 $LOCATION/$MAPSET --exec r.mapcalc --overwrite expression="soil_texture = 9"
