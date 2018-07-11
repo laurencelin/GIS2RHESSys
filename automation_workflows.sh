@@ -1,5 +1,7 @@
 #!/bin/bash
 # path setup below is for Mac OS
+# assume new fully bundled GRASS 7.4 is installed from http://grassmac.wikidot.com/downloads
+# assume R and rgrass7 package are installed.
 # adding R paths
 export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/Library/Frameworks/R.framework/Resources
