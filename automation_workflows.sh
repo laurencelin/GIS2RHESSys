@@ -1,7 +1,10 @@
 #!/bin/bash
-# path setup below is for Mac OS
+#
 # assume new fully bundled GRASS 7.4 is installed from http://grassmac.wikidot.com/downloads
 # assume R and rgrass7 package are installed.
+# assume ssurgo_extraction.R is downloaded and saved together with this script.
+#
+# path setup below is for Mac OS
 # adding R paths
 export PATH=$PATH:/usr/local/bin
 export PATH=$PATH:/Library/Frameworks/R.framework/Resources
@@ -49,9 +52,9 @@ grass74 $LOCATION/$MAPSET --exec sh grass_setup.sh $PROJDIR $gageLong $gageLat $
 # developing ...
 grass74 $LOCATION/$MAPSET --exec v.to.rast --overwrite input=ssurgo use=cat output=soil_ssurgo
 grass74 $LOCATION/$MAPSET --exec v.db.select map=ssurgo separator=comma file=$PROJDIR/rhessys/ssurgo_cat_mukey.csv 
-# <run r-script>
-# command below will set loam as the soil type for the whole catchment (as a place holder for now)
-#grass74 $LOCATION/$MAPSET --exec r.mapcalc --overwrite expression="soil_texture = 9"
+Rscript ssurgo_extraction.R $downloadedSSURGO_directory
+# command below will set loam as the soil type for the whole catchment (in case SSURGO is unavailable)
+# grass74 $LOCATION/$MAPSET --exec r.mapcalc --overwrite expression="soil_texture = 9"
 ########### import LULC(e.g., NLCD) ###############
 ### simply use NLCD LULC to setup roads, stratum, landuse, lai, and impervious (see rules)
 grass74 $LOCATION/$MAPSET --exec r.import -o --overwrite input=$downloadedLULCfile output=lulc
