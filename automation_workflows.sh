@@ -27,7 +27,8 @@ CATCHMENTNAME='catchment_name'
 #          << boundaries of the DEM, LULC, SSURGO should be sufficient large to cover the catchment area >>
 downloadedDEMfile='downloaddem.tiff' # full path to the downloaded <file>
 downloadedLULCfile='lulc.tiff' # full path to the downloaded <file>
-downloadedSSURGO='' # full path to the downloaded ssurgo <folder>
+downloadedSSURGO_directory='' # full path to the downloaded ssurgo <folder>
+downloadedSSURGO_soilmu_file='' # the shapefile name, e.g., "soilmu_a_xxx.shp"
 #          << user needs to provide outlet location and projection information  >>
 gageLat='38.444565' # catchment outlet WSG84 Lat (decimal degree)
 gageLong='-78.371133' # catchment outlet WSG84 Long (decimal degree; includes the negative sign if applied)
@@ -42,7 +43,7 @@ LOCATION=$GISDBASE/$LOCATION_NAME
 MAPSET=PERMANENT
 grass74 -c $EPSGCODE -e $LOCATION # debug: it yields an error but it still works
 grass74 $LOCATION/$MAPSET --exec r.import -o --overwrite input=$downloadedDEMfile output=dem
-grass74 $LOCATION/$MAPSET --exec v.import -o --overwrite input=$downloadedSSURGO/spatial/soilmu_a_xxx.shp output=ssurgo
+grass74 $LOCATION/$MAPSET --exec v.import -o --overwrite input=$downloadedSSURGO_directory/spatial/$downloadedSSURGO_soilmu_file output=ssurgo
 grass74 $LOCATION/$MAPSET --exec sh grass_setup.sh $PROJDIR $gageLong $gageLat $thres
 ########### import SSURGO soil vector soilmu_a_xxx.shp ###############
 # developing ...
