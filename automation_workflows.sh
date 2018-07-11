@@ -51,7 +51,7 @@ grass74 $LOCATION/$MAPSET --exec sh grass_setup.sh $PROJDIR $gageLong $gageLat $
 ########### import SSURGO soil vector soilmu_a_xxx.shp ###############
 # developing ...
 grass74 $LOCATION/$MAPSET --exec v.to.rast --overwrite input=ssurgo use=cat output=soil_ssurgo
-grass74 $LOCATION/$MAPSET --exec v.db.select map=ssurgo separator=comma file=$PROJDIR/rhessys/ssurgo_cat_mukey.csv 
+grass74 $LOCATION/$MAPSET --exec v.db.select map=ssurgo separator=comma file=$PROJDIR/rhessys/soil_cat_mukey.csv 
 Rscript ssurgo_extraction.R $downloadedSSURGO_directory
 # command below will set loam as the soil type for the whole catchment (in case SSURGO is unavailable)
 # grass74 $LOCATION/$MAPSET --exec r.mapcalc --overwrite expression="soil_texture = 9"
