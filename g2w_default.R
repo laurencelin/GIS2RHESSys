@@ -16,8 +16,6 @@
 	projectFolder = arg[1]
 	outWorldFile = 'worldfile.csv'
 	climateStationID = as.numeric(arg[2])
-	soil_cat_mukey = arg[3] # product from "grass74 $LOCATION/$MAPSET --exec v.db.select map=ssurgo separator=comma file=$PROJDIR/rhessys/ssurgo_cat_mukey.csv"
-	soil_mukey_texture = [4] # product from "Rscript ssurgo_extraction.R $downloadedSSURGO_directory"
 
 	param = read.csv(paste(projectFolder,'/','rhessys_veg_default.csv',sep=''),skip=4,header=T,stringsAsFactors=F)
 	plantcol = cbind(as.numeric(unique(param[1,3:ncol(param)])), 3:ncol(param)); 
