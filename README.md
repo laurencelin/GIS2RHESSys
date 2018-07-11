@@ -18,7 +18,7 @@ Future directions:
 
 a) merge this tool set to UVA Jupyter Notebook, interact with RHESSys workflows (python)
 
-b) add in SSURGO soil tool (R script: https://github.com/laurencelin/ssurgo_extraction)
+b) add in SSURGO soil tool (R script: https://github.com/laurencelin/ssurgo_extraction)[Updated: tool is added in the automation_workflow.sh; perhaps need some test runs.]
 
 c) provide linkage/guide to RHESSys calibration: https://github.com/laurencelin/R-coded-scripts-for-RHESSys-calibration
 
