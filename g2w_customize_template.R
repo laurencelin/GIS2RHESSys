@@ -150,14 +150,14 @@
 	
 	## sub-patch/grid setting
 		
-	subGridAssignment = matrix(NA,3,3)
-	subGridAssignment[2:3,1] = c(4.5,2) # tree [LAI, vegID]
-	subGridAssignment[2:3,2] = c(1.5,3) # green [LAI, vegID]
-	subGridAssignment[2:3,3] = c(0.0,4) # no veg [LAI, vegID]	
+	subGridAssignment = matrix(NA,4,3)
+	subGridAssignment[2:4,1] = c(4.5,2,1) # tree [LAI, vegID, rootz]
+	subGridAssignment[2:4,2] = c(1.5,3,0.3) # green [LAI, vegID, rootz]
+	subGridAssignment[2:4,3] = c(0.0,4,0) # no veg [LAI, vegID, rootz]		
 	landuseClass = c(2,1,3) # RHESSys def
 	
 		## scanning each grid within a patch and forming within patch configuration using the subgrid information
-	subGrid_buff = 'patchID frac lai vegID land imp'
+	subGrid_buff = 'patchID frac lai vegID land imp rootz'
 	patchVegnum = tapply(1:sum(mask),INDEX=tapplyOrder, FUN=function(x){
 			
 			subGridAssignment[1,] = c(mean(forestFrac[x]), mean(lawnFrac[x]), mean(impervious[x]) )
@@ -185,6 +185,7 @@
 	patchVegID = subGrid_info[,'vegID']
 	patchLAND = subGrid_info[,'land'] 	
 	patchIMP = subGrid_info[,'imp']  #<<----	
+	patchRZ = subGrid_info[,'rootz']
 
 	lai_ = patchVegLAI ## already ordered
 		stratum = patchVegID
@@ -255,7 +256,7 @@
 	stratumColumn[,2] = patchVegID # stratePlantID
 	stratumColumn[,3] = patchVegCover # stratecfrac -->affect precipitation intercept 
 	stratumColumn[,4] = 0 # strateGap -->affect sunlight intercept 
-	stratumColumn[,5] = 1 # strateRZ 1m by default
+	stratumColumn[,5] = patchRZ # strateRZ 1m by default
 	stratumColumn[,c(9,13,16,19,22,25,29,31,35,38,41,44,47)] = stratumMass
 	
 	
