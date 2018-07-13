@@ -28,7 +28,7 @@
 	library(rgrass7)
 	library(rgdal)
 	gis = gmeta()
-	gridarea = gis$nsres * gis$ewres
+	gridarea = round(gis$nsres * gis$ewres)
 	
 	# bounded by GIS mask
 	basinMap = 'SLBsite'
