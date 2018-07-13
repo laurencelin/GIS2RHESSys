@@ -13,7 +13,7 @@
 	title = c(defaultWorldName, defaultBasinName, defaultHillName, defaultZoneName, defaultPatchName, defaultStratumName)
 	
 #----------------------------------------------------------------------------------------------
-	projectFolder = './'
+	projectFolder = '.'
 	outWorldFile = 'worldfile.csv'
 	climateStationID = 101 #as.numeric(arg[2])
 		
@@ -223,9 +223,9 @@
 		
 
 #----------------------------------------------------------------------------------------------		
-	outWorldFile = paste(projectFolder,'/', outWorldFile,sep='')
+	outWorldFilePath = paste(projectFolder,'/worldfiles/', outWorldFile,sep='')
 	title = c(defaultWorldName, defaultBasinName, defaultHillName, defaultZoneName, defaultPatchName, defaultStratumName)
-	write( title, outWorldFile, ncolumns=length(title), append=F, sep=',')
+	write( title, outWorldFilePath, ncolumns=length(title), append=F, sep=',')
 		
 		
 	WorldBasinColumn = rep(1, sum(patchVegnum)) %o% c(1,1, mean(xx), mean(yy), mean(dem), 1, latitude, 0) #<<---- debug
@@ -269,7 +269,7 @@
 		1-patchIMP,
 		patchColumn3,
 		stratumColumn
-	), outWorldFile, row.names=F,col.names=F, append=T, sep=',')
+	), outWorldFilePath, row.names=F,col.names=F, append=T, sep=',')
 					
 
 	
