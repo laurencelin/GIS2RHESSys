@@ -200,6 +200,6 @@ projectFolder = arg[1]
 	
 	## Part 3: writing output flow table
 
-	write(flow_table_buff, paste(projectFolder,'/flowtable_sub.txt',sep=''), ncolumns=1)
+	write(flow_table_buff, paste(projectFolder,'/rhessys/flow/flowtable_sub.txt',sep=''), ncolumns=1)
 	
 	
