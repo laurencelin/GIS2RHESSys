@@ -246,9 +246,9 @@
 		patchID, patchX, patchY, patchZ, patchSOIL)[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
 	
 	patchColumn2 = cbind(
-		patchArea, patchSLOPE, patchTWI, 1-patchIMP, 
-		rep(1, numpatch) %o% c(0.12, 0,0,0, 0.28, 0, -10, 0, -0.5,1,0, 0.0000001,0.0000001,0.0000002,0.0000003,0.0000004,0.0000001, 0,0, 0.0000002,0.0000003,4e-9,0)
-		)[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
+		patchArea, patchSLOPE, patchTWI)[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
+		
+	patchColumn3 = cbind(rep(1, numpatch) %o% c(0.12, 0,0,0, 0.28, 0, -10, 0, -0.5,1,0, 0.0000001,0.0000001,0.0000002,0.0000003,0.0000004,0.0000001, 0,0, 0.0000002,0.0000003,4e-9,0))[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
 						
 	stratumColumn = matrix(0, sum(patchVegnum),length(defaultStratumName))	
 	stratumColumn[,1] = 1:dim(stratumColumn)[1] #strateID
@@ -266,8 +266,14 @@
 		patchColumn1,
 		patchLAND,
 		patchColumn2,
+		1-patchIMP,
+		patchColumn3,
 		stratumColumn
 	), outWorldFile, row.names=F,col.names=F, append=T, sep=',')
+					
+
+	
+
 					
 
 	
