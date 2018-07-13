@@ -160,8 +160,6 @@
 	subGrid_buff = 'patchID frac lai vegID land imp'
 	patchVegnum = tapply(1:sum(mask),INDEX=tapplyOrder, FUN=function(x){
 			
-			## this error is fucking from the sources. need SLB dataset to regenerate the "frac" maps. and then redo everything! 
-			## x = 22493
 			subGridAssignment[1,] = c(mean(forestFrac[x]), mean(lawnFrac[x]), mean(impervious[x]) )
 				if(is.na(subGridAssignment[1,1]) ) subGridAssignment[1,1]=0
 				if(is.na(subGridAssignment[1,2]) ) subGridAssignment[1,2]=0
