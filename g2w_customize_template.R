@@ -157,7 +157,7 @@
 	landuseClass = c(2,1,3) # RHESSys def
 	
 		## scanning each grid within a patch and forming within patch configuration using the subgrid information
-	subGrid_buff = 'patchID frac lai vegID land imp rootz'
+	subGrid_buff = 'patchID frac lai vegID rootz land imp'
 	patchVegnum = tapply(1:sum(mask),INDEX=tapplyOrder, FUN=function(x){
 			
 			subGridAssignment[1,] = c(mean(forestFrac[x]), mean(lawnFrac[x]), mean(impervious[x]) )
