@@ -194,9 +194,9 @@
 		stratumMass[cond,13] = stratumMass[cond,6]/stratum.CNR	
 		
 #----------------------------------------------------------------------------------------------		
-	outWorldFile = paste(projectFolder,'/', outWorldFile,sep='')
+	outWorldFilePath = paste(projectFolder,'/', outWorldFile,sep='')
 	title = c(defaultWorldName, defaultBasinName, defaultHillName, defaultZoneName, defaultPatchName, defaultStratumName)
-	write( title, outWorldFile, ncolumns=length(title), append=F, sep=',')
+	write( title, outWorldFilePath, ncolumns=length(title), append=F, sep=',')
 		
 		
 	WorldBasinColumn = rep(1, sum(patchVegnum)) %o% c(1,1, mean(xx[mask]), mean(yy[mask]), mean(dem[mask]), 1, latitude, 0)
@@ -234,7 +234,7 @@
 		zoneColumn,
 		patchColumn,
 		stratumColumn
-	), outWorldFile, row.names=F,col.names=F, append=T, sep=',')
+	), outWorldFilePath, row.names=F,col.names=F, append=T, sep=',')
 					
 
 	
