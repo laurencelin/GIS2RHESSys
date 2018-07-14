@@ -1,6 +1,7 @@
 ## single basin
 ## sub-patch/grid setting
 #----------------------------------------------------------------------------------------------
+	options(scipen=999)	
 	arg=commandArgs(T)
 	DtoR = pi/180
 	RtoD = 1/DtoR
