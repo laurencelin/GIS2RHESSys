@@ -1,5 +1,5 @@
 ## flow table
-
+options(scipen=999)
 arg=commandArgs(T)
 library(rgrass7)
 library(rgdal)
