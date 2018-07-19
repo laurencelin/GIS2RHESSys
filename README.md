@@ -7,7 +7,7 @@ step 0:   PROJDIR (LINE 19 @ automation_workflows.sh) is the pathway to the proj
 step 1:   downloaded and process elevation and LULC data (see LINE 31-32 @ automation_workflows.sh);
           identify the Lat/Long of the catchment outlet (see LINE 36-37 @ automation_workflows.sh);
           find the NAD83 UTM zone and the corresponding EPSG code for the catchment (see LINE 38 @ automation_workflows.sh);
-          define "threshold value" for stream channel (in terms of number of grids, not area; see LINE 39 @ automation_workflows.sh)
+          define "threshold value" for stream channel (in terms of number of grids, not area; see LINE 39 @ automation_workflows.sh);
           download https://github.com/laurencelin/ssurgo_extraction and put the scripts inside the downloaded GIS2RHESSys folder (have to do this manually for now because ssurgo_extraction is considered as a seperated tool).
           
 step 2:   edit automation_workflows.sh with the information above, and run the script in terminals at the location of the script.
