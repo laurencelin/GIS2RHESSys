@@ -1,5 +1,10 @@
 # GIS2RHESSys
 
+![Alt text](rhessys_filesystem.png?raw=true "Title")
+
+There are two sets of tools: one for SSURGO and the other one for GRASS & RHESSys.
+
+
 This tool set is a beta version with limited automation. Two major functions for this tool set: 1) extracting spatial information from GIS to RHESSys worldfile (RHESSys input file) and 2) calculating subsurface and surface D-inf flow distribution. This tool set will continuously receive updates for fixing issues and providing more functionality/automation.  More importantly, the shell/R scripts here serve as templates for advanced/highly-customized RHESSys setup.
 
 step 1:   PROJDIR (LINE 19 @ automation_workflows.sh) is the path to the project directory (e.g., ~/Desktop/project). Note that in the current beta version we DO NOT put the GIS2RHESSys scripts inside the PROJDIR. Perhaps, we will make some changes here to better organize all the scripts inside the PROJDIR.
@@ -14,7 +19,7 @@ step 2:   downloaded and process elevation and LULC data (see LINE 31-32 @ autom
 step 3:   edit automation_workflows.sh with the information above, and run the script in terminals at the location of the script.
 
 
-![Alt text](rhessys_filesystem.png?raw=true "Title")
+
 
 automation_workflows.sh is designed to create the GRASS GIS database, delineate catchment, setup watershed model variables (e.g., impervious, lai, and vegetation type based on NLCD classification and default rules), and generate RHESSys model input files (worldfile and flowtable). Note that, user may experience "error"/unexpected result when catchment outlet Lat/Long is not well align with the flow accumution. 
 
