@@ -4,7 +4,7 @@
 
 There are two sets of tools: one for SSURGO and the other one for GRASS & RHESSys.
 
-
+(outdated below!)
 This tool set is a beta version with limited automation. Two major functions for this tool set: 1) extracting spatial information from GIS to RHESSys worldfile (RHESSys input file) and 2) calculating subsurface and surface D-inf flow distribution. This tool set will continuously receive updates for fixing issues and providing more functionality/automation.  More importantly, the shell/R scripts here serve as templates for advanced/highly-customized RHESSys setup.
 
 step 1:   PROJDIR (LINE 19 @ automation_workflows.sh) is the path to the project directory (e.g., ~/Desktop/project). Note that in the current beta version we DO NOT put the GIS2RHESSys scripts inside the PROJDIR. Perhaps, we will make some changes here to better organize all the scripts inside the PROJDIR.
