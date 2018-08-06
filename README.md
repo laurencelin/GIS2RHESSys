@@ -4,6 +4,9 @@ RHESSys directory and file system (below) for a project/catchment
 
 ![Alt text](rhessys_filesystem.png?raw=true "Title")
 
+
+![Alt text](branches_difference.png?raw=true "Title")
+
 There are two sets of tools: one for SSURGO and the other one for GRASS & RHESSys.
 
 (outdated below!)
