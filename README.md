@@ -1,13 +1,15 @@
 # GIS2RHESSys
 
-RHESSys directory and file system (below) for a project/catchment
+We use two sets of tools for building RHESSys model from scratch: one for SSURGO (ssurgo_extraction) and the other one for GRASS (GIS2RHESSys). We assume a certain RHESSys directory and file system (below) for a project/catchment. User needs to create the project directory and then edit one of the workflows.sh in the "GIS2RHESSys".
 
 ![Alt text](rhessys_filesystem.png?raw=true "Title")
 
 
+There are two branches of "GIS2RHESSys" handling different GIS data structures. The master branch handles the most straightforward GIS data (see below), while 1mUrban branch deals with high resolution GIS data (e.g., 1 m) by auto-aggregating data to 3-m or 10-m resolution and build RHESSys patch object by the LULC fractions. 
+
 ![Alt text](branches_difference.png?raw=true "Title")
 
-There are two sets of tools: one for SSURGO and the other one for GRASS & RHESSys.
+
 
 (outdated below!)
 This tool set is a beta version with limited automation. Two major functions for this tool set: 1) extracting spatial information from GIS to RHESSys worldfile (RHESSys input file) and 2) calculating subsurface and surface D-inf flow distribution. This tool set will continuously receive updates for fixing issues and providing more functionality/automation.  More importantly, the shell/R scripts here serve as templates for advanced/highly-customized RHESSys setup.
