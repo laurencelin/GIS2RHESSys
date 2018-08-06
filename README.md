@@ -5,42 +5,13 @@ We use two sets of tools for building RHESSys model from scratch: one for SSURGO
 ![Alt text](rhessys_filesystem.png?raw=true "Title")
 
 
-There are two branches of "GIS2RHESSys" handling different GIS data structures. The master branch handles the most straightforward GIS data (see below), while 1mUrban branch deals with high resolution GIS data (e.g., 1 m) by auto-aggregating data to 3-m or 10-m resolution and build RHESSys patch object by the LULC fractions. 
+There are two branches of "GIS2RHESSys" handling different GIS data structures. The master branch handles the most straightforward GIS data (see below), while 1mUrban branch deals with high resolution GIS data (e.g., 1 m) by auto-aggregating data to 3-m or 10-m resolution and build RHESSys patch object by the multiple LULC fractions. 
 
 ![Alt text](branches_difference.png?raw=true "Title")
 
+There may be more than one 'workflows.sh' in the "GIS2RHESSys". The workflows.sh is a bash/shell script to 1) set the system library paths; 2) make grass datasets and GIS data post-processing; 3) delineate catchment; and 4) extract GIS information to build RHESSys models. Certain procedures are organized in groups in workflows.sh (it's similar to Jupyter Notebook). The workflows.sh for building RHESSys from RAW GIS data (i.e., from scratch) has the most procedures while workflows.sh for rebuild RHESSys from existing GRASS GIS dataset could have a fewer procedure. User should customize the workflows.sh for his/her tasks. Advanced users should also look into the "g2w" and "cf" for more controls.  For example, one modifies the existing LULC maps in the GRASS GIS dataset and saves the edited information as a new map "newLULC". Then one should edit the "g2w" and "cf" scripts to look up the "newLULC" for LULC information. The "template" file is fully imbedded into the "g2w" and "cf" scripts. 
 
-
-(outdated below!)
-This tool set is a beta version with limited automation. Two major functions for this tool set: 1) extracting spatial information from GIS to RHESSys worldfile (RHESSys input file) and 2) calculating subsurface and surface D-inf flow distribution. This tool set will continuously receive updates for fixing issues and providing more functionality/automation.  More importantly, the shell/R scripts here serve as templates for advanced/highly-customized RHESSys setup.
-
-step 1:   PROJDIR (LINE 19 @ automation_workflows.sh) is the path to the project directory (e.g., ~/Desktop/project). Note that in the current beta version we DO NOT put the GIS2RHESSys scripts inside the PROJDIR. Perhaps, we will make some changes here to better organize all the scripts inside the PROJDIR.
-
-step 2:   downloaded and process elevation and LULC data (see LINE 31-32 @ automation_workflows.sh);
-          identify the Lat/Long of the catchment outlet (see LINE 36-37 @ automation_workflows.sh);
-          find the NAD83 UTM zone and the corresponding EPSG code for the catchment (see LINE 38 @ automation_workflows.sh);
-          define "threshold value" for stream channel (in terms of number of grids, not area; see LINE 39 @ automation_workflows.sh);
-          download https://github.com/laurencelin/ssurgo_extraction and put the scripts inside the downloaded GIS2RHESSys folder (have to do this manually for now because ssurgo_extraction is considered as a seperated tool);
-          set the paths to the SSURGO data (see LINE 33-34 @ automation_workflows.sh).
-          
-step 3:   edit automation_workflows.sh with the information above, and run the script in terminals at the location of the script.
-
-
-
-
-automation_workflows.sh is designed to create the GRASS GIS database, delineate catchment, setup watershed model variables (e.g., impervious, lai, and vegetation type based on NLCD classification and default rules), and generate RHESSys model input files (worldfile and flowtable). Note that, user may experience "error"/unexpected result when catchment outlet Lat/Long is not well align with the flow accumution. 
-
-grass_setup.sh is a script containing all grass commands to delineate catchment, and it is called by the automation_workflows.sh.  Regular users have no need to modify it.
-
-g2w_default.R and cf_default.R are R scripts to replace the C-coded old programs used for GRASS 6.4 to generate RHESSys input files. Regular users have no need to modify them. However, they are excellent templates for advanced users to highly customize the RHESSys setup. Note that this calculation will take some time, specially when catchment is large. 
-               
-Future directions:
-
-a) merge this tool set to UVA Jupyter Notebook, interact with RHESSys workflows (python)
-
-b) add in SSURGO soil tool (R script: https://github.com/laurencelin/ssurgo_extraction) [Updated: tool is added in the automation_workflow.sh; perhaps need some test runs.]
-
-c) provide linkage/guide to RHESSys calibration: https://github.com/laurencelin/R-coded-scripts-for-RHESSys-calibration
+![Alt text](procedure.png?raw=true "Title")
 
 Other links:
 
