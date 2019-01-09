@@ -39,7 +39,7 @@ RtoD = 1/DtoR
 	rast2 = readRAST(streamMap)	
 		stream = rast2@data[[1]][mask]
 
-	roadMap = 'road' # mountain dirt road; not paved road
+	roadMap = 'roads' # mountain dirt road; not paved road
 	rast3 = readRAST(roadMap)		
 		road = rast3@data[[1]][mask]
 
