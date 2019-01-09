@@ -92,7 +92,7 @@
 		
 	lulcMAP = 'landuse' 
 	vegMAP = 'vegid' 
-	rast3 = readRAST(c(lulcMAP, vegMAP))
+	rast3 = readRAST(c(lulcMAP, vegMAP),NODATA=0)
 	lulc = rast3@data[[1]][mask]	
 	vegid = rast3@data[[2]][mask]	
 	
