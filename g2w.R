@@ -98,7 +98,7 @@
 	
 	laiMAP = 'lai'
 	coverMAP = 'coverFrac'
-	impMAP = 'imprevious'
+	impMAP = 'impervious'
 	rast4 = readRAST(c(impMAP, coverMAP, laiMAP))
 	imp = rast4@data[[1]][mask]	
 	coverFrac = rast4@data[[1]][mask]	
