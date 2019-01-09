@@ -97,12 +97,16 @@
 	vegid = rast3@data[[2]][mask]	
 	
 	laiMAP = 'lai'
+    	rast4 = readRAST(laiMAP)
+	lai = rast4@data[[1]][mask]	
+
 	coverMAP = 'coverFrac'
+    	rast5 = readRAST(coverMAP)
+	coverFrac = rast5@data[[1]][mask]	
+
 	impMAP = 'impervious'
-	rast4 = readRAST(c(impMAP, coverMAP, laiMAP))
-	imp = rast4@data[[1]][mask]	
-	coverFrac = rast4@data[[1]][mask]	
-	lai = rast4@data[[1]][mask]		
+	rast6 = readRAST(impMAP)
+	imp = rast6@data[[1]][mask]			
 		
 		
 		
