@@ -23,8 +23,8 @@ g.remove -f type=raster name=tmp
 # delineate catchment based on the nearest outlet point on the stream/uaa
 r.water.outlet --overwrite input=drain output=basin coordinates=$xyCoord
 g.region zoom=basin
-r.mask raster=basin
 r.watershed -s --overwrite elevation=dem threshold=$inputThreshold basin=sub stream=str half_basin=hill
+r.mask raster=basin
 r.mapcalc --overwrite expression="basin = if(isnull(hill),null(),1)"
 g.region raster=dem
 g.region zoom=basin
