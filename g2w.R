@@ -77,7 +77,7 @@
 	twiMAP = 'wetness_index' ##<<---- r.topidx
 	whorizonMAP = 'west_180' 
 	ehorizonMAP = 'east_000' 
-	isohyetMAP = 'ONE' # <------ "precipitation" mm/m (x >= 1.0)
+	isohyetMAP = 'isohyet' # <------ "precipitation" mm/m (x >= 1.0)
 	rast2 = readRAST(c(xMAP, yMAP, demMAP, slopeMap, aspectMAP, twiMAP, whorizonMAP, ehorizonMAP, isohyetMAP), NODATA=-1)
 		xx = rast2@data[[1]][mask]
 		yy = rast2@data[[2]][mask]
