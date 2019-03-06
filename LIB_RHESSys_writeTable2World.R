@@ -1,4 +1,7 @@
 options(scipen=999)
+LIBnrow = function(x){
+	return <- ifelse(is.null(dim(x)[1]), 1, dim(x)[1]) 
+}#function
 
 arg=commandArgs(T)
 
