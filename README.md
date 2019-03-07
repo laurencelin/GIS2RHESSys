@@ -3,7 +3,7 @@
 - master branch serves a general purposed collection of scripts help constructing RHESSys eco-hydrological model
 - Soil, vegeation, and LULC databases are also stored under master branch.
 - Most tools here are coded in R with pacakage "rgrass7" to access GRASS GIS data
-- 
+- Jupyter notebook interfaces are newly added in the "Jupyter notebook" branch
 
 ![Alt text](rhessys_filesystem.png?raw=true "Title")
 
