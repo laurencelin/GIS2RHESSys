@@ -1,9 +1,10 @@
 options(scipen=999)	
 arg=commandArgs(T)
+	arg=c('dem', 'slope', 'aspect', 'hill')
 
 library(rgrass7)
 library(rgdal)
-
+library(mclust)
 
 rast = readRAST(arg[1:4])
 mask = !is.na(rast@data[[1]])
@@ -13,34 +14,49 @@ aspect = rast@data[[3]][mask]
 hill = rast@data[[4]][mask]
 DtoR = pi/180
 
+## temperature vs elevation: 6˚C per 1000 m
+
+
+# clusterData = cbind(
+	# scale(dem,scale=F),
+	# scale(slope),
+	# scale(cos(aspect*DtoR)*sin(slope*DtoR)),
+	# scale(sin(aspect*DtoR)*sin(slope*DtoR))
+# ); colnames(clusterData)=c('dem','slope','aspectx','aspecty')
+
+
 clusterData = cbind(
-	scale(dem),
 	scale(slope),
 	scale(cos(aspect*DtoR)*sin(slope*DtoR)),
 	scale(sin(aspect*DtoR)*sin(slope*DtoR))
-); colnames(clusterData)=c('dem','slope','aspectx','aspecty')
+); colnames(clusterData)=c('slope','aspectx','aspecty')
 
 
-# Determine number of clusters
-# wss <- (dim(clusterData)[1]-1)*sum(apply(clusterData,2,var))
-# for (i in 2:100) wss[i] <- sum(kmeans(clusterData, centers=i,iter.max=1000)$withinss)
-# plot(1:100, wss, type="b", xlab="Number of Clusters", ylab="Within groups sum of squares")
+# M Cluster Analysis
+fit <- Mclust(clusterData) 
+fit$cluster <- fit$classification
+#fit <- kmeans(clusterData, 80,iter.max=1000) # 80 cluster solution
 
-# K-Means Cluster Analysis
-fit <- kmeans(clusterData, 80,iter.max=1000) # 80 cluster solution
+# elevation band, hill, and cluster grp
+combIndex = paste(round(dem/10), hill*100, fit$cluster,sep='-')
+combClass = match(combIndex, unique(combIndex))
 
-# get cluster means 
-resultTable = aggregate(clusterData,by=list(fit$cluster),FUN=mean)
-#write.csv(resultTable,'~/Desktop/zone_cluster_class.csv', row.names=F)
 
-# append cluster assignment
-result = cbind(dem,slope,aspect,hill, fit$cluster, hill*100+ fit$cluster)
-colnames(result)= c('dem','slope','aspect','hill','cluster','zoneID')
-#write.csv(result,arg[5], row.names=F)
+
+	# get cluster means 
+	#resultTable = aggregate(clusterData,by=list(fit$cluster),FUN=mean)
+	#write.csv(resultTable,'~/Desktop/zone_cluster_class.csv', row.names=F)
+
+
+
+	# append cluster assignment
+	#result = cbind(dem,slope,aspect,hill, fit$cluster, hill*100+ fit$cluster)
+	#colnames(result)= c('dem','slope','aspect','hill','cluster','zoneID')
+	#write.csv(result,arg[5], row.names=F)
 
 
 zoneGIS = rep(NA,length(mask))
-zoneGIS[mask] = result[,'zoneID']
+zoneGIS[mask] = combClass #result[,'zoneID']
 rast$zone = as.integer(zoneGIS);
 writeRAST(rast, "zone", zcol="zone", overwrite=T)
 
