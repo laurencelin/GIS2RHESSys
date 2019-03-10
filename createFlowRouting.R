@@ -49,7 +49,7 @@ RtoD = 1/DtoR
 		
 			
 	## ... ACTION maps
-	nlcdMAP = 'NLCD'
+	nlcdMAP = 'LULCcode'
 	rast5 = readRAST(nlcdMAP)
 		nlcd = rast5@data[[1]][mask]
 		
