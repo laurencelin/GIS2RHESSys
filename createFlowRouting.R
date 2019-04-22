@@ -1,6 +1,8 @@
 ## flow table
 options(scipen=999)
 arg=commandArgs(T)
+library(sp)
+library(XML)
 library(rgrass7)
 library(rgdal)
 gis = gmeta()
