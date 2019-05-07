@@ -45,6 +45,8 @@
 	
 #----------------------------------------------------------------------------------------------
 	# read in rast
+	library(sp)
+	library(XML)
 	library(rgrass7)
 	library(rgdal)
 	gis = gmeta()
