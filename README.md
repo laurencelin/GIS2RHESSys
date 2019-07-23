@@ -8,7 +8,7 @@
 ![Alt text](rhessys_filesystem.png?raw=true "Title")
 
 
-The workflows.sh is a bash/shell script to 1) set the system library paths; 2) make grass datasets and GIS data post-processing; 3) delineate catchment; and 4) extract GIS information to build RHESSys models. Certain procedures are organized in groups in workflows.sh. The workflows.sh for building RHESSys from RAW GIS data (i.e., from scratch) has the most procedures while workflows.sh for rebuild RHESSys from existing GRASS GIS dataset could have a fewer procedures. User should customize the workflows.sh for his/her tasks. Advanced users should also look into the "g2w" and "createFlowRouting" for more controls.  
+The workflows.sh is a bash/shell script to 1) set the system library paths; 2) make grass datasets and GIS data post-processing; 3) delineate catchment; and 4) extract GIS information to build RHESSys models. Certain procedures are organized in groups in workflows.sh. User should customize the workflows.sh for his/her tasks. Advanced users should also look into the "g2w" and "createFlowRouting" for more controls.  
 
 Below diagram shows the relationship between GRASS dataset and RHESSys model.
 
