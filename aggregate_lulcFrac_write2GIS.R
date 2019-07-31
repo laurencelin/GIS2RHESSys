@@ -73,7 +73,7 @@ lulcCodeFrac = read.csv(arg[3])
 	rast$pavedroadFrac = rep(0,length(rast@data[[1]]))
 	if(length(pavedroadCode)>1) rast$pavedroadFrac[mask] = (rowSums(patchlulcFrac[, pavedroadCode])/patchlulcFrac$total)[gisOrder]
 	if(length(pavedroadCode)==1) rast$pavedroadFrac[mask] = (patchlulcFrac[, pavedroadCode]/patchlulcFrac$total)[gisOrder]
-	writeRAST(rast,'pavedroadFrac',zcol='roadFrac',overwrite=T)
+	writeRAST(rast,'pavedroadFrac',zcol='pavedroadFrac',overwrite=T)
 	
 	
 
