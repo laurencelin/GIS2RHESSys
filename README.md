@@ -6,7 +6,7 @@
 
 For start, please browse into the following branches
 - Jupyter notebook interfaces are newly added in the "Jupyter notebook" branch
-- standalone (working ...)
+- workflows, designed for local machine operations.
 
 ![Alt text](rhessys_filesystem.png?raw=true "Title")
 
