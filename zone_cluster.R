@@ -1,10 +1,10 @@
 options(scipen=999)	
 arg=commandArgs(T)
-	arg=c('dem', 'slope', 'aspect', 'hill')
+#arg=c('dem','slope','aspect','hill','zone_cluster')
 
 library(rgrass7)
-library(rgdal)
-library(mclust)
+#library(rgdal)
+#library(mclust)
 
 rast = readRAST(arg[1:4])
 mask = !is.na(rast@data[[1]])
@@ -17,52 +17,46 @@ DtoR = pi/180
 ## temperature vs elevation: 6˚C per 1000 m
 
 
-# clusterData = cbind(
-	# scale(dem,scale=F),
-	# scale(slope),
-	# scale(cos(aspect*DtoR)*sin(slope*DtoR)),
-	# scale(sin(aspect*DtoR)*sin(slope*DtoR))
-# ); colnames(clusterData)=c('dem','slope','aspectx','aspecty')
+	zoneclassindex = tapply(seq_along(mask)[mask], hill, function(ii){ return <- ii })
+	zoneclasshill = tapply(seq_along(hill), hill, function(ii){ return <- hill[ii][1] })
+	# sapply(seq_along(zoneclassindex),function(i){ length(zoneclassindex[[i]]) })
+	
+	
+	zoneclass = tapply(seq_along(hill), hill, function(ii){
+		
+		# form dataset for cluster analysis
+		clusterData = cbind(
+			scale(dem[ii]),
+			scale(slope[ii]),
+			scale(cos(aspect[ii]*DtoR)*sin(slope[ii]*DtoR)),
+			scale(sin(aspect[ii]*DtoR)*sin(slope[ii]*DtoR))
+		); colnames(clusterData)=c('dem','slope','aspectx','aspecty')
+		
+		# numer of cluster
+		maxNumCluster = min(max(floor(length(ii)*0.1), 100),100) 
+		wss <- (dim(clusterData)[1]-1)*sum(apply(clusterData,2,var))
+		for (i in 2: maxNumCluster) wss[i] <- sum(kmeans(clusterData, centers=i,iter.max=1000)$withinss)
+			AccumImprovement = cumsum(diff(wss))
+			#plot( AccumImprovement, type='b')
+			numCluster = which( AccumImprovement/min(AccumImprovement) > 0.8)[1]; numCluster
+		
+		#clustering
+		fit <- kmeans(clusterData, numCluster,iter.max=1000) 
+			
+		return <- fit$cluster
+	})#tapply
 
+	max_num_zone = max(sapply(seq_along(zoneclassindex),function(i){ max(zoneclass[[i]]) }))
+	hill_multipler = 10^ceiling(log(max_num_zone,base=10))
 
-clusterData = cbind(
-	scale(slope),
-	scale(cos(aspect*DtoR)*sin(slope*DtoR)),
-	scale(sin(aspect*DtoR)*sin(slope*DtoR))
-); colnames(clusterData)=c('slope','aspectx','aspecty')
+	zoneGIS = rep(NA,length(mask))
+	for(ii in seq_along(zoneclassindex)){
+		zoneGIS[ zoneclassindex[[ii]] ] = zoneclasshill[[ii]]* hill_multipler + zoneclass[[ ii ]]
+	}#ii
+	
 
-
-# M Cluster Analysis
-fit <- Mclust(clusterData) 
-fit$cluster <- fit$classification
-#fit <- kmeans(clusterData, 80,iter.max=1000) # 80 cluster solution
-
-# elevation band, hill, and cluster grp
-combIndex = paste(round(dem/10), hill*100, fit$cluster,sep='-')
-combClass = match(combIndex, unique(combIndex))
-
-
-
-	# get cluster means 
-	#resultTable = aggregate(clusterData,by=list(fit$cluster),FUN=mean)
-	#write.csv(resultTable,'~/Desktop/zone_cluster_class.csv', row.names=F)
-
-
-
-	# append cluster assignment
-	#result = cbind(dem,slope,aspect,hill, fit$cluster, hill*100+ fit$cluster)
-	#colnames(result)= c('dem','slope','aspect','hill','cluster','zoneID')
-	#write.csv(result,arg[5], row.names=F)
-
-
-zoneGIS = rep(NA,length(mask))
-zoneGIS[mask] = combClass #result[,'zoneID']
 rast$zone = as.integer(zoneGIS);
-writeRAST(rast, "zone", zcol="zone", overwrite=T)
-
-# # result = read.csv('~/Desktop/zone_map.csv')
-# dem_zone = simplify2array(tapply(result[,'dem'], INDEX=result[,'zoneID'], FUN=function(x){return<-c(min(x),mean(x),max(x))}))
-# slope_zone = simplify2array(tapply(result[,'slope'], INDEX=result[,'zoneID'], FUN=function(x){return<-c(min(x),mean(x),max(x))}))
+writeRAST(rast, arg[5], zcol="zone", overwrite=T)
 
 
 
