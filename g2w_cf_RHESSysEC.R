@@ -322,7 +322,10 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	patchZ = tapply(dem,INDEX=patch, FUN=mean)
 	patchCount = tapply(rep(1,len),INDEX=patch, FUN=sum)
 	patchArea = patchCount* gridarea
-	patchSOIL = tapply(soil,INDEX=patch, most)
+	patchSOIL = tapply(seq_along(patch),INDEX=patch, FUN=function(ii){
+		hold=table(soil[ii]); 
+		return <- as.numeric(names(hold)[which.max(hold)]) + ifelse(sum(nonimpactedsoilQ[ii],na.rm=T)>0,0,100)# plus 100 for compacted soil.
+	})
 	patchSLOPE = tapply(slope,INDEX=patch, FUN=mean)
 	patchTWI = tapply(abs(twi),INDEX=patch, FUN=mean); patchTWI[is.na(patchTWI)]=0;
 		patchID = as.numeric(names(patchX))
