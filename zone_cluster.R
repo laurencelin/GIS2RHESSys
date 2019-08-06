@@ -1,5 +1,6 @@
 options(scipen=999)	
 arg=commandArgs(T)
+# arg=c('dem', 'slope', 'aspect', 'hill', 'zone_cluster')
 
 library(rgrass7)
 
@@ -16,11 +17,10 @@ DtoR = pi/180
 
 	zoneclassindex = tapply(seq_along(mask)[mask], hill, function(ii){ return <- ii })
 	zoneclasshill = tapply(seq_along(hill), hill, function(ii){ return <- hill[ii][1] })
-	# sapply(seq_along(zoneclassindex),function(i){ length(zoneclassindex[[i]]) })
-	
-	
-	zoneclass = tapply(seq_along(hill), hill, function(ii){
 		
+	zoneclass = tapply(seq_along(hill), hill, function(ii){
+		# ii = seq_along(hill)[hill==53]
+		# In mathematical speak that is 9.8°C per 1,000 meters; Google
 		# form dataset for cluster analysis
 		clusterData = cbind(
 			scale(dem[ii]),
@@ -30,16 +30,19 @@ DtoR = pi/180
 		); colnames(clusterData)=c('dem','slope','aspectx','aspecty')
 		
 		# numer of cluster
-		maxNumCluster = min(max(floor(length(ii)*0.1), 100),100) 
-		if( length(ii)>maxNumCluster ) maxNumCluster=length(ii)-1
+		elevationAspect = ceiling((max(dem[ii])-min(dem[ii]))*0.1)*8 # 10m by 8 direction
+		maxNumCluster = min( max(floor(length(ii)*0.1), elevationAspect), elevationAspect) 
+		if( length(ii) < maxNumCluster ) maxNumCluster=length(ii)-1
+		
+		
 		wss <- (dim(clusterData)[1]-1)*sum(apply(clusterData,2,var))
-		for (i in 2: maxNumCluster) wss[i] <- sum(kmeans(clusterData, centers=i,iter.max=1000)$withinss)
+		for (i in 2: maxNumCluster) wss[i] <- sum(kmeans(clusterData, centers=i,iter.max=1000,algorithm="MacQueen")$withinss) 
 			AccumImprovement = cumsum(diff(wss))
 			#plot( AccumImprovement, type='b')
 			numCluster = which( AccumImprovement/min(AccumImprovement) > 0.8)[1]; numCluster
 		
 		#clustering
-		fit <- kmeans(clusterData, numCluster,iter.max=1000) 
+		fit <- kmeans(clusterData, numCluster,iter.max=1000,algorithm="MacQueen") 
 			
 		return <- fit$cluster
 	})#tapply
