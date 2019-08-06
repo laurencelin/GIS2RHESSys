@@ -1,10 +1,7 @@
 options(scipen=999)	
 arg=commandArgs(T)
-#arg=c('dem','slope','aspect','hill','zone_cluster')
 
 library(rgrass7)
-#library(rgdal)
-#library(mclust)
 
 rast = readRAST(arg[1:4])
 mask = !is.na(rast@data[[1]])
@@ -34,6 +31,7 @@ DtoR = pi/180
 		
 		# numer of cluster
 		maxNumCluster = min(max(floor(length(ii)*0.1), 100),100) 
+		if( length(ii)>maxNumCluster ) maxNumCluster=length(ii)-1
 		wss <- (dim(clusterData)[1]-1)*sum(apply(clusterData,2,var))
 		for (i in 2: maxNumCluster) wss[i] <- sum(kmeans(clusterData, centers=i,iter.max=1000)$withinss)
 			AccumImprovement = cumsum(diff(wss))
