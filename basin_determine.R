@@ -25,6 +25,8 @@ index = tapply(seq_along(sub),sub,function(ii){ ii })
 index_partial = tapply(seq_along(sub),sub,function(ii){ ii[ !is.na(basin[ii]) ] })
 basin_sub = tapply(seq_along(sub),sub,function(ii){ sum(basin[ii],na.rm=T)/length(ii) })
 selected_basin_sub = as.numeric(names(basin_sub)[basin_sub>0])
+selected_basin_sub_index = match(selected_basin_sub, as.numeric(names(basin_sub)) )
+
 
 # ... stream network structure
 # 1.  2. 3.  4. 5.  6. 7.  8. (GRASS from current drainTO code order)
@@ -59,15 +61,18 @@ for( ii in seq_along(selected_basin_sub) ){
 	
 	if(selectedSUBs_down[selectedSUBs_order[ii]] %in% selected_basin_sub){
 		# outlet sub
-		rast$tmp[mask][ index_partial[[ii]] ] = 1
+		rast$tmp[mask][ index_partial[[ selected_basin_sub_index[ii] ]] ] = 1
 	}else{
 		# upslope sub
-		rast$tmp[mask][ index[[ii]] ] = 1
+		rast$tmp[mask][ index[[ selected_basin_sub_index[ii] ]] ] = 1
 	}
 
 }#ii
-basinCond = !is.na(rast$tmp[mask])
+basinCond = !is.na(rast$tmp[mask]) 
 writeRAST(rast,"basin",zcol='tmp', overwrite=T)
+
+	# 122948
+
 
 
 rast$tmp = rep(NA,length(mask))
