@@ -13,6 +13,7 @@ rows = rast2@data[[1]][mask]
 cols = rast2@data[[2]][mask]
 	strRows = rows[strCOND]
 	strCols = cols[strCOND]
+	strDRAIN = abs(drain[strCOND])
 maxCol = max(cols,na.rm=T)
 maskRC = rows*maxCol+cols 
 maskRC_string2Index <- new.env(hash=T)
@@ -22,6 +23,8 @@ maskRC_string2Index <- new.env(hash=T)
 # ... which sub contain D8basin
 index = tapply(seq_along(sub),sub,function(ii){ ii })
 index_partial = tapply(seq_along(sub),sub,function(ii){ ii[ !is.na(basin[ii]) ] })
+basin_sub = tapply(seq_along(sub),sub,function(ii){ sum(basin[ii],na.rm=T)/length(ii) })
+selected_basin_sub = as.numeric(names(basin_sub)[basin_sub>0])
 
 # ... stream network structure
 # 1.  2. 3.  4. 5.  6. 7.  8. (GRASS from current drainTO code order)
@@ -29,8 +32,8 @@ index_partial = tapply(seq_along(sub),sub,function(ii){ ii[ !is.na(basin[ii]) ] 
 colneighbor = c(1,    0,    -1,    -1,    -1,    0,    1,    1)
 rowneighbor = c(-1,    -1,    -1,    0,    1,    1,    1,    0)
 downstrRC = 
-	sapply(seq_along(strRows), FUN=function(x){strRows[x]+rowneighbor[drain[strCOND][x] ] }) * maxCol + 
-	sapply(seq_along(strCols), FUN=function(x){strCols[x]+colneighbor[drain[strCOND][x] ] })
+	sapply(seq_along(strRows), FUN=function(x){strRows[x]+rowneighbor[strDRAIN[x] ] }) * maxCol + 
+	sapply(seq_along(strCols), FUN=function(x){strCols[x]+colneighbor[strDRAIN[x] ] })
 
     
     currentstrSUB =  sapply(maskRC[strCOND], function(x){
@@ -46,18 +49,22 @@ downstrRC =
 
 	cond_ = currentstrSUB != downstrSUB
 	selectedSUBs = currentstrSUB[cond_]
-	selectedSUBs_index = match(selectedSUBs, as.numeric(names(index)))
-	outletSUB = selectedSUBs[downstrSUB[cond_]<0]
+	selectedSUBs_down = downstrSUB[cond_]
+	selectedSUBs_order = match(selected_basin_sub, selectedSUBs)
 	
-
+	
 # ... SUB to basin
 rast$tmp = rep(NA,length(mask))
-for( ii in seq_along(selectedSUBs) ){
-	if(selectedSUBs[ii] == outletSUB){
-		rast$tmp[mask][ index_partial[[selectedSUBs_index[ii]]] ] = 1
+for( ii in seq_along(selected_basin_sub) ){
+	
+	if(selectedSUBs_down[selectedSUBs_order[ii]] %in% selected_basin_sub){
+		# outlet sub
+		rast$tmp[mask][ index_partial[[ii]] ] = 1
 	}else{
-		rast$tmp[mask][ index[[selectedSUBs_index[ii]]] ] = 1
+		# upslope sub
+		rast$tmp[mask][ index[[ii]] ] = 1
 	}
+
 }#ii
 basinCond = !is.na(rast$tmp[mask])
 writeRAST(rast,"basin",zcol='tmp', overwrite=T)
