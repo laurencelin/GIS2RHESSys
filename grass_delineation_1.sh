@@ -8,6 +8,8 @@ r.mask -r
 # set x, y, and physical variables (e.g., slope, aspect ... etc) based on elevation
 r.mapcalc --overwrite expression="xmap = x()"
 r.mapcalc --overwrite expression="ymap = y()"
+r.mapcalc --overwrite expression="rowmap = row()"
+r.mapcalc --overwrite expression="colmap = col()"
 r.slope.aspect --overwrite elevation=dem slope=slope_ aspect=aspect_
 r.horizon --overwrite -d elevation=dem direction=180 output="west" distance=1.0
 r.horizon --overwrite -d elevation=dem direction=0 output="east" distance=1.0
