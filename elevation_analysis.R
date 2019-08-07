@@ -25,6 +25,7 @@ list2env(setNames(as.list(seq_along(dem)),maskRC),envir=hashenv) #<<---- native 
 
 	##############################################################################################
 	### ---------------- calculate difference in elevation from current cell to its downslope cell
+	print('processing dsd ...')
 	rast$output = rep(NA,length(mask))
 	rast$output[mask] = unlist(lapply(seq_along(dem), function(ii){
 		downIndex = hashenv[[ toString((rows[ii] + rowneighbor[drain[ii]])*maxCol + (cols[ii] + colneighbor[drain[ii]])) ]]
@@ -39,6 +40,7 @@ list2env(setNames(as.list(seq_along(dem)),maskRC),envir=hashenv) #<<---- native 
 	
 	##############################################################################################
 	### ----------------- calculate averaged difference in elevation from current cell to its upslope cell
+	print('processing usd ...')
 	rast$usdDEM = rep(0,length(mask))
 	rast$usdDEMCount = rep(0,length(mask))
 	for(ii in seq_along(dem)){
@@ -55,25 +57,30 @@ list2env(setNames(as.list(seq_along(dem)),maskRC),envir=hashenv) #<<---- native 
 	writeRAST(rast, paste('usd',toupper(arg[1]),sep=''), zcol='usdDEM', overwrite=T)
 	
 	##############################################################################################
-	### -------------- ?
-	rast$handsDEM = rep(0,length(mask)); #	rast$processed = rep(0,length(mask))
+	### ----------
+	print('processing hands ...')
+	rast$handsDEM = rep(NA,length(mask)); #	rast$processed = rep(0,length(mask))
+	maxlen = sum(mask)
 	for(ii in seq_along(dem)){
 		traceIndex = list()
 		traceIndex_ii = 1;
 		
 		cii = ii; traceIndex[[traceIndex_ii]]=ii; traceIndex_ii=traceIndex_ii+1
 		downIndex = hashenv[[ toString((rows[cii] + rowneighbor[drain[cii]])*maxCol + (cols[cii] + colneighbor[drain[cii]])) ]]
-		if( is.null(downIndex) ){
+		if( is.null(downIndex) | length(downIndex)==0 ){
 			rast$handsDEM[mask][ii] = 0
 		}else{
-			while( is.na(str[downIndex]) ){
+			while( traceIndex_ii<=maxlen &(is.na(str[downIndex]) | is.na(rast$handsDEM[mask][downIndex])) ){
 				cii = downIndex; traceIndex[[traceIndex_ii]]=downIndex; traceIndex_ii=traceIndex_ii+1
 				downIndex = hashenv[[ toString((rows[cii] + rowneighbor[drain[cii]])*maxCol + (cols[cii] + colneighbor[drain[cii]])) ]]
+				if(is.null(downIndex) | length(downIndex)==0 ){ downIndex=traceIndex[[traceIndex_ii-1]]; break; } 
 			}#while
-			rast$handsDEM[mask][unlist(traceIndex)] = dem[unlist(traceIndex)] - dem[downIndex]
+			if( traceIndex_ii>=maxlen ) print(paste('warning ',ii,sep=''))
+			rast$handsDEM[mask][unlist(traceIndex)] = dem[unlist(traceIndex)] - dem[downIndex] + 
+				ifelse(is.na(str[downIndex]) & !is.na(rast$handsDEM[mask][downIndex]),rast$handsDEM[mask][downIndex],0)
 		}#
 	}# for ii
-	rast$handsDEM[!mask]=NA
+	#rast$handsDEM[!mask]=NA
 	writeRAST(rast, paste('hands',toupper(arg[1]),sep=''), zcol='handsDEM', overwrite=T)
 	
 	##############################################################################################
