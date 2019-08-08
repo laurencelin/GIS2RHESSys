@@ -1,4 +1,8 @@
 arg=commandArgs(T)
+arg=c('patch',
+'/Users/laurencelin/Downloads/BeaverCkReservoir/wattsbranch_rhessys/lulcFrac10m.csv',
+'/Users/laurencelin/Downloads/BeaverCkReservoir/wattsbranch_rhessys/lulc_codeinformation.csv')
+
 
 library(rgrass7)
 
@@ -40,39 +44,39 @@ lulcCodeFrac = read.csv(arg[3])
 	rast$lulcComposition_forest = rep(0,length(rast@data[[1]]))
 	if(length(forestCode)>1) rast$lulcComposition_forest[mask] = (rowSums(patchlulcFrac[, forestCode])/patchlulcFrac$total)[gisOrder]
 	if(length(forestCode)==1) rast$lulcComposition_forest[mask] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
-	writeRAST(rast,'forestFrac',zcol='forestFrac',overwrite=T)
+	writeRAST(rast,'forestFrac',zcol='lulcComposition_forest',overwrite=T)
 	
 	rast$lulcComposition_shrub = rep(0,length(rast@data[[1]]))
 	if(length(shurbCode)>1) rast$lulcComposition_shrub[mask] = (rowSums(patchlulcFrac[, shurbCode])/patchlulcFrac$total)[gisOrder]
 	if(length(shurbCode)==1) rast$lulcComposition_shrub[mask] = (patchlulcFrac[, shurbCode]/patchlulcFrac$total)[gisOrder]
-	writeRAST(rast,'shrubFrac',zcol='shrubFrac',overwrite=T)
+	writeRAST(rast,'shrubFrac',zcol='lulcComposition_shrub',overwrite=T)
 
 	rast$lulcComposition_lawn = rep(0,length(rast@data[[1]]))
 	if(length(lawCode)>1) rast$lulcComposition_lawn[mask] = (rowSums(patchlulcFrac[, lawCode])/patchlulcFrac$total)[gisOrder]
 	if(length(lawCode)==1) rast$lulcComposition_lawn[mask] = (patchlulcFrac[, lawCode]/patchlulcFrac$total)[gisOrder]
-	writeRAST(rast,'lawnFrac',zcol='lawnFrac',overwrite=T)
+	writeRAST(rast,'lawnFrac',zcol='lulcComposition_lawn',overwrite=T)
 
 	rast$lulcComposition_imp = rep(0,length(rast@data[[1]]))
 	if(length(impCode)>1) rast$lulcComposition_imp[mask] = (rowSums(patchlulcFrac[, impCode])/patchlulcFrac$total)[gisOrder]
 	if(length(impCode)==1) rast$lulcComposition_imp[mask] = (patchlulcFrac[, impCode]/patchlulcFrac$total)[gisOrder]
-	writeRAST(rast,'impFrac',zcol='impFrac',overwrite=T)
+	writeRAST(rast,'impFrac',zcol='lulcComposition_imp',overwrite=T)
 
 
 
 	rast$impBreakdownFrac_roof = rep(0,length(rast@data[[1]]))
 	if(length(roofCode)>1) rast$impBreakdownFrac_roof[mask] = (rowSums(patchlulcFrac[, roofCode])/patchlulcFrac$total)[gisOrder]
 	if(length(roofCode)==1) rast$impBreakdownFrac_roof[mask] = (patchlulcFrac[, roofCode]/patchlulcFrac$total)[gisOrder]
-	writeRAST(rast,'roofFrac',zcol='roofFrac',overwrite=T)
+	writeRAST(rast,'roofFrac',zcol='impBreakdownFrac_roof',overwrite=T)
 
 	rast$impBreakdownFrac_driveway = rep(0,length(rast@data[[1]]))
 	if(length(drivewayCode)>1) rast$impBreakdownFrac_driveway[mask] = (rowSums(patchlulcFrac[, drivewayCode])/patchlulcFrac$total)[gisOrder]
 	if(length(drivewayCode)==1) rast$impBreakdownFrac_driveway[mask] = (patchlulcFrac[, drivewayCode]/patchlulcFrac$total)[gisOrder]
-	writeRAST(rast,'drivewayFrac',zcol='drivewayFrac',overwrite=T)
+	writeRAST(rast,'drivewayFrac',zcol='impBreakdownFrac_driveway',overwrite=T)
 
 	rast$impBreakdownFrac_pavedRoad = rep(0,length(rast@data[[1]]))
 	if(length(pavedroadCode)>1) rast$impBreakdownFrac_pavedRoad[mask] = (rowSums(patchlulcFrac[, pavedroadCode])/patchlulcFrac$total)[gisOrder]
 	if(length(pavedroadCode)==1) rast$impBreakdownFrac_pavedRoad[mask] = (patchlulcFrac[, pavedroadCode]/patchlulcFrac$total)[gisOrder]
-	writeRAST(rast,'pavedroadFrac',zcol='pavedroadFrac',overwrite=T)
+	writeRAST(rast,'pavedroadFrac',zcol='impBreakdownFrac_pavedRoad',overwrite=T)
 	
 	
 
