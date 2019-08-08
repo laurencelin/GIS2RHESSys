@@ -73,6 +73,8 @@ lulcCodeFrac = read.csv(arg[3])
 	if(length(roofCode)==1) rast$impBreakdownFrac_roof[mask] = (patchlulcFrac[, roofCode]/patchlulcFrac$total)[gisOrder]
 	writeRAST(rast,'roofFrac',zcol='impBreakdownFrac_roof',overwrite=T)
 
+
+
 	rast$impBreakdownFrac_driveway = rep(0,length(rast@data[[1]]))
 	if(length(drivewayCode)>1) rast$impBreakdownFrac_driveway[mask] = (rowSums(patchlulcFrac[, drivewayCode])/patchlulcFrac$total)[gisOrder]
 	if(length(drivewayCode)==1) rast$impBreakdownFrac_driveway[mask] = (patchlulcFrac[, drivewayCode]/patchlulcFrac$total)[gisOrder]
