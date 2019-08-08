@@ -123,14 +123,16 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     print('reading xx,yy,.... ... DONE')
 
     # extract LULC information (must have)
-    rast = readRAST(c(template$impFracMAP,template$roofMAP,template$drivewayMAP,template$pavedRoadFracMAP, template$forestFracMAP,template$lawnFracMAP,template$shrubFracMAP), NODATA=-1)
+    rast = readRAST(c(template$impFracMAP,template$roofMAP,template$drivewayMAP,template$pavedRoadFracMAP, template$forestFracMAP,template$shrubFracMAP,template$cropFracMAP,template$lawnFracMAP,), NODATA=-1)
         impFrac = rast@data[[1]][mask]
         roofFrac = rast@data[[2]][mask]
         drivewayFrac = rast@data[[3]][mask]
         pavedRoadFrac = rast@data[[4]][mask]
         forestFrac = rast@data[[5]][mask]
-        lawnFrac = rast@data[[6]][mask]
-        shrubFrac = rast@data[[7]][mask]
+        shrubFrac = rast@data[[6]][mask]
+        cropFrac = rast@data[[7]][mask]
+        lawnFrac = rast@data[[8]][mask]
+
     print('reading lulc ... DONE')
 
     # extract flow table related information
@@ -268,6 +270,32 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 		})
 
 
+	cropLAI = lapply(1:15, function(i){ 
+		tryCatch({
+			rast = readRAST(paste('crop',i,'LAI',sep=''))
+			return <- rast@data[[1]][mask]},
+			
+			error = function(e){ return <- NA}
+			)#tryCatch
+		})
+	cropID = lapply(1:15, function(i){ 
+		tryCatch({
+			rast = readRAST(paste('crop',i,'StratumID',sep=''))
+			return <- rast@data[[1]][mask]},
+			
+			error = function(e){ return <- NA}
+			)#tryCatch
+		})
+	cropFFrac = lapply(1:15, function(i){ 
+		tryCatch({
+			rast = readRAST(paste('crop',i,'FFrac',sep=''))
+			return <- rast@data[[1]][mask]},
+			
+			error = function(e){ return <- NA}
+			)#tryCatch
+		})
+
+
 
 
 	## basin centroid and latitude
@@ -334,44 +362,45 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	# rep(patchIDrhessysOrder, times=patchVegnum) in below is expending the idMatrix order by Vegnum
 	
 	## sub-patch/grid setting
-	subGridAssignment = matrix(NA,4,4)
+	subGridAssignment = matrix(NA,4,5)
 	subGridAssignment[2:4,1] = c(NA,	NA,	NA) # tree [LAI, vegID, rootz]
 	subGridAssignment[2:4,2] = c(NA,	NA,	NA) # shrub [LAI, vegID, rootz]
-	subGridAssignment[2:4,3] = c(NA,	NA,	NA) # green [LAI, vegID, rootz]
-	subGridAssignment[2:4,4] = c(0.0,	4,	0) # no veg [LAI, vegID, rootz]		
-	landuseClass = c(2,2,1,3) # RHESSys def
+	subGridAssignment[2:4,3] = c(NA,	NA,	NA) # crop [LAI, vegID, rootz]
+	subGridAssignment[2:4,4] = c(NA,	NA,	NA) # lawn [LAI, vegID, rootz]
+	subGridAssignment[2:4,5] = c(0.0,	4,	0) # no veg [LAI, vegID, rootz]		
+	landuseClass = c(2,2,1,1,3) # RHESSys def (update RHESSys LULC! need these at all? detention size, fertilizer?, what exact does lulc class do? )
 	
 		## scanning each grid within a patch and forming within patch configuration using the subgrid information
 	subGrid_buff = 'patchID frac lai vegID rootz land imp'
 	patchVegnum = tapply(1:sum(mask),INDEX=tapplyOrder, FUN=function(x){
 			
-			# x = 1287
-			# x = which(patch==6588)
-			# x = which(patch==6915)
-			# x = which(patch==7241)
 			patchSTR = sum(stream[x], na.rm=T)
 			subGridAssignment[1,] = c(
 				ifelse(patchSTR==0,mean(forestFrac[x]),0),
 				ifelse(patchSTR==0,mean(shrubFrac[x]),0), 
+				ifelse(patchSTR==0,mean(cropFrac[x]),0), 
 				ifelse(patchSTR==0,mean(lawnFrac[x]),0), 
 				ifelse(patchSTR==0,mean(impFrac[x]),0) 
 				)
 			if(is.na(subGridAssignment[1,1]) ) subGridAssignment[1,1]=0
 			if(is.na(subGridAssignment[1,2]) ) subGridAssignment[1,2]=0
 			if(is.na(subGridAssignment[1,3]) ) subGridAssignment[1,3]=0
+            if(is.na(subGridAssignment[1,4]) ) subGridAssignment[1,3]=0
 			if(patchSTR==0){
-				if(is.na(subGridAssignment[1,4]) | subGridAssignment[1,4]==0) 
-					subGridAssignment[1,4] = max(0, 1-subGridAssignment[1,1]-subGridAssignment[1,2]-subGridAssignment[1,3])
+				if(is.na(subGridAssignment[1,5]) | subGridAssignment[1,5]==0)
+					subGridAssignment[1,5] = max(0, 1-subGridAssignment[1,1]-subGridAssignment[1,2]-subGridAssignment[1,3]-subGridAssignment[1,4])
 			}else{
-				subGridAssignment[1,4] = 0
+				subGridAssignment[1,5] = 0
 				# don't want to make imp on str grids
 			}
 			
 			
 			land = landuseClass[which.max(subGridAssignment[1,])] 
-			imp = subGridAssignment[1,4] 			
-			fracQ = c(	subGridAssignment[1,1]>0, subGridAssignment[1,2]>0, subGridAssignment[1,3]>0, 
-						subGridAssignment[1,1]==0&subGridAssignment[1,2]==0&subGridAssignment[1,3]==0)
+			imp = subGridAssignment[1,5]
+			fracQ = c(	subGridAssignment[1,1]>0, subGridAssignment[1,2]>0,
+                        subGridAssignment[1,3]>0,subGridAssignment[1,4]>0,
+						subGridAssignment[1,1]==0&subGridAssignment[1,2]==0&
+                            subGridAssignment[1,3]==0&subGridAssignment[1,4]==0)
 						
 						
 			numVeg = 0			
@@ -390,7 +419,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 					)#c		
 			}# fracQ[1] 
 			if(fracQ[2]){ 
-				## count how many trees
+				## count how many shrub
 				FFraclist = sapply(1:15,function(i){ mean(shrubFFrac[[i]][x]) }) * subGridAssignment[1,2]
 				LAIlist = sapply(1:15,function(i){ mean(shrubLAI[[i]][x]) })
 				vegIDlist = sapply(1:15,function(i){ shrubID[[i]][1] })
@@ -402,9 +431,22 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 						})
 					)#c	
 			}#fracQ[2]
-			if(fracQ[3]){
-				## count how many trees
-				FFraclist = sapply(1:15,function(i){ mean(grassFFrac[[i]][x]) }) * subGridAssignment[1,3]
+            if(fracQ[3]){
+                ## count how many crop
+                FFraclist = sapply(1:15,function(i){ mean(cropFFrac[[i]][x]) }) * subGridAssignment[1,3]
+                LAIlist = sapply(1:15,function(i){ mean(cropLAI[[i]][x]) })
+                vegIDlist = sapply(1:15,function(i){ cropID[[i]][1] })
+                vegCount = !is.na(FFraclist)
+                numVeg = numVeg + sum(vegCount)
+                subGrid_buff_string = c(subGrid_buff_string,
+                sapply(seq_len(15)[vegCount], function(i){
+                    paste(patch[x][1], FFraclist[i], LAIlist[i], vegIDlist[i], 0.3, land,imp, sep=' ')
+                })
+                )#c
+            }#fracQ[3]
+			if(fracQ[4]){
+				## count how many lawn
+				FFraclist = sapply(1:15,function(i){ mean(grassFFrac[[i]][x]) }) * subGridAssignment[1,4]
 				LAIlist = sapply(1:15,function(i){ mean(grassLAI[[i]][x]) })
 				vegIDlist = sapply(1:15,function(i){ grassID[[i]][1] })
 				vegCount = !is.na(FFraclist)
@@ -414,12 +456,12 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 						paste(patch[x][1], FFraclist[i], LAIlist[i], vegIDlist[i], 0.2, land,imp, sep=' ')
 						})
 					)#c	
-			}#fracQ[3]
-			if(fracQ[4]){
-				numVeg = numVeg + 1
-				subGridAssignment[1,4]=1; #this is for below when no vegation in the patch
-				subGrid_buff_string = c(subGrid_buff_string, paste(patch[x][1],paste(subGridAssignment[,4],collapse=' '), land,imp, sep=' '))
 			}#fracQ[4]
+			if(fracQ[5]){
+				numVeg = numVeg + 1
+				subGridAssignment[1,5]=1; #this is for below when no vegation in the patch
+				subGrid_buff_string = c(subGrid_buff_string, paste(patch[x][1],paste(subGridAssignment[,5],collapse=' '), land,imp, sep=' '))
+			}#fracQ[5]
 			
 			subGrid_buff <<- c(subGrid_buff, unlist(subGrid_buff_string))
 			
