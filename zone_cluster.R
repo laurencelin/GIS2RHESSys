@@ -19,7 +19,7 @@ zoneclass = tapply(seq_along(hill), hill, function(ii){
 	# In mathematical speak that is 9.8°C per 1,000 meters; Google
 	# form dataset for cluster analysis
 	clusterData = cbind(
-		(dem[ii]-mean(dem[ii]))*0.1, # 10 m elevation band
+		(dem[ii]-mean(dem[ii]))*0.02, # 50 m elevation band
 		scale(slope[ii]),
 		scale(cos(aspect[ii]*DtoR)*sin(slope[ii]*DtoR)),
 		scale(sin(aspect[ii]*DtoR)*sin(slope[ii]*DtoR))
@@ -31,7 +31,7 @@ zoneclass = tapply(seq_along(hill), hill, function(ii){
 	# if( length(ii) < maxNumCluster ) maxNumCluster=length(ii)-1
 	
 	# elevation band first
-	numCluster = ceiling((max(dem[ii])-min(dem[ii]))*0.1)
+	numCluster = ceiling((max(dem[ii])-min(dem[ii]))*0.02)
 	fit <- kmeans(clusterData[,'dem'], numCluster,iter.max=1000,algorithm="MacQueen") #
 	elevationBand = fit$cluster
 	
