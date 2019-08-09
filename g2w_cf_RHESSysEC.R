@@ -4,11 +4,6 @@
 source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_misc.r')
 	options(scipen=999)
     arg = commandArgs(T)
-    arg=c(
-            '/Users/laurencelin/Downloads/BeaverCkReservoir',
-            'vegCollection.csv', 'soilCollection.csv', 'lulcCollection.csv',
-            '/Users/laurencelin/Downloads/BeaverCkReservoir/wattsbranch_rhessys/g2w_template.txt'
-        )
 	
 	DtoR = pi/180
 	RtoD = 1/DtoR
