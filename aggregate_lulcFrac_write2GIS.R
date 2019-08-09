@@ -1,11 +1,5 @@
 arg=commandArgs(T)
 
-arg=c('patch',
-'/Users/laurencelin/Downloads/BeaverCkReservoir/wattsbranch_rhessys_30m/lulcFrac30m.csv',
-'/Users/laurencelin/Downloads/BeaverCkReservoir/wattsbranch_rhessys_30m/lulc_codeinformation.csv')
-
-
-
 
 library(rgrass7)
 
