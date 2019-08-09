@@ -4,11 +4,11 @@
 source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_misc.r')
 	options(scipen=999)
     arg = commandArgs(T)
-    # arg=c(
-    #        '/Users/laurencelin/Downloads/test',
-    #        'vegCollection.csv', 'soilCollection.csv', 'lulcCollection.csv',
-    #        '/Users/laurencelin/Downloads/test/rhessys/g2w_template.txt'
-    #    )
+    arg=c(
+            '/Users/laurencelin/Downloads/BeaverCkReservoir',
+            'vegCollection.csv', 'soilCollection.csv', 'lulcCollection.csv',
+            '/Users/laurencelin/Downloads/BeaverCkReservoir/wattsbranch_rhessys/g2w_template.txt'
+        )
 	
 	DtoR = pi/180
 	RtoD = 1/DtoR
@@ -63,7 +63,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     if(is.null(template$sewercoverMAP)) template$sewercoverMAP=''
     if(is.null(template$pipecoverMAP)) template$pipecoverMAP=''
     if(is.null(template$stormdrainMAP)) template$stormdrainMAP=''
-    if(is.null(template$nonimpactedsoilQMAP)) template$nonimpactedsoilQMAP=''
+    if(is.null(template$compactedsoilMAP)) template$compactedsoilMAP=''
     if(is.null(template$additionalSurfaceDrainMAP)) template$additionalSurfaceDrainMAP=''
 
 	projectFolder = arg[1]
@@ -178,11 +178,11 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         print('reading stormdrain ... DONE')},
         error = function(e){ stormdrain <<- rep(NA,length(mask)) }
         )#tryCatch
-    nonimpactedsoilQ=NULL; tryCatch({
-        rast = readRAST(template$nonimpactedsoilQMAP);
-        nonimpactedsoilQ <- rast@data[[1]][mask];
+    compactedsoilQ=NULL; tryCatch({
+        rast = readRAST(template$compactedsoilMAP);
+        compactedsoilQ <- rast@data[[1]][mask];
         print('reading non-impacted soil ... DONE')},
-        error = function(e){ nonimpactedsoilQ <<- rep(NA,length(mask)) }
+        error = function(e){ compactedsoilQ <<- rep(NA,length(mask)) }
         )#tryCatch
     additionalSurfaceDrain=NULL; tryCatch({
         rast = readRAST(template$additionalSurfaceDrainMAP);
@@ -352,7 +352,8 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	patchArea = patchCount* gridarea
 	patchSOIL = tapply(seq_along(patch),INDEX=patch, FUN=function(ii){
 		hold=table(soil[ii]); 
-		return <- as.numeric(names(hold)[which.max(hold)]) + ifelse(sum(nonimpactedsoilQ[ii],na.rm=T)>0,0,100)# plus 100 for compacted soil.
+		return <- as.numeric(names(hold)[which.max(hold)]) + ifelse(sum(compactedsoilQ[ii],na.rm=T)>0,100,0)# plus 100 for compacted soil.
+        # here is a problem when no nonimpactedsoil is defined!!
 	})
 	patchSLOPE = tapply(slope,INDEX=patch, FUN=mean)
 	patchTWI = tapply(abs(twi),INDEX=patch, FUN=mean); patchTWI[is.na(patchTWI)]=0;
@@ -374,26 +375,19 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	subGrid_buff = 'patchID frac lai vegID rootz land imp'
 	patchVegnum = tapply(1:sum(mask),INDEX=tapplyOrder, FUN=function(x){
 			
-			patchSTR = sum(stream[x], na.rm=T)
+			patchSTR = sum(stream[x], na.rm=T) # patchSTR==0 --> not modeled stream grid
 			subGridAssignment[1,] = c(
-				ifelse(patchSTR==0,mean(forestFrac[x]),0),
-				ifelse(patchSTR==0,mean(shrubFrac[x]),0), 
-				ifelse(patchSTR==0,mean(cropFrac[x]),0), 
-				ifelse(patchSTR==0,mean(lawnFrac[x]),0), 
-				ifelse(patchSTR==0,mean(impFrac[x]),0) 
+                ifelse(patchSTR==0,mean(forestFrac[x]),0), #1
+                ifelse(patchSTR==0,mean(shrubFrac[x]),0),  #2
+                ifelse(patchSTR==0,mean(cropFrac[x]),0),   #3
+                ifelse(patchSTR==0,mean(lawnFrac[x]),0),   #4
+                ifelse(patchSTR==0,mean(impFrac[x]),0)     #5
 				)
 			if(is.na(subGridAssignment[1,1]) ) subGridAssignment[1,1]=0
 			if(is.na(subGridAssignment[1,2]) ) subGridAssignment[1,2]=0
 			if(is.na(subGridAssignment[1,3]) ) subGridAssignment[1,3]=0
-            if(is.na(subGridAssignment[1,4]) ) subGridAssignment[1,3]=0
-			if(patchSTR==0){
-				if(is.na(subGridAssignment[1,5]) | subGridAssignment[1,5]==0)
-					subGridAssignment[1,5] = max(0, 1-subGridAssignment[1,1]-subGridAssignment[1,2]-subGridAssignment[1,3]-subGridAssignment[1,4])
-			}else{
-				subGridAssignment[1,5] = 0
-				# don't want to make imp on str grids
-			}
-			
+            if(is.na(subGridAssignment[1,4]) ) subGridAssignment[1,4]=0
+            if(is.na(subGridAssignment[1,5]) ) subGridAssignment[1,5]=0
 			
 			land = landuseClass[which.max(subGridAssignment[1,])] 
 			imp = subGridAssignment[1,5]
@@ -716,7 +710,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             riparianQ = sum(!is.na(riparian[ii])),	#16 (checking whether patch contains riparian grids)
             sewerdrainQ = sum(!is.na(sewercover[ii])), #17 (checking whether patch contains sewercover grids)
             subsurfpipedrainQ = sum(!is.na(pipecover[ii])), # other non-sewer pipes
-            nonimpactedsoilQfrac = mean(nonimpactedsoilQ[ii],na.rm=T), # 24 nonimpactedsoilQ
+            compactedsoilQfrac = mean(compactedsoilQ[ii],na.rm=T), # 24 compactedsoilQ
             ## ... surface routing
             strQ = sum(!is.na(stream[ii])),         #11 modeled stream grids
             nonmodelstrgridQ = sum(!is.na(fullstreamExt[ii])),	#21 non-modeled stream grid (treat as land grids)
