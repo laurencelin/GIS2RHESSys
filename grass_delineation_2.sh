@@ -15,3 +15,5 @@ r.mapcalc --overwrite expression="ZERO = 0"
 r.mapcalc --overwrite expression="ONE = 1"
 r.mapcalc --overwrite expression="slope = if(isnull(slope_),0.143,slope_)"
 r.mapcalc --overwrite expression="aspect = if(isnull(aspect_),abs(drain)*45,aspect_)"
+g.remove -f type=vector name=tmp
+g.remove -f type=raster name=tmp

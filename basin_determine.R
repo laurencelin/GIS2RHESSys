@@ -1,12 +1,12 @@
 library(rgrass7)
-rast=readRAST(c('basin_','sub_','hill_','str_','drain'))
-mask = !is.na(rast@data[[2]]) # use sub as mask
-basin=rast@data[[1]][mask]
-sub=rast@data[[2]][mask]
-hill=rast@data[[3]][mask]
-str=rast@data[[4]][mask]
+rast=readRAST(c('tmp','basin_','sub_','hill_','str_','drain'))
+mask = !is.na(rast@data[[1]]) # use sub as mask
+basin=rast@data[[2]][mask]
+sub=rast@data[[3]][mask]
+hill=rast@data[[4]][mask]
+str=rast@data[[5]][mask]
 strCOND = !is.na(str)
-drain=rast@data[[5]][mask]
+drain=rast@data[[6]][mask]
 
 rast2=readRAST(c('rowmap','colmap'))
 rows = rast2@data[[1]][mask]
@@ -26,7 +26,8 @@ index_partial = tapply(seq_along(sub),sub,function(ii){ ii[ !is.na(basin[ii]) ] 
 basin_sub = tapply(seq_along(sub),sub,function(ii){ sum(basin[ii],na.rm=T)/length(ii) })
 selected_basin_sub = as.numeric(names(basin_sub)[basin_sub>0])
 selected_basin_sub_index = match(selected_basin_sub, as.numeric(names(basin_sub)) )
-
+# sapply(seq_along(index),function(k){length(index[[k]])})
+# sapply(seq_along(index_partial),function(k){length(index_partial[[k]])})
 
 # ... stream network structure
 # 1.  2. 3.  4. 5.  6. 7.  8. (GRASS from current drainTO code order)
@@ -60,20 +61,16 @@ rast$tmp = rep(NA,length(mask))
 for( ii in seq_along(selected_basin_sub) ){
 	
 	if(selectedSUBs_down[selectedSUBs_order[ii]] %in% selected_basin_sub){
-		# outlet sub
-		rast$tmp[mask][ index_partial[[ selected_basin_sub_index[ii] ]] ] = 1
-	}else{
 		# upslope sub
-		rast$tmp[mask][ index[[ selected_basin_sub_index[ii] ]] ] = 1
+        rast$tmp[mask][ index[[ selected_basin_sub_index[ii] ]] ] = 1
+	}else{
+        # outlet sub
+        rast$tmp[mask][ index_partial[[ selected_basin_sub_index[ii] ]] ] = 1
 	}
 
 }#ii
 basinCond = !is.na(rast$tmp[mask]) 
 writeRAST(rast,"basin",zcol='tmp', overwrite=T)
-
-	# 122948
-
-
 
 rast$tmp = rep(NA,length(mask))
 rast$tmp[mask][basinCond] = sub[basinCond]
