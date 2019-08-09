@@ -123,7 +123,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     print('reading xx,yy,.... ... DONE')
 
     # extract LULC information (must have)
-    rast = readRAST(c(template$impFracMAP,template$roofMAP,template$drivewayMAP,template$pavedRoadFracMAP, template$forestFracMAP,template$shrubFracMAP,template$cropFracMAP,template$lawnFracMAP,), NODATA=-1)
+    rast = readRAST(c(template$impFracMAP,template$roofMAP,template$drivewayMAP,template$pavedRoadFracMAP, template$forestFracMAP,template$shrubFracMAP,template$cropFracMAP,template$lawnFracMAP), NODATA=-1)
         impFrac = rast@data[[1]][mask]
         roofFrac = rast@data[[2]][mask]
         drivewayFrac = rast@data[[3]][mask]
