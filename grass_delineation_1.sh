@@ -16,7 +16,7 @@ r.horizon --overwrite -d elevation=dem direction=0 output="east" distance=1.0
 #
 r.watershed --overwrite elevation=dem accumulation=uaa drainage=drain tci=wetness_index  # -s
 r.watershed --overwrite elevation=dem threshold=$inputThreshold basin=sub_ stream=str_ half_basin=hill_  ## -s
-r.watershed --overwrite elevation=dem accumulation=uaaD8 -s
+#r.watershed --overwrite elevation=dem accumulation=uaaD8 -s
 #
 # finding the nearest stream/uaa to the provided "outlet" point (vector data)
 # this snapping process gets wrong with D-inf routing !
@@ -36,7 +36,7 @@ r.water.outlet --overwrite input=drain output=basin_ coordinates=$xyCoord
 #
 r.to.vect --overwrite input=sub_ output=tmp type=area
 v.rast.stats -c map=tmp raster=basin_ column_prefix=select method=average
-v.to.rast input=tmp@PERMANENT type=area where=select_average>0 output=tmp use=attr attribute_column=select_average
+v.to.rast --overwrite input=tmp type=area where=select_average>0 output=tmp use=attr attribute_column=select_average
 #g.region raster=tmp
 
 
