@@ -4,7 +4,8 @@
 source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_misc.r')
 	options(scipen=999)
     arg = commandArgs(T)
-	
+
+
 	DtoR = pi/180
 	RtoD = 1/DtoR
     BASEMENT_DEPTH = 3 #meter
@@ -370,7 +371,8 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	subGrid_buff = 'patchID frac lai vegID rootz land imp'
 	patchVegnum = tapply(1:sum(mask),INDEX=tapplyOrder, FUN=function(x){
 			
-			patchSTR = sum(stream[x], na.rm=T) # patchSTR==0 --> not modeled stream grid
+            #patchSTR = sum(fullstreamExt[x], na.rm=T); # patchSTR==0 --> no canopy on all stream extension!
+            patchSTR = sum(stream[x], na.rm=T)
 			subGridAssignment[1,] = c(
                 ifelse(patchSTR==0,mean(forestFrac[x]),0), #1
                 ifelse(patchSTR==0,mean(shrubFrac[x]),0),  #2
@@ -386,8 +388,10 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 			
 			land = landuseClass[which.max(subGridAssignment[1,])] 
 			imp = subGridAssignment[1,5]
-			fracQ = c(	subGridAssignment[1,1]>0, subGridAssignment[1,2]>0,
-                        subGridAssignment[1,3]>0,subGridAssignment[1,4]>0,
+			fracQ = c(	subGridAssignment[1,1]>0,
+                        subGridAssignment[1,2]>0,
+                        subGridAssignment[1,3]>0,
+                        subGridAssignment[1,4]>0,
 						subGridAssignment[1,1]==0&subGridAssignment[1,2]==0&
                             subGridAssignment[1,3]==0&subGridAssignment[1,4]==0)
 						
@@ -429,7 +433,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
                 numVeg = numVeg + sum(vegCount)
                 subGrid_buff_string = c(subGrid_buff_string,
                 sapply(seq_len(15)[vegCount], function(i){
-                    paste(patch[x][1], FFraclist[i], LAIlist[i], vegIDlist[i], 0.3, land,imp, sep=' ')
+                        paste(patch[x][1], FFraclist[i], LAIlist[i], vegIDlist[i], 0.3, land,imp, sep=' ')
                 })
                 )#c
             }#fracQ[3]
@@ -449,7 +453,8 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 			if(fracQ[5]){
 				numVeg = numVeg + 1
 				subGridAssignment[1,5]=1; #this is for below when no vegation in the patch
-				subGrid_buff_string = c(subGrid_buff_string, paste(patch[x][1],paste(subGridAssignment[,5],collapse=' '), land,imp, sep=' '))
+				subGrid_buff_string = c(subGrid_buff_string,
+                        paste(patch[x][1],paste(subGridAssignment[,5],collapse=' '), land,imp, sep=' '))
 			}#fracQ[5]
 			
 			subGrid_buff <<- c(subGrid_buff, unlist(subGrid_buff_string))
@@ -686,7 +691,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     print('starting step I')
     patchInfo = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
         return <- c(
-             patchID = mean(patch[ii]),             #1 patchID
+            patchID = mean(patch[ii]),             #1 patchID
             elevation = mean(dem[ii]),             #2 elevation
             xx = mean(xx[ii]),                #3 x coordinate
             yy = mean(yy[ii]),                #4 y coordinate
