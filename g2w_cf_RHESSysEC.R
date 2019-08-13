@@ -4,9 +4,8 @@
 source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_misc.r')
 	options(scipen=999)
     arg = commandArgs(T)
-    arg = c('/Users/laurencelin/Downloads/BeaverCkReservoir', 'default', 'default', 'default', '/Users/laurencelin/Downloads/BeaverCkReservoir/wattsbranch_rhessys_30m/g2w_template.txt')
 
-	DtoR = pi/180
+    DtoR = pi/180
 	RtoD = 1/DtoR
     BASEMENT_DEPTH = 3 #meter
     PAVEDROAD_DEPTH = 0.3 #meter
