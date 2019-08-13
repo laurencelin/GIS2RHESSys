@@ -50,6 +50,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         out = read.csv(text=x, sep=sep, header=header, skip=0, ...)
         return(out)
     }#function
+
     templateACTION = read.tcsv(arg[5],stringsAsFactors=F, len=7);
     template = read.tcsv(arg[5],stringsAsFactors=F, vskip=7);
     if(is.null(template$streamFullextension)) template$streamFullextension=''
@@ -191,7 +192,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	treeLAI = lapply(1:15, function(i){
 		tryCatch({
             rast = readRAST( template[[paste('tree',i,'LAI',sep='')]] ) # paste('tree',i,'LAI',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
@@ -199,7 +200,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	treeID = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('tree',i,'StratumID',sep='')]] ) # paste('tree',i,'StratumID',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
@@ -207,16 +208,16 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	treeFFrac = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('tree',i,'FFrac',sep='')]] ) # paste('tree',i,'FFrac',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
 		})
-	
+
 	shrubLAI = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('shrub',i,'LAI',sep='')]] ) # paste('shrub',i,'LAI',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
@@ -224,7 +225,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	shrubID = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('shrub',i,'StratumID',sep='')]] ) # paste('shrub',i,'StratumID',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
@@ -232,17 +233,17 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	shrubFFrac = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('shrub',i,'FFrac',sep='')]] ) # paste('shrub',i,'FFrac',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
 		})
-
+    # is(shrubLAI[[2]]); is(shrubID[[2]]); is(shrubFFrac[[2]])
 	
 	grassLAI = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('grass',i,'LAI',sep='')]] ) # paste('grass',i,'LAI',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
@@ -250,7 +251,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	grassID = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('grass',i,'StratumID',sep='')]] ) # paste('grass',i,'StratumID',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
@@ -258,17 +259,17 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	grassFFrac = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('grass',i,'FFrac',sep='')]] ) # paste('grass',i,'FFrac',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
 		})
-
+    # is(grassLAI[[2]]); is(grassID[[2]]); is(grassFFrac[[2]])
 
 	cropLAI = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('crop',i,'LAI',sep='')]] ) # paste('crop',i,'LAI',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
@@ -276,7 +277,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	cropID = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('crop',i,'StratumID',sep='')]] ) # paste('crop',i,'StratumID',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
@@ -284,12 +285,12 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	cropFFrac = lapply(1:15, function(i){ 
 		tryCatch({
             rast = readRAST( template[[paste('crop',i,'FFrac',sep='')]] ) # paste('crop',i,'FFrac',sep='')
-			return <- rast@data[[1]][mask]},
+			return <- as.numeric(rast@data[[1]][mask]) },
 			
 			error = function(e){ return <- NA}
 			)#tryCatch
 		})
-
+    # is(cropLAI[[2]]); is(cropID[[2]]); is(cropFFrac[[2]])
 
 
 
@@ -469,6 +470,10 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	patchIMP = subGrid_info[,'imp']  #<<----	
 	patchRZ = subGrid_info[,'rootz']
 
+    table(patchVegnum)
+    dim(subGrid_info)[1] >= length(patchSLOPE)
+    length(patchVegnum) == length(patchSLOPE)
+    table(patchVegID)
 
 	lai_ = patchVegLAI ## already ordered
 		stratum = patchVegID
