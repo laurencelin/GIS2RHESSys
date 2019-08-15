@@ -33,12 +33,14 @@ if( sum(is.na(toPatchCond)) ){
     drivewayCode
     pavedroadCode
     
+    //modeList = list()
     gisOrder = match(rast@data[[1]][mask], patchlulcFrac$patchID)
     # ... constructing GIS maps
     rast$lulcComposition_forest = rep(0,length(rast@data[[1]]))
     if(length(forestCode)>1) rast$lulcComposition_forest[mask] = (rowSums(patchlulcFrac[, forestCode])/patchlulcFrac$total)[gisOrder]
     if(length(forestCode)==1) rast$lulcComposition_forest[mask] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
     writeRAST(rast,'forestFrac',zcol='lulcComposition_forest',overwrite=T)
+    //modeList[[1]] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
     
     rast$lulcComposition_shrub = rep(0,length(rast@data[[1]]))
     if(length(shrubCode)>1) rast$lulcComposition_shrub[mask] = (rowSums(patchlulcFrac[, shrubCode])/patchlulcFrac$total)[gisOrder]
@@ -68,8 +70,6 @@ if( sum(is.na(toPatchCond)) ){
     if(length(roofCode)==1) rast$impBreakdownFrac_roof[mask] = (patchlulcFrac[, roofCode]/patchlulcFrac$total)[gisOrder]
     writeRAST(rast,'roofFrac',zcol='impBreakdownFrac_roof',overwrite=T)
     
-    
-    
     rast$impBreakdownFrac_driveway = rep(0,length(rast@data[[1]]))
     if(length(drivewayCode)>1) rast$impBreakdownFrac_driveway[mask] = (rowSums(patchlulcFrac[, drivewayCode])/patchlulcFrac$total)[gisOrder]
     if(length(drivewayCode)==1) rast$impBreakdownFrac_driveway[mask] = (patchlulcFrac[, drivewayCode]/patchlulcFrac$total)[gisOrder]
@@ -80,7 +80,10 @@ if( sum(is.na(toPatchCond)) ){
     if(length(pavedroadCode)==1) rast$impBreakdownFrac_pavedRoad[mask] = (patchlulcFrac[, pavedroadCode]/patchlulcFrac$total)[gisOrder]
     writeRAST(rast,'pavedroadFrac',zcol='impBreakdownFrac_pavedRoad',overwrite=T)
     
-}#
+    rast$modeLULC = rep(0,length(rast@data[[1]]))
+    
+    
+}# if wrong LULC code table
 
 
 
