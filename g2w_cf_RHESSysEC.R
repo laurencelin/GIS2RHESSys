@@ -402,7 +402,8 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 				## count how many trees
 				FFraclist = sapply(1:15,function(i){ mean(treeFFrac[[i]][x]) }) * subGridAssignment[1,1]
 				LAIlist = sapply(1:15,function(i){ mean(treeLAI[[i]][x]) })
-				vegIDlist = sapply(1:15,function(i){ treeID[[i]][1] })
+				vegIDlist = sapply(1:15,function(i){ treeID[[i]][x][1] })
+                
                 vegCount = !is.na(FFraclist) & FFraclist>0 & !is.na(LAIlist) & LAIlist>0 & !is.na(vegIDlist) & vegIDlist>0
 				numVeg = numVeg + sum(vegCount)		
 				subGrid_buff_string = c(subGrid_buff_string,
@@ -415,7 +416,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 				## count how many shrub
 				FFraclist = sapply(1:15,function(i){ mean(shrubFFrac[[i]][x]) }) * subGridAssignment[1,2]
 				LAIlist = sapply(1:15,function(i){ mean(shrubLAI[[i]][x]) })
-				vegIDlist = sapply(1:15,function(i){ shrubID[[i]][1] })
+				vegIDlist = sapply(1:15,function(i){ shrubID[[i]][x][1] })
                 vegCount = !is.na(FFraclist) & FFraclist>0 & !is.na(LAIlist) & LAIlist>0 & !is.na(vegIDlist) & vegIDlist>0
 				numVeg = numVeg + sum(vegCount)	
 				subGrid_buff_string = c(subGrid_buff_string,
@@ -428,7 +429,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
                 ## count how many crop
                 FFraclist = sapply(1:15,function(i){ mean(cropFFrac[[i]][x]) }) * subGridAssignment[1,3]
                 LAIlist = sapply(1:15,function(i){ mean(cropLAI[[i]][x]) })
-                vegIDlist = sapply(1:15,function(i){ cropID[[i]][1] })
+                vegIDlist = sapply(1:15,function(i){ cropID[[i]][x][1] })
                 vegCount = !is.na(FFraclist) & FFraclist>0 & !is.na(LAIlist) & LAIlist>0 & !is.na(vegIDlist) & vegIDlist>0
                 numVeg = numVeg + sum(vegCount)
                 subGrid_buff_string = c(subGrid_buff_string,
@@ -441,7 +442,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 				## count how many lawn
 				FFraclist = sapply(1:15,function(i){ mean(grassFFrac[[i]][x]) }) * subGridAssignment[1,4]
 				LAIlist = sapply(1:15,function(i){ mean(grassLAI[[i]][x]) })
-				vegIDlist = sapply(1:15,function(i){ grassID[[i]][1] })
+				vegIDlist = sapply(1:15,function(i){ grassID[[i]][x][1] })
                 vegCount = !is.na(FFraclist) & FFraclist>0 & !is.na(LAIlist) & LAIlist>0 & !is.na(vegIDlist) & vegIDlist>0
 				numVeg = numVeg + sum(vegCount)			
 				subGrid_buff_string = c(subGrid_buff_string,
