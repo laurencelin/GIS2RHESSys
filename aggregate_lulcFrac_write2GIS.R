@@ -33,14 +33,14 @@ if( sum(is.na(toPatchCond)) ){
     drivewayCode
     pavedroadCode
     
-    //modeList = list()
+    #modeList = list()
     gisOrder = match(rast@data[[1]][mask], patchlulcFrac$patchID)
     # ... constructing GIS maps
     rast$lulcComposition_forest = rep(0,length(rast@data[[1]]))
     if(length(forestCode)>1) rast$lulcComposition_forest[mask] = (rowSums(patchlulcFrac[, forestCode])/patchlulcFrac$total)[gisOrder]
     if(length(forestCode)==1) rast$lulcComposition_forest[mask] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
     writeRAST(rast,'forestFrac',zcol='lulcComposition_forest',overwrite=T)
-    //modeList[[1]] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
+    #modeList[[1]] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
     
     rast$lulcComposition_shrub = rep(0,length(rast@data[[1]]))
     if(length(shrubCode)>1) rast$lulcComposition_shrub[mask] = (rowSums(patchlulcFrac[, shrubCode])/patchlulcFrac$total)[gisOrder]
