@@ -1,19 +1,16 @@
 # GIS2RHESSys
 Quick notes: 
-- Master branch serves a collection of scripts and datasets that help constructing RHESSys eco-hydrological model 
-- Datasets include soil, vegeation, and LULC parameter values
 - Most tools here are coded in R with pacakage "rgrass7" to access GRASS GIS data
 
+**To start**, please look at the guide on workflow script https://github.com/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb 
 
-**To start**, please browse into the following **branches**
-- **Jupyter notebook** interfaces are newly added in the "Jupyter notebook" branch
-- **workflows**, designed for local machine operations.
+
 
 **Understanding project and RHESSys model directory structure**
 ![Alt text](rhessys_filesystem.png?raw=true "Title")
 
 
-The workflows.sh is a bash/shell script to 1) set the system library paths; 2) make grass datasets and GIS data post-processing; 3) delineate catchment; and 4) extract GIS information to build RHESSys models. Certain procedures are organized in groups in workflows.sh. User should customize the workflows.sh for his/her tasks. Advanced users should also look into the "g2w" and "createFlowRouting" for more controls.  
+
 
 Below diagram shows the relationship between GRASS dataset and RHESSys model.
 
