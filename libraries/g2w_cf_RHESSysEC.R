@@ -37,17 +37,25 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         rowCountFields = count.fields(file, sep=sep)
         if(vskip>0) rowCountFields = rowCountFields[-1:-vskip]
         n = max( rowCountFields, na.rm=TRUE)
-        x = readLines(file)
-        .splitvar = function(x, sep, n) {
-            var = unlist(strsplit(x, split=sep))
-            length(var) = n
-            return(var)
-        }#function
-        endline = length(x)
+        
+        # x = readLines(file)
+        # .splitvar = function(x, sep, n) {
+        #     var = unlist(strsplit(x, split=sep))
+        #     length(var) = n
+        #     return(var)
+        # }#function
+        # x = do.call(cbind, lapply(x[(vskip+1):endline], .splitvar, sep=sep, n=n))
+        # x = apply(x[(hskip+1):dim(x)[1],], 1, paste, collapse=sep)
+        # out = read.csv(text=x, sep=sep, header=header, skip=0, ...)
+        
+        x = read.table(file, sep=' ', fill=T, stringsAsFactors=F )
+        endline = dim(x)[1]
         if(len>0) endline = vskip+1+len
-        x = do.call(cbind, lapply(x[(vskip+1):endline], .splitvar, sep=sep, n=n))
-        x = apply(x[(hskip+1):dim(x)[1],], 1, paste, collapse=sep)
-        out = read.csv(text=x, sep=sep, header=header, skip=0, ...)
+        transformedX = sapply( (hskip+1):n, function(ii){
+        	paste( x[(vskip+1):endline, ii], collapse=',')
+        });
+        out = read.csv(text=transformedX, sep=',', header=header, skip=0, ...)
+        
         return(out)
     }#function
 
@@ -119,7 +127,16 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     print('reading xx,yy,.... ... DONE')
 
     # extract LULC information (must have)
-    rast = readRAST(c(template$impFracMAP,template$roofMAP,template$drivewayMAP,template$pavedRoadFracMAP, template$forestFracMAP,template$shrubFracMAP,template$cropFracMAP,template$grassFracMAP), NODATA=-1)
+    rast = readRAST(c(
+        template$impFracMAP,
+        template$roofMAP,
+        template$drivewayMAP,
+        template$pavedRoadFracMAP,
+        template$forestFracMAP,
+        template$shrubFracMAP,
+        template$cropFracMAP,
+        template$grassFracMAP), NODATA=-1)
+
         impFrac = rast@data[[1]][mask]
         roofFrac = rast@data[[2]][mask]
         drivewayFrac = rast@data[[3]][mask]
