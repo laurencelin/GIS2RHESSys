@@ -49,12 +49,6 @@ RtoD = 1/DtoR
 	rast4 = readRAST(drainMap)		
 		drain = abs(rast4@data[[1]][mask])
 		
-			
-	## ... ACTION maps
-	lulcMAP = 'RHESSyslulcClass'
-	rast5 = readRAST(lulcMAP)
-		lulc = rast5@data[[1]][mask]
-		
 		
 	## assume grids are squares 
 	cellarea = gis$nsres * gis$ewres
@@ -111,7 +105,6 @@ RtoD = 1/DtoR
 			strQ = sum(!is.na(stream[ii])),	#11 strQ (checking whether patch contains stream grids)
 			aveSlope = tan(mean(slope[ii])*DtoR),	#13 average slope
 			maxSlope = tan(max(slope[ii])*DtoR),	#14 max slope
-			lulcQ = mean(lulc[ii]), # 23 
 			mtnRoadQ = sum(!is.na(road[ii]))
 			);
 	})#tapply <--- this output is a list of c() in outputOrder
@@ -135,7 +128,6 @@ RtoD = 1/DtoR
 			hold2 = as.vector(gridSurroundRC[indirectEdgeIndex,jj]);
 			hold2[hold2%in% withinPatchGridRC] = -1
 	
-			#return <- c(table(hold[hold>0])* directEdge, table(hold2[hold2>0])* diagonalEdge) 
 			return <- c( tapply(hold[hold>0],hold[hold>0],length)*directEdge, tapply(hold2[hold2>0],hold2[hold2>0],length)*diagonalEdge) 
 			 
 		})
@@ -254,7 +246,8 @@ RtoD = 1/DtoR
 			sprintf('%.2f',1.0),
 			sprintf('%.2f',0.0),
 			drainage_type, 
-			total_gamma, length(withinNeighbourRC),'\n', file=subsurfaceflow_table_buff,sep=' ')
+			total_gamma, length(withinNeighbourRC),'\n',
+            file=subsurfaceflow_table_buff,sep=' ')
 		
 		cat( paste(
 			allNeighbourInfo['patchID',],
@@ -262,13 +255,15 @@ RtoD = 1/DtoR
 			allNeighbourInfo['hillID',],
 			sprintf('%.5f',neighbor_frac_gamma),
 			#sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
-			#sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=subsurfaceflow_table_buff,sep='\n')
+			#sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '),
+            file=subsurfaceflow_table_buff,sep='\n')
 		
 		if(drainage_type==2) cat (
 			patch_info_lowest['patchID'],
 			patch_info_lowest['zoneID'],
 			patch_info_lowest['hillID'],
-			roadWidth,'\n', file=subsurfaceflow_table_buff,sep=' ')  #*current_patch_info[16]
+			roadWidth,'\n',
+            file=subsurfaceflow_table_buff,sep=' ')  #*current_patch_info[16]
 			
 
 	}# for loop ii 
