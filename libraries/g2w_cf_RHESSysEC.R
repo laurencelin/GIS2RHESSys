@@ -701,10 +701,20 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	
     # part 1: gathering information to temporary files
     fullLength = seq(1,length.out=length(patch))
-    patch_info_dem = tapply(dem,INDEX=patch,mean)
+    patch_info_dem = tapply(dem,INDEX=patch,mean) # use elevation to organize patch order in the file output
     orderedPatch = as.numeric(names(patch_info_dem[order(patch_info_dem,decreasing=T)])) ### patch could be longer than 'orderedPatch'
     outputOrder = match(patch, orderedPatch) # has the same length as 'patch'
-    # test = tapply(patch, outputOrder,mean); sum(test==orderedPatch)==length(orderedPatch)
+    # ... finding basin outlet and hillslope outlets
+    strCOND = !is.na(stream)
+    subID = 2*ceiling(hill*0.5)
+    suboutlet_orderedPatch_index = tapply(fullLength[strCOND], subID[strCOND],function(ii){
+        # must be stream channel
+        return <- match(patch[ii][which.min(dem[ii])], orderedPatch)
+    })#
+    suboutlet_orderedPatch_index_hillID = as.numeric(names(suboutlet_orderedPatch_index))
+    basinoutlet_orderedPatch_index = match(patch[strCOND][which.min(dem[strCOND])], orderedPatch)
+
+
     maskRC_string2outputOrder_num <- new.env(hash=T)
     list2env(setNames(as.list(outputOrder),maskRC),envir=maskRC_string2outputOrder_num) #<<---- native R hash
     maskRC_string2maskRC_num <- new.env(hash=T)
@@ -713,6 +723,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     print('starting step I')
     patchInfo = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
         return <- c(
+            subIDindex = match(mean(subID[ii]),suboutlet_orderedPatch_index_hillID),
             patchID = mean(patch[ii]),             #1 patchID
             elevation = mean(dem[ii]),             #2 elevation
             xx = mean(xx[ii]),                #3 x coordinate
@@ -724,7 +735,6 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             len = length(ii),                   #10 num of cells
             aveSlope = tan(mean(slope[ii])*DtoR),   #13 average slope
             maxSlope = tan(max(slope[ii])*DtoR),    #14 max slope
-            
             
             ## ... 
             irrigateQfra = mean(lawnFrac[ii],na.rm=T), # 23 lawnFrac for irrigate
@@ -748,9 +758,11 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             unpavedRoadQ = sum(!is.na(unpavedroad[ii])) # assume it cuts watertable
         );
     })#tapply <--- this output is a list of c() in outputOrder
-    patch_info_lowest = patchInfo[[ length(patchInfo) ]]
-	
-	
+    patch_info_lowest = patchInfo[[ length(patchInfo) ]] ## assume basin outlet
+    patch_info_basinoutlet = patchInfo[[ basinoutlet_orderedPatch_index ]]
+    patch_info_suboulet = lapply(suboutlet_orderedPatch_index, function(ii){ patchInfo[[ii]] })
+    #cbind(suboutlet_orderedPatch_index_hillID, suboutlet_orderedPatch_index)
+
 
     ## part 2: sort by 'elevation' & finding neighbor
     print('starting step II')
@@ -914,6 +926,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         total_gamma = sum(gamma_jj)/total_perimeter*current_patch_info['len']*cellarea; # currrent CF calculation
         if(drainage_type==1) total_gamma = current_patch_info['aveSlope']*current_patch_info['len']*cellarea; # special for stream
         
+    #-------------- subsurface -------------------# within a for loop
         if(as.numeric(templateACTION$outputSubFlow[2])>0 ){
             cat(
             paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
@@ -931,15 +944,19 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
             sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=subsurfaceflow_table_buff,sep='\n')
             
+            # ... traditional road grid, which cannot be stream or outlet grid
             if(drainage_type==2) cat (
-            patch_info_lowest['patchID'],
-            patch_info_lowest['zoneID'],
-            patch_info_lowest['hillID'],
+            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+            #patch_info_lowest['patchID'],
+            #patch_info_lowest['zoneID'],
+            #patch_info_lowest['hillID'],
             roadWidth,'\n', file=subsurfaceflow_table_buff,sep=' ')  #cellsize*current_patch_info[15]
         }
         
 
-	#-------------- surface -------------------#
+	#-------------- surface -------------------# within a for loop
         if( (current_patch_info['roofQfrac']>0 | current_patch_info['drivewayQfrac']>0 | current_patch_info['pavedRoadQfrac']>0 | current_patch_info['nonstrsurfdrainQ']>0) & current_patch_info['strQ']==0 ){
             # debug: surface water is the "detention" in the model; not calculated by gamma/total_gamma
             # debug: road grids (by frac) has only one drain direction; storm drain will overwrite every direction;
@@ -1004,50 +1021,75 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 sprintf('%.2f',allNeighbourInfo[7,]/allNeighbourInfo[4,]),
                 sprintf('%.2f',allNeighbourInfo[7,]),sep=' '), file=surfaceflow_table_buff,sep='\n')
                 
-                # current_patch_info[15]>0    road / storm drain
+                # current_patch_info[15]>0    road / storm drain & NOT str grid & NOT strExt
                 if(current_patch_info['pavedRoadQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) cat(
-                patch_info_lowest['patchID'],
-                patch_info_lowest['zoneID'],
-                patch_info_lowest['hillID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                #patch_info_lowest['patchID'],
+                #patch_info_lowest['zoneID'],
+                #patch_info_lowest['hillID'],
                 sprintf('%.5f', stormsurfacedrainFrac['road']),
                 sprintf('%.2f',1.0),
                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                 
-                # current_patch_info[19]>0 roof
+                # current_patch_info[19]>0 roof & NOT str grid & NOT strExt
                 if(current_patch_info['roofQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) cat(
-                patch_info_lowest['patchID'],
-                patch_info_lowest['zoneID'],
-                patch_info_lowest['hillID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                #patch_info_lowest['patchID'],
+                #patch_info_lowest['zoneID'],
+                #patch_info_lowest['hillID'],
                 sprintf('%.5f', stormsurfacedrainFrac['roof']),
                 sprintf('%.2f',1.0),
                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                 
-                # current_patch_info[20]>0 parking
+                # current_patch_info[20]>0 parking & NOT str grid & NOT strExt
                 if(current_patch_info['drivewayQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) cat(
-                patch_info_lowest['patchID'],
-                patch_info_lowest['zoneID'],
-                patch_info_lowest['hillID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                #patch_info_lowest['patchID'],
+                #patch_info_lowest['zoneID'],
+                #patch_info_lowest['hillID'],
                 sprintf('%.5f', stormsurfacedrainFrac['parking']),
                 sprintf('%.2f',1.0),
                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                 
-                # current_patch_info[17]>0 & current_patch_info[21]==0
+                # current_patch_info[17]>0 extenddrain & NOT str grid & NOT strExt
                 if(stormsurfacedrainFrac['extenddrain']>0 & current_patch_info['nonmodelstrgridQ']==0) cat(
-                patch_info_lowest['patchID'],
-                patch_info_lowest['zoneID'],
-                patch_info_lowest['hillID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                #patch_info_lowest['patchID'],
+                #patch_info_lowest['zoneID'],
+                #patch_info_lowest['hillID'],
                 sprintf('%.5f', stormsurfacedrainFrac['extenddrain']),
                 sprintf('%.2f',1.0),
                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                 
-                # current_patch_info[17]>0 & current_patch_info[21]==0
-                if(current_patch_info['nonmodelstrgridQ']>0) cat(
-                patch_info_lowest['patchID'],
-                patch_info_lowest['zoneID'],
-                patch_info_lowest['hillID'],
+                # strExt (surface) & NOT str grid @ outlet
+                if(current_patch_info['nonmodelstrgridQ']>0 & current_patch_info['patchID']!=patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'] ) cat(
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                #patch_info_lowest['patchID'],
+                #patch_info_lowest['zoneID'],
+                #patch_info_lowest['hillID'],
                 sprintf('%.5f', 0.4),
                 sprintf('%.2f',1.0),
                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                
+                # strExt (surface) & str grid @ outlet
+                if(current_patch_info['nonmodelstrgridQ']>0 & current_patch_info['patchID']==patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID']) cat(
+                patch_info_basinoutlet['patchID'],
+                patch_info_basinoutlet['zoneID'],
+                patch_info_basinoutlet['hillID'],
+                sprintf('%.5f', 0.4),
+                sprintf('%.2f',1.0),
+                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                
             }# if
         }else{
             # same as subsurface flow
