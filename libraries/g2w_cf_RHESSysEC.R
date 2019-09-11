@@ -86,7 +86,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	colnames(soilParamCOL) = c('soilID','soilDefIndex')
 	soilParam_len = ncol(soilParam)
 	
-	lulcParam = read.csv(ifelse(arg[4]=='default'|arg[4]=='NA'|arg[4]=='na'|arg[4]=='.','https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/lulcCollection.csv', arg[4]),skip=4,header=T,stringsAsFactors=F) #<<------
+	lulcParam = read.csv(ifelse(arg[4]=='default'|arg[4]=='NA'|arg[4]=='na'|arg[4]=='.','https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/lulcCollectionEC.csv', arg[4]),skip=4,header=T,stringsAsFactors=F) #<<------
 	lulcParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam)); 
 	colnames(lulcParamCOL) = c('lulcID','lulcDefIndex')
 	lulcParam_len = ncol(lulcParam)
