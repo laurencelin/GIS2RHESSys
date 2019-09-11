@@ -180,6 +180,12 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         print('reading sewer ... DONE')},
         error = function(e){ sewercover <<- rep(NA,length(mask)) }
         )#tryCatch
+    septic=NULL; tryCatch({
+        rast = readRAST(template$septicMAP);
+        septic <- rast@data[[1]][mask];
+        print('reading septic ... DONE')},
+        error = function(e){ septic <<- rep(NA,length(mask)) }
+        )#tryCatch
     pipecover=NULL; tryCatch({
         rast = readRAST(template$pipecoverMAP);
         pipecover <- rast@data[[1]][mask];
@@ -404,7 +410,26 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
             if(is.na(subGridAssignment[1,4]) ) subGridAssignment[1,4]=0
             if(is.na(subGridAssignment[1,5]) ) subGridAssignment[1,5]=0
 			
-			land = landuseClass[which.max(subGridAssignment[1,])] 
+            land = ifelse(sum(septic[x],na.rm=T)>0, 4, landuseClass[which.max(subGridAssignment[1,])] )#  ### not very useful
+                # management ACTIONcodes: < (subpatch scale variable)
+                # 2 = actionIRRIGRATION  {irrigration daily max} < lawnFrac
+                # 3 = actionFERTILIZE {fertilizer application schedule and amount} < lawnFrac
+                # 5 = actionGLAZING {lawn/crop glazing} < lawnFrac
+                # 7 = actionHARVEST {harvest schedule and amount and aftermath} < lawnFrac & forestFrac?
+                # 11 = actionSEPTIC {setpic leaks annual Q and N} < lawnFrac
+                # 13 = actionDETENTION {surface detention e.g., very small ponds?, bottom leak, top drainage}
+                
+                # drainage/routing ACTIONcodes: < (subpatch scale variable)
+                # 0 = land (default)
+                # 1 = class::stream
+                # 2 = class::road
+                # 3 = actionSTORMDRAIN {drainage surface Q along roads}
+                # 5 = actionGWDRAIN {gw1} < impFrac
+                # 7 = actionRIPARIAN {gw2riparian}
+                # 17 = actionPIPEDRAIN {drainage surface excessive Q within some areas, e.g., lawn, park}
+                # 11 = actionSEWER {drainge subsurface Q; loss of Q}
+                
+                
 			imp = subGridAssignment[1,5]
             fracQ = c(	subGridAssignment[1,1]>0,   # tree
                         subGridAssignment[1,2]>0,   # shrub
