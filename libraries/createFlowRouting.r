@@ -255,7 +255,8 @@ RtoD = 1/DtoR
 			allNeighbourInfo['hillID',],
 			sprintf('%.5f',neighbor_frac_gamma),
 			#sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
-			#sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '),
+			#sprintf('%.2f',allNeighbourInfo['sharedEdge',]),
+            sep=' '),
             file=subsurfaceflow_table_buff,sep='\n')
 		
 		if(drainage_type==2) cat (
