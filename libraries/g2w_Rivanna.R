@@ -336,22 +336,21 @@
 	
 	worldHEADER = NULL
 	worldHEADER = c(worldHEADER, paste(1,'num_basin_files'))
-	worldHEADER = c(worldHEADER, paste('/',tmp[2],'/',tmp[3],'/',tmp[4],'/',rhessysFolder,'/',defsFolder,'/basin_basin.def basin_default_filename',sep=''))	
+	worldHEADER = c(worldHEADER, paste(projectFolder,'/',rhessysFolder,'/',defsFolder,'/basin_basin.def basin_default_filename',sep=''))	
 	worldHEADER = c(worldHEADER, paste(1,'num_hillslope_files'))	
-	worldHEADER = c(worldHEADER, paste('/',tmp[2],'/',tmp[3],'/',tmp[4],'/',rhessysFolder,'/',defsFolder,'/hillslope_hillslope.def hillslope_default_filename',sep=''))	
+	worldHEADER = c(worldHEADER, paste(projectFolder,'/',rhessysFolder,'/',defsFolder,'/hillslope_hillslope.def hillslope_default_filename',sep=''))	
 	worldHEADER = c(worldHEADER, paste(1,'num_zone_files'))	
-	worldHEADER = c(worldHEADER, paste('/',tmp[2],'/',tmp[3],'/',tmp[4],'/',rhessysFolder,'/',defsFolder,'/zone_zone.def zone_default_filename',sep=''))	
+	worldHEADER = c(worldHEADER, paste(projectFolder,'/',rhessysFolder,'/',defsFolder,'/zone_zone.def zone_default_filename',sep=''))	
 	
 	worldHEADER = c(worldHEADER, paste(length(soilHEADER),'num_patch_files'))	
-	worldHEADER = c(worldHEADER, paste('/',tmp[2],'/',tmp[3],'/',tmp[4],'/',rhessysFolder,'/',soilHEADER,sep=''))
+	worldHEADER = c(worldHEADER, paste(projectFolder,'/',rhessysFolder,'/',soilHEADER,sep=''))
 	worldHEADER = c(worldHEADER, paste(length(lulcHEADER),'num_landuse_files'))	
-	worldHEADER = c(worldHEADER, paste('/',tmp[2],'/',tmp[3],'/',tmp[4],'/',rhessysFolder,'/',lulcHEADER,sep=''))
+	worldHEADER = c(worldHEADER, paste(projectFolder,'/',rhessysFolder,'/',lulcHEADER,sep=''))
 	worldHEADER = c(worldHEADER, paste(length(vegHEADER),'num_stratum_files'))	
-	worldHEADER = c(worldHEADER, paste('/',tmp[2],'/',tmp[3],'/',tmp[4],'/',rhessysFolder,'/',vegHEADER,sep=''))
+	worldHEADER = c(worldHEADER, paste(projectFolder,'/',rhessysFolder,'/',vegHEADER,sep=''))
 	
 	worldHEADER = c(worldHEADER, paste(1,'num_base_stations'))
 	worldHEADER = c(worldHEADER, paste(climateStationNAME,' base_station_filename',sep=''))
-	
 	write(worldHEADER,arg[8])
 	
 	
