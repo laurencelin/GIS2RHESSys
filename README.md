@@ -2,7 +2,7 @@
 Quick notes: 
 - Most tools here are coded in R with pacakage "rgrass7" to access GRASS GIS data
 
-**To start**, please look at the guide on workflow script https://github.com/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb 
+**To start**, please look at the guide on workflow script https://nbviewer.jupyter.org/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb
 
 
 
