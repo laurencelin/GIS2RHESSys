@@ -1,0 +1,3 @@
+41: Deciduous Forest
+42: Evergreen Forest
+43: Mixed Forest
