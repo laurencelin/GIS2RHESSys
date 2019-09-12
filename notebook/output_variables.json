@@ -1,0 +1,276 @@
+{
+
+        "pot_surface_infil": {
+            "description": "Rain Throughfall",
+            "Units": "mm"
+       },
+        "snow_thr": {
+            "description": "Snow Throughfall",
+            "Units": "mm"
+       },
+       "sat_def_z": {
+            "description": "Saturation deficit with depth",
+            "Units": "mm of depth"
+       },
+       "sat_def": {
+            "description": "Saturation Deficit - volume",
+            "Units": "mm of water"
+       },
+       "rz_storage": {
+            "description": "Rooting Zone Storage",
+            "Units": "mm of water"
+       },
+       "unsat_stor": {
+            "description": "Unsaturated Storage",
+            "Units": "mm"
+       },
+       "rz_drainage": {
+            "description": "Rooting Zone Drainage",
+            "Units": "mm"
+       },
+       "unsat_drainage": {
+            "description": "Unsaturated Drainage",
+            "Units": "mm"
+       },
+       "cap": {
+            "description": "Capillary Rise",
+            "Units": "mm"
+       },
+       "evap": {
+            "description": "Evaporation",
+            "Units": "mm"
+       },
+       "snowpack": {
+            "description": "Snow Water Equivalent (SWE)",
+            "Units": "mm"
+       },
+       "trans": {
+            "description": "Transpiration",
+            "Units": "mm"
+       },
+       "baseflow": {
+            "description": "Baseflow",
+            "Units": "mm"
+       },
+       "streamflow": {
+            "description": "Total Stream Outflow",
+            "Units": "mm (normalized by basin area)"
+       },
+       "psn": {
+            "description": "Net Photosynthesis",
+            "Units": "kgC/m2"
+       },
+       "lai": {
+            "description": "Leaf Area Index",
+            "Units": "m2/m2"
+       },
+       "gw.Qou": {
+            "description": "Groundwater Output",
+            "Units": "mm"
+       },
+       "gw.storage": {
+            "description": "Groundwater Store",
+            "Units": "mm"
+       },
+       "detention_store": {
+            "description": "Detention Store",
+            "Units": "mm"
+       },
+       "%sat_area": {
+            "description": "Percent Saturated Area",
+            "Units": "m2/m2"
+       },
+       "litter_store": {
+            "description": "Litter intercepted water Store",
+            "Units": "m2/m2"
+       },
+       "canopy_store": {
+            "description": "Canopy Intercepted water Store",
+            "Units": "m2/m2"
+       },
+       "%snow_cover": {
+            "description": "Percent Snow Cover",
+            "Units": "m2/m2"
+       },
+       "snow_subl": {
+            "description": "Snow Sublimation",
+            "Units": ""
+       },
+       "trans_var": {
+            "description": "Spatial variation in transpiration",
+            "Units": ""
+       },
+       "acc_trans": {
+            "description": "",
+            "Units": ""
+       },
+       "acctransv_var": {
+            "description": "",
+            "Units": ""
+       },
+       "pet": {
+            "description": "Potential Evapotranspiration",
+            "Units": "mm"
+       },
+       "dC13": {
+            "description": "",
+            "Units": ""
+       },
+       "precip": {
+            "description": "Precipitation",
+            "Units": "mm"
+       },
+       "pcp_assim": {
+            "description": "",
+            "Units": ""
+       },
+       "mortf": {
+            "description": "Fraction of Basin that have tree mortality",
+            "Units": ""
+       },
+       "tmax": {
+            "description": "Maximum Temperature",
+            "Units": "°C"
+       },
+       "tmin": {
+            "description": "Minimum Temperature",
+            "Units": "°C"
+       },
+       "tavg": {
+            "description": "Average Temperature",
+            "Units": "°C"
+       },
+       "vpd": {
+            "description": "Vapor Pressure Deficit",
+            "Units": "Pa"
+       },
+       "snowfall": {
+            "description": "Snowfall",
+            "Units": ""
+       },
+       "recharge": {
+            "description": "_Recharge of water to soil",
+            "Units": ""
+       },
+       "gpsn": {
+            "description": "Gross Photosynthesis",
+            "Units": "kgC/m2"
+       },
+       "resp": {
+            "description": "_ Respiration_",
+            "Units": "kgC/m2"
+       },
+       "gs": {
+            "description": "Canopy Conductance",
+            "Units": ""
+       },
+       "rootdepth": {
+            "description": "Rooting depth",
+            "Units": ""
+       },
+       "plantc": {
+            "description": "Plant Carbon",
+            "Units": "kgC/m2"
+       },
+       "snowmelt": {
+            "description": "Snow Melt",
+            "Units": ""
+       },
+       "canopysubl": {
+            "description": "Canopy Sublimation",
+            "Units": ""
+       },
+       "routedstreamflow": {
+            "description": "",
+            "Units": ""
+       },
+       "canopy_snow": {
+            "description": "Snow Intercepted on Canopy",
+            "Units": ""
+       },
+       "height": {
+            "description": "Canopy height",
+            "Units": ""
+       },
+       "evap_can": {
+            "description": "Canopy Evaporation",
+            "Units": ""
+       },
+       "evap_lit": {
+            "description": "Litter Evaporation_",
+            "Units": ""
+       },
+       "evap_soil": {
+            "description": "Soil Evaporation_",
+            "Units": ""
+       },
+       "litrc": {
+            "description": "Litter Carbon_",
+            "Units": ""
+       },
+        "Kdown": {
+            "description": "Downward (from atmosphere) Direct Shortwave Radiation_",
+            "Units": ""
+       },
+       "Ldown": {
+            "description": "Downward (from atmosphere) Longwave Radiation_",
+            "Units": ""
+       },
+       "Kup": {
+            "description": "Reflected (upward) Shortwave Radiation_",
+            "Units": ""
+       },
+       "Lup": {
+            "description": "Reflected (upward) Longwave Radiation_",
+            "Units": ""
+       },
+       "Kstar_can": {
+            "description": "Absorbed shortwave by canopy",
+            "Units": ""
+       },
+       "Kstar_soil": {
+            "description": "Absorbed shortwave by soil",
+            "Units": ""
+       },
+       "Kstar_snow": {
+            "description": "Absorbed shortwave by snow",
+            "Units": ""
+       },
+       "Lstar_can": {
+            "description": "Absorbed longwave by canopy",
+            "Units": ""
+       },
+       "Lstar_soil": {
+            "description": "Absorbed longwave by soil",
+            "Units": ""
+       },
+       "Lstar_snow": {
+            "description": "Absorbed longwave by snow",
+            "Units": ""
+       },
+       "LE_canopy": {
+            "description": "Latent heat evaporated by canopy",
+            "Units": ""
+       },
+       "LE_soil": {
+            "description": "",
+            "Units": ""
+       },
+       "LE_snow": {
+            "description": "",
+            "Units": ""
+       },
+       "Lstar_strat": {
+            "description": "",
+            "Units": ""
+       },
+       "canopydrip": {
+            "description": "",
+            "Units": ""
+       },
+       "ga": {
+            "description": "Aerodynamic Conductance",
+            "Units": "mm/s"
+       }
+       
+}
