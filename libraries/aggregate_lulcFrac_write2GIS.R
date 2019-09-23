@@ -1,5 +1,5 @@
 arg=commandArgs(T)
-
+arg=c('patch','/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs/Workspace/current_projects/WSC_hydrology/sandy30m/lulcFrac30m.csv','/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs/Workspace/current_projects/WSC_hydrology/sandy30m/lulc_codeinformation.csv')
 
 library(rgrass7)
 
@@ -14,74 +14,106 @@ if( sum(is.na(toPatchCond)) ){
 }else{
     
     lulcCodeFrac = lulcCodeFrac[toPatchCond,]
-    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_forest>0]; if(length(tmp)>0) forestCode = paste('lulc',tmp,sep='') else forestCode=NULL
-    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_shrub>0]; if(length(tmp)>0) shrubCode = paste('lulc',tmp,sep='') else shrubCode=NULL
-    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_crop>0]; if(length(tmp)>0) cropCode = paste('lulc',tmp,sep='') else cropCode=NULL
-    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_lawn>0]; if(length(tmp)>0) lawCode = paste('lulc',tmp,sep='') else lawCode=NULL
+    forestCode = list(); forestCode$title=NULL; forestCode$value=NULL;
+    shrubCode = list(); shrubCode$title=NULL; shrubCode$value=NULL;
+    cropCode = list(); cropCode$title=NULL; cropCode$value=NULL;
+    lawCode = list(); lawCode$title=NULL; lawCode$value=NULL;
+    impCode = list(); impCode$title=NULL; impCode$value=NULL;
+    roofCode = list(); roofCode$title=NULL; roofCode$value=NULL;
+    drivewayCode = list(); drivewayCode$title=NULL; drivewayCode$value=NULL;
+    pavedroadCode = list(); pavedroadCode$title=NULL; pavedroadCode$value=NULL;
     
-    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_imp>0]; if(length(tmp)>0) impCode = paste('lulc',tmp,sep='') else impCode=NULL
-    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$impBreakdownFrac_roof>0]; if(length(tmp)>0) roofCode = paste('lulc',tmp,sep='') else roofCode=NULL
-    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$impBreakdownFrac_driveway>0]; if(length(tmp)>0) drivewayCode = paste('lulc',tmp,sep='') else drivewayCode=NULL
-    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$impBreakdownFrac_pavedRoad>0]; if(length(tmp)>0) pavedroadCode = paste('lulc',tmp,sep='') else  pavedroadCode=NULL
     
-    forestCode
-    shrubCode
-    cropCode
-    lawCode
-    impCode
-    roofCode
-    drivewayCode
-    pavedroadCode
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_forest>0];
+        if(length(tmp)>0){ forestCode$title = paste('lulc',tmp,sep=''); forestCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_shrub>0];
+        if(length(tmp)>0){ shrubCode$title = paste('lulc',tmp,sep=''); shrubCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_crop>0];
+        if(length(tmp)>0){ cropCode$title = paste('lulc',tmp,sep=''); cropCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_lawn>0];
+        if(length(tmp)>0){ lawCode$title = paste('lulc',tmp,sep=''); lawCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_imp>0];
+        if(length(tmp)>0){ impCode$title = paste('lulc',tmp,sep=''); impCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$impBreakdownFrac_roof>0];
+        if(length(tmp)>0){ roofCode$title = paste('lulc',tmp,sep=''); roofCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$impBreakdownFrac_driveway>0];
+        if(length(tmp)>0){ drivewayCode$title = paste('lulc',tmp,sep=''); drivewayCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$impBreakdownFrac_pavedRoad>0];
+        if(length(tmp)>0){ pavedroadCode$title = paste('lulc',tmp,sep=''); pavedroadCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    
+   
     
     #modeList = list()
     gisOrder = match(rast@data[[1]][mask], patchlulcFrac$patchID)
     # ... constructing GIS maps
-    rast$lulcComposition_forest = rep(0,length(rast@data[[1]]))
-    if(length(forestCode)>1) rast$lulcComposition_forest[mask] = (rowSums(patchlulcFrac[, forestCode])/patchlulcFrac$total)[gisOrder]
-    if(length(forestCode)==1) rast$lulcComposition_forest[mask] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
-    writeRAST(rast,'forestFrac',zcol='lulcComposition_forest',overwrite=T)
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(forestCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(forestCode$title), function(ii){
+            patchlulcFrac[, forestCode$title[ii]]* lulcCodeFrac$lulcComposition_forest[forestCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'forestFrac',zcol='lulcComposition',overwrite=T)
     #modeList[[1]] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
     
-    rast$lulcComposition_shrub = rep(0,length(rast@data[[1]]))
-    if(length(shrubCode)>1) rast$lulcComposition_shrub[mask] = (rowSums(patchlulcFrac[, shrubCode])/patchlulcFrac$total)[gisOrder]
-    if(length(shrubCode)==1) rast$lulcComposition_shrub[mask] = (patchlulcFrac[, shrubCode]/patchlulcFrac$total)[gisOrder]
-    writeRAST(rast,'shrubFrac',zcol='lulcComposition_shrub',overwrite=T)
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(shrubCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(shrubCode$title), function(ii){
+            patchlulcFrac[, shrubCode$title[ii]]* lulcCodeFrac$lulcComposition_shrub[shrubCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'shrubFrac',zcol='lulcComposition',overwrite=T)
     
-    rast$lulcComposition_crop = rep(0,length(rast@data[[1]]))
-    if(length(cropCode)>1) rast$lulcComposition_crop[mask] = (rowSums(patchlulcFrac[, cropCode])/patchlulcFrac$total)[gisOrder]
-    if(length(cropCode)==1) rast$lulcComposition_crop[mask] = (patchlulcFrac[, cropCode]/patchlulcFrac$total)[gisOrder]
-    writeRAST(rast,'cropFrac',zcol='lulcComposition_crop',overwrite=T)
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(cropCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(cropCode$title), function(ii){
+            patchlulcFrac[, cropCode$title[ii]]* lulcCodeFrac$lulcComposition_crop[cropCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'cropFrac',zcol='lulcComposition',overwrite=T)
     
-    rast$lulcComposition_lawn = rep(0,length(rast@data[[1]]))
-    if(length(lawCode)>1) rast$lulcComposition_lawn[mask] = (rowSums(patchlulcFrac[, lawCode])/patchlulcFrac$total)[gisOrder]
-    if(length(lawCode)==1) rast$lulcComposition_lawn[mask] = (patchlulcFrac[, lawCode]/patchlulcFrac$total)[gisOrder]
-    writeRAST(rast,'lawnFrac',zcol='lulcComposition_lawn',overwrite=T)
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(lawCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(lawCode$title), function(ii){
+            patchlulcFrac[, lawCode$title[ii]]* lulcCodeFrac$lulcComposition_lawn[lawCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'lawnFrac',zcol='lulcComposition',overwrite=T)
     
     
     
     
-    rast$lulcComposition_imp = rep(0,length(rast@data[[1]]))
-    if(length(impCode)>1) rast$lulcComposition_imp[mask] = (rowSums(patchlulcFrac[, impCode])/patchlulcFrac$total)[gisOrder]
-    if(length(impCode)==1) rast$lulcComposition_imp[mask] = (patchlulcFrac[, impCode]/patchlulcFrac$total)[gisOrder]
-    writeRAST(rast,'impFrac',zcol='lulcComposition_imp',overwrite=T)
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(impCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(impCode$title), function(ii){
+            patchlulcFrac[, impCode$title[ii]]* lulcCodeFrac$lulcComposition_imp[impCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'impFrac',zcol='lulcComposition',overwrite=T)
     
-    rast$impBreakdownFrac_roof = rep(0,length(rast@data[[1]]))
-    if(length(roofCode)>1) rast$impBreakdownFrac_roof[mask] = (rowSums(patchlulcFrac[, roofCode])/patchlulcFrac$total)[gisOrder]
-    if(length(roofCode)==1) rast$impBreakdownFrac_roof[mask] = (patchlulcFrac[, roofCode]/patchlulcFrac$total)[gisOrder]
-    writeRAST(rast,'roofFrac',zcol='impBreakdownFrac_roof',overwrite=T)
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(roofCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(roofCode$title), function(ii){
+            patchlulcFrac[, roofCode$title[ii]]* lulcCodeFrac$impBreakdownFrac_roof[roofCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'roofFrac',zcol='lulcComposition',overwrite=T)
     
-    rast$impBreakdownFrac_driveway = rep(0,length(rast@data[[1]]))
-    if(length(drivewayCode)>1) rast$impBreakdownFrac_driveway[mask] = (rowSums(patchlulcFrac[, drivewayCode])/patchlulcFrac$total)[gisOrder]
-    if(length(drivewayCode)==1) rast$impBreakdownFrac_driveway[mask] = (patchlulcFrac[, drivewayCode]/patchlulcFrac$total)[gisOrder]
-    writeRAST(rast,'drivewayFrac',zcol='impBreakdownFrac_driveway',overwrite=T)
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(drivewayCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(drivewayCode$title), function(ii){
+            patchlulcFrac[, drivewayCode$title[ii]]* lulcCodeFrac$impBreakdownFrac_driveway[drivewayCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'drivewayFrac',zcol='lulcComposition',overwrite=T)
     
-    rast$impBreakdownFrac_pavedRoad = rep(0,length(rast@data[[1]]))
-    if(length(pavedroadCode)>1) rast$impBreakdownFrac_pavedRoad[mask] = (rowSums(patchlulcFrac[, pavedroadCode])/patchlulcFrac$total)[gisOrder]
-    if(length(pavedroadCode)==1) rast$impBreakdownFrac_pavedRoad[mask] = (patchlulcFrac[, pavedroadCode]/patchlulcFrac$total)[gisOrder]
-    writeRAST(rast,'pavedroadFrac',zcol='impBreakdownFrac_pavedRoad',overwrite=T)
-    
-    rast$modeLULC = rep(0,length(rast@data[[1]]))
-    
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(pavedroadCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(pavedroadCode$title), function(ii){
+            patchlulcFrac[, pavedroadCode$title[ii]]* lulcCodeFrac$impBreakdownFrac_driveway[pavedroadCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'pavedroadFrac',zcol='lulcComposition',overwrite=T)
     
 }# if wrong LULC code table
 
