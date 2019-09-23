@@ -1,5 +1,4 @@
 arg=commandArgs(T)
-arg=c('patch','/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs/Workspace/current_projects/WSC_hydrology/sandy30m/lulcFrac30m.csv','/Users/laurencelin/Library/Mobile Documents/com~apple~CloudDocs/Workspace/current_projects/WSC_hydrology/sandy30m/lulc_codeinformation.csv')
 
 library(rgrass7)
 
