@@ -1,8 +1,9 @@
 arg=commandArgs(T)
 
+
 library(rgrass7)
 
-rast = readRAST(arg[1])
+rast = readRAST(arg[1]) # rast = readRAST('patch')
 mask = !is.na(rast@data[[1]])
 
 patchlulcFrac = read.csv(arg[2]); patchlulcFracCODE = colnames(patchlulcFrac)[c(-1,-2)]; print('read patchlulcFrac')
@@ -109,7 +110,7 @@ if( sum(is.na(toPatchCond)) ){
     rast$lulcComposition = rep(0,length(rast@data[[1]]))
     if(length(pavedroadCode$title)>=1){
         rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(pavedroadCode$title), function(ii){
-            patchlulcFrac[, pavedroadCode$title[ii]]* lulcCodeFrac$impBreakdownFrac_driveway[pavedroadCode$value[ii]]
+            patchlulcFrac[, pavedroadCode$title[ii]]* lulcCodeFrac$impBreakdownFrac_pavedRoad[pavedroadCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
     writeRAST(rast,'pavedroadFrac',zcol='lulcComposition',overwrite=T)
