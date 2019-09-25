@@ -5,8 +5,8 @@ library(rgrass7)
 rast = readRAST(arg[1])
 mask = !is.na(rast@data[[1]])
 
-patchlulcFrac = read.csv(arg[2]); patchlulcFracCODE = colnames(patchlulcFrac)[c(-1,-2)]
-lulcCodeFrac = read.csv(arg[3]); lulcCodeFracCODE = paste('lulc',lulcCodeFrac$lulcCode,sep='')
+patchlulcFrac = read.csv(arg[2]); patchlulcFracCODE = colnames(patchlulcFrac)[c(-1,-2)]; print('read patchlulcFrac')
+lulcCodeFrac = read.csv(arg[3]); lulcCodeFracCODE = paste('lulc',lulcCodeFrac$lulcCode,sep=''); print('read lulcCodeFrac')
 toPatchCond = match(patchlulcFracCODE,lulcCodeFracCODE)
 if( sum(is.na(toPatchCond)) ){
     print('ERROR: the LULC composition table does not match with LULC GIS data.')
