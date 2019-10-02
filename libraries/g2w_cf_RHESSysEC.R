@@ -59,8 +59,8 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         return(out)
     }#function
 
-    templateACTION = read.tcsv(arg[5],stringsAsFactors=F, len=7);
-    template = read.tcsv(arg[5],stringsAsFactors=F, vskip=7);
+    templateACTION = read.tcsv(arg[1],stringsAsFactors=F, len=11);
+    template = read.tcsv(arg[1],stringsAsFactors=F, vskip=11);
     if(is.null(template$streamFullextension)) template$streamFullextension=''
     if(is.null(template$unpavedroadMap)) template$unpavedroadMap=''
     if(is.null(template$riparianMAP)) template$riparianMAP=''
@@ -70,23 +70,23 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     if(is.null(template$compactedsoilMAP)) template$compactedsoilMAP=''
     if(is.null(template$additionalSurfaceDrainMAP)) template$additionalSurfaceDrainMAP=''
 
-	projectFolder = arg[1]
+	projectFolder = templateACTION$projdir[1]
 	climateStationID = as.numeric(templateACTION$stationID[1])
 	climateStationNAME = templateACTION$stationFile[1]
 		
 	## user provides a customized vegetation.csv containing all vegetation vegParameters.
     print(arg)
-	vegParam = read.csv(ifelse(arg[2]=='default'|arg[2]=='NA'|arg[2]=='na'|arg[2]=='.','https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/vegCollection.csv', arg[2]),skip=4,header=T,stringsAsFactors=F) #<<------
+	vegParam = read.csv(templateACTION$vegCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
 	vegParamCOL = cbind(as.numeric(unique(vegParam[1,3:ncol(vegParam)])), 3:ncol(vegParam)); 
 	colnames(vegParamCOL) = c('vegID','vegDefIndex')
 	vegParam_len = ncol(vegParam)
 	
-	soilParam = read.csv(ifelse(arg[3]=='default'|arg[3]=='NA'|arg[3]=='na'|arg[3]=='.','https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/soilCollection.csv', arg[3]),skip=4,header=T,stringsAsFactors=F) #<<------
+	soilParam = read.csv(templateACTION$soilCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
 	soilParamCOL = cbind(as.numeric(unique(soilParam[1,3:ncol(soilParam)])), 3:ncol(soilParam)); 
 	colnames(soilParamCOL) = c('soilID','soilDefIndex')
 	soilParam_len = ncol(soilParam)
 	
-	lulcParam = read.csv(ifelse(arg[4]=='default'|arg[4]=='NA'|arg[4]=='na'|arg[4]=='.','https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/lulcCollectionEC.csv', arg[4]),skip=4,header=T,stringsAsFactors=F) #<<------
+	lulcParam = read.csv(templateACTION$lulcCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
 	lulcParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam)); 
 	colnames(lulcParamCOL) = c('lulcID','lulcDefIndex')
 	lulcParam_len = ncol(lulcParam)
@@ -622,7 +622,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	for(ii in selectedVeg ){
 		filename = paste(defsFolder,"/stratum_",gsub("\\.","_",colnames(vegParam)[ii]),".def",sep="")
 		vegHEADER = c(vegHEADER, paste(filename,'stratum_default_filename'))
-		filepth = paste(arg[1],'/',rhessysFolder,'/', filename,sep="")
+		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
 		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(vegParam[, ii], vegParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
 
@@ -633,7 +633,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	for(ii in selectedsoil ){
 		filename = paste(defsFolder,"/soil_",gsub("\\.","_",colnames(soilParam)[ii]),".def",sep="")
 		soilHEADER = c(soilHEADER, paste(filename,'patch_default_filename'))
-		filepth = paste(arg[1],'/',rhessysFolder,'/', filename,sep="")
+		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
 		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(soilParam[, ii], soilParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
 	
@@ -644,7 +644,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	for(ii in selectedlulc ){
 		filename = paste(defsFolder,"/landuse_",gsub("\\.","_",colnames(lulcParam)[ii]),".def",sep="")
 		lulcHEADER = c(lulcHEADER, paste(filename,'landuse_default_filename'))
-		filepth = paste(arg[1],'/',rhessysFolder,'/', filename,sep="")
+		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
 		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(lulcParam[, ii], lulcParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
 	
