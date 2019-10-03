@@ -1,6 +1,6 @@
 #!/bin/bash
 # set maxcol
-declare $(r.info map=dem | awk 'NR==13{print "maxcol="$3}')
+eval $(r.info map=dem | awk 'NR==13{print "maxcol="$3}')
 #
 g.region zoom=basin
 r.mask raster=basin

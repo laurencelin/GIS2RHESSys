@@ -27,10 +27,10 @@ r.watershed --overwrite elevation=dem threshold=$inputThreshold basin=sub_ strea
 
 # ... this is for D-Inf (maybe do it in R?)
 # v.to.rast input=outlet type=point output=outlet_tmp use=cat <--- not
-declare $(r.what --quiet map=sub_ points=outlet separator=space | awk '{print "outletSUB=" $3}')
+eval $(r.what --quiet map=sub_ points=outlet separator=space | awk '{print "outletSUB=" $3}')
 r.mapcalc --overwrite expression="tmp = if(sub_==$outletSUB && str_>0, uaa, null())"
 r.to.vect --overwrite input=tmp output=tmp type=line
-declare $(v.distance -p from=outlet from_type=point to=tmp to_type=line upload=to_x,to_y separator=space | awk '{print "xyCoord=" $2 "," $3}')
+eval $(v.distance -p from=outlet from_type=point to=tmp to_type=line upload=to_x,to_y separator=space | awk '{print "xyCoord=" $2 "," $3}')
 # delineate catchment based on the nearest outlet point on the stream/uaa ##--- this step is contrained by D8
 r.water.outlet --overwrite input=drain output=basin_ coordinates=$xyCoord
 #
