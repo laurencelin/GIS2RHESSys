@@ -59,34 +59,34 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         return(out)
     }#function
 
-    templateACTION = read.tcsv(arg[1],stringsAsFactors=F, len=11);
-    template = read.tcsv(arg[1],stringsAsFactors=F, vskip=11);
+    templateACTION = read.tcsv(arg[5],stringsAsFactors=F, len=7);
+    template = read.tcsv(arg[5],stringsAsFactors=F, vskip=7);
     if(is.null(template$streamFullextension)) template$streamFullextension=''
     if(is.null(template$unpavedroadMap)) template$unpavedroadMap=''
     if(is.null(template$riparianMAP)) template$riparianMAP=''
     if(is.null(template$sewercoverMAP)) template$sewercoverMAP=''
     if(is.null(template$pipecoverMAP)) template$pipecoverMAP=''
-    if(is.null(template$roadStormDrainInletMAP)) template$roadStormDrainInletMAP=''
+    if(is.null(template$stormdrainMAP)) template$stormdrainMAP=''
     if(is.null(template$compactedsoilMAP)) template$compactedsoilMAP=''
-    if(is.null(template$additionalSurfaceDrainInletMAP)) template$additionalSurfaceDrainInletMAP=''
+    if(is.null(template$additionalSurfaceDrainMAP)) template$additionalSurfaceDrainMAP=''
 
-	projectFolder = templateACTION$projdir[1]
+	projectFolder = arg[1]
 	climateStationID = as.numeric(templateACTION$stationID[1])
 	climateStationNAME = templateACTION$stationFile[1]
 		
 	## user provides a customized vegetation.csv containing all vegetation vegParameters.
     print(arg)
-	vegParam = read.csv(templateACTION$vegCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
+	vegParam = read.csv(ifelse(arg[2]=='default'|arg[2]=='NA'|arg[2]=='na'|arg[2]=='.','https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/vegCollection.csv', arg[2]),skip=4,header=T,stringsAsFactors=F) #<<------
 	vegParamCOL = cbind(as.numeric(unique(vegParam[1,3:ncol(vegParam)])), 3:ncol(vegParam)); 
 	colnames(vegParamCOL) = c('vegID','vegDefIndex')
 	vegParam_len = ncol(vegParam)
 	
-	soilParam = read.csv(templateACTION$soilCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
+	soilParam = read.csv(ifelse(arg[3]=='default'|arg[3]=='NA'|arg[3]=='na'|arg[3]=='.','https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/soilCollection.csv', arg[3]),skip=4,header=T,stringsAsFactors=F) #<<------
 	soilParamCOL = cbind(as.numeric(unique(soilParam[1,3:ncol(soilParam)])), 3:ncol(soilParam)); 
 	colnames(soilParamCOL) = c('soilID','soilDefIndex')
 	soilParam_len = ncol(soilParam)
 	
-	lulcParam = read.csv(templateACTION$lulcCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
+	lulcParam = read.csv(ifelse(arg[4]=='default'|arg[4]=='NA'|arg[4]=='na'|arg[4]=='.','https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/lulcCollectionEC.csv', arg[4]),skip=4,header=T,stringsAsFactors=F) #<<------
 	lulcParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam)); 
 	colnames(lulcParamCOL) = c('lulcID','lulcDefIndex')
 	lulcParam_len = ncol(lulcParam)
@@ -99,7 +99,6 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 		hill = rast@data[[2]][mask]
 		zone = rast@data[[3]][mask]
 		patch = rast@data[[4]][mask]
-        emptyMAP = rep(NA,length(mask))
 	print('reading basin, hill, zone, patch ... DONE')
 	
 	# extract soil def IDs (must have)
@@ -128,53 +127,34 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     print('reading xx,yy,.... ... DONE')
 
     # extract LULC information (must have)
-    impFrac=NULL;tryCatch({
-        rast = readRAST(template$impFracMAP);
-        impFrac <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ impFrac <<- emptyMAP }
-        )#tryCatch
-    forestFrac=NULL;tryCatch({
-        rast = readRAST(template$forestFracMAP);
-        forestFrac <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ forestFrac <<- emptyMAP }
-        )#tryCatch
-    shrubFrac=NULL;tryCatch({
-        rast = readRAST(template$shrubFracMAP);
-        shrubFrac <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ shrubFrac <<- emptyMAP }
-        )#tryCatch
-    cropFrac=NULL;tryCatch({
-        rast = readRAST(template$cropFracMAP);
-        cropFrac <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ cropFrac <<- emptyMAP }
-        )#tryCatch
-    lawnFrac=NULL;tryCatch({
-        rast = readRAST(template$grassFracMAP);
-        lawnFrac <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ lawnFrac <<- emptyMAP }
-        )#tryCatch
+    rast = readRAST(c(
+        template$impFracMAP,#1
+        template$roofMAP, #2
+        template$drivewayMAP,#3
+        template$pavedRoadFracMAP,#4
+        template$forestFracMAP,#5
+        template$shrubFracMAP,#6
+        template$cropFracMAP,#7
+        template$grassFracMAP #8
+        ), NODATA=-1)
 
+        impFrac = rast@data[[1]][mask]
+        roofFrac = rast@data[[2]][mask]
+        drivewayFrac = rast@data[[3]][mask]
+        pavedRoadFrac = rast@data[[4]][mask]
+        forestFrac = rast@data[[5]][mask]
+        shrubFrac = rast@data[[6]][mask]
+        cropFrac = rast@data[[7]][mask]
+        lawnFrac = rast@data[[8]][mask]
 
+    print('reading lulc ... DONE')
 
-    # extract other LULC information related to management
-    irrigrationCoveredArea=NULL;tryCatch({
-        rast = readRAST(template$irrigrationMAP);
-        irrigrationCoveredArea <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ irrigrationCoveredArea <<- emptyMAP }
-        )#tryCatch
-
-    # extract other LULC information -- surface routing -- stream extension
+    # extract flow table related information
     stream=NULL;tryCatch({
         rast = readRAST(template$streamMap);
         stream <- rast@data[[1]][mask];
         print('reading str ... DONE')},
-        error = function(e){ stream <<- emptyMAP }
+        error = function(e){ stream <<- rep(NA,length(mask)) }
         )#tryCatch
     fullstreamExt=NULL; tryCatch({
         rast = readRAST(template$streamFullextension);
@@ -182,109 +162,54 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         print('reading strExtension ... DONE')},
         error = function(e){ fullstreamExt <<- stream }
         )#tryCatch
-
-    # extract other LULC information -- surface routing -- road storm drainage
-    pavedRoadFrac=NULL;tryCatch({
-        rast = readRAST(template$pavedRoadFracMAP);
-        pavedRoadFrac <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ pavedRoadFrac <<- emptyMAP }
-        )#tryCatch
-    onRoadDraingeDir=NULL;tryCatch({
-        rast = readRAST(template$onRoadDraingeDir);
-        onRoadDraingeDir <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ onRoadDraingeDir <<- emptyMAP }
-        )#tryCatch
-    roadStormDrainInlet=NULL; tryCatch({
-        rast = readRAST(template$roadStormDrainInlet);
-        roadStormDrainInlet <- rast@data[[1]][mask];
-        print('reading roadStormDrainInlet ... DONE')},
-        error = function(e){ roadStormDrainInlet <<- emptyMAP }
-        )#tryCatch
-    roadStormDrainOutlet=NULL; tryCatch({
-        rast = readRAST(template$roadStormDrainOutlet);
-        roadStormDrainOutlet <- rast@data[[1]][mask];
-        print('reading roadStormDrainInlet ... DONE')},
-        error = function(e){ roadStormDrainOutlet <<- emptyMAP }
-        )#tryCatch
-
-    # extract other LULC information -- surface routing -- surface drainage via pipes
-    additionalSurfaceDrainInlet=NULL; tryCatch({
-        rast = readRAST(template$additionalSurfaceDrainInletMAP);
-        additionalSurfaceDrainInlet <- rast@data[[1]][mask];
-        print('reading additional surf drinage ... DONE')},
-        error = function(e){ additionalSurfaceDrainInlet <<- emptyMAP }
-        )#tryCatch
-    additionalSurfaceDrainOutlet=NULL; tryCatch({
-        rast = readRAST(template$additionalSurfaceDrainOutlet);
-        additionalSurfaceDrainOutlet <- rast@data[[1]][mask];
-        print('reading additional surf drinage ... DONE')},
-        error = function(e){ additionalSurfaceDrainOutlet <<- emptyMAP }
-        )#tryCatch
-
-    # extract other LULC information -- surface routing -- housing & drive way
-    roofFrac=NULL;tryCatch({
-        rast = readRAST(template$roofMAP);
-        roofFrac <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ roofFrac <<- emptyMAP }
-        )#tryCatch
-    drivewayFrac=NULL;tryCatch({
-        rast = readRAST(template$drivewayMAP);
-        drivewayFrac <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ drivewayFrac <<- emptyMAP }
-        )#tryCatch
-
-
-    # extract other LULC information -- subsurface drainages -- pipelines and sewers
-    sewercover=NULL; tryCatch({
-        rast = readRAST(template$sewercoverMAP);
-        sewercover <- rast@data[[1]][mask];
-        print('reading sewer ... DONE')},
-        error = function(e){ sewercover <<- emptyMAP }
-        )#tryCatch
-    septic=NULL; tryCatch({
-        rast = readRAST(template$septicMAP);
-        septic <- rast@data[[1]][mask];
-        print('reading septic ... DONE')},
-        error = function(e){ septic <<- emptyMAP }
-        )#tryCatch
-    pipecover=NULL; tryCatch({
-        rast = readRAST(template$pipecoverMAP);
-        pipecover <- rast@data[[1]][mask];
-        print('reading pipe ... DONE')},
-        error = function(e){ pipecover <<- emptyMAP }
-        )#tryCatch
-
-    # extract other LULC information -- subsurface drainages -- interrcepts
-    compactedsoilQ=NULL; tryCatch({
-        rast = readRAST(template$compactedSoilMAP);
-        compactedsoilQ <- rast@data[[1]][mask];
-        print('reading non-impacted soil ... DONE')},
-        error = function(e){ compactedsoilQ <<- emptyMAP }
-        )#tryCatch
     unpavedroad=NULL; tryCatch({
-        rast = readRAST(template$unpavedRoadMap);
+        rast = readRAST(template$unpavedroadMap);
         unpavedroad <- rast@data[[1]][mask];
         print('reading unpavedRoad ... DONE')},
-        error = function(e){ unpavedroad <<- emptyMAP }
+        error = function(e){ unpavedroad <<- rep(NA,length(mask)) }
         )#tryCatch
     riparian=NULL; tryCatch({
         rast = readRAST(template$riparianMAP);
         riparian <- rast@data[[1]][mask];
         print('reading riparian ... DONE')},
-        error = function(e){ riparian <<- emptyMAP }
+        error = function(e){ riparian <<- rep(NA,length(mask)) }
         )#tryCatch
-    basement=NULL; tryCatch({
-        rast = readRAST(template$basementFracMAP);
-        basement <- rast@data[[1]][mask];
-        print('reading riparian ... DONE')},
-        error = function(e){ basement <<- emptyMAP }
+    sewercover=NULL; tryCatch({
+        rast = readRAST(template$sewercoverMAP);
+        sewercover <- rast@data[[1]][mask];
+        print('reading sewer ... DONE')},
+        error = function(e){ sewercover <<- rep(NA,length(mask)) }
         )#tryCatch
-
-    print('reading lulc ... DONE')
+    septic=NULL; tryCatch({
+        rast = readRAST(template$septicMAP);
+        septic <- rast@data[[1]][mask];
+        print('reading septic ... DONE')},
+        error = function(e){ septic <<- rep(NA,length(mask)) }
+        )#tryCatch
+    pipecover=NULL; tryCatch({
+        rast = readRAST(template$pipecoverMAP);
+        pipecover <- rast@data[[1]][mask];
+        print('reading pipe ... DONE')},
+        error = function(e){ pipecover <<- rep(NA,length(mask)) }
+        )#tryCatch
+    stormdrain=NULL; tryCatch({
+        rast = readRAST(template$stormdrainMAP);
+        stormdrain <- rast@data[[1]][mask];
+        print('reading stormdrain ... DONE')},
+        error = function(e){ stormdrain <<- rep(NA,length(mask)) }
+        )#tryCatch
+    compactedsoilQ=NULL; tryCatch({
+        rast = readRAST(template$compactedsoilMAP);
+        compactedsoilQ <- rast@data[[1]][mask];
+        print('reading non-impacted soil ... DONE')},
+        error = function(e){ compactedsoilQ <<- rep(NA,length(mask)) }
+        )#tryCatch
+    additionalSurfaceDrain=NULL; tryCatch({
+        rast = readRAST(template$additionalSurfaceDrainMAP);
+        additionalSurfaceDrain <- rast@data[[1]][mask];
+        print('reading additional surf drinage ... DONE')},
+        error = function(e){ additionalSurfaceDrain <<- rep(NA,length(mask)) }
+        )#tryCatch
 
 
     # extract strata information
@@ -697,7 +622,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	for(ii in selectedVeg ){
 		filename = paste(defsFolder,"/stratum_",gsub("\\.","_",colnames(vegParam)[ii]),".def",sep="")
 		vegHEADER = c(vegHEADER, paste(filename,'stratum_default_filename'))
-		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
+		filepth = paste(arg[1],'/',rhessysFolder,'/', filename,sep="")
 		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(vegParam[, ii], vegParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
 
@@ -708,7 +633,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	for(ii in selectedsoil ){
 		filename = paste(defsFolder,"/soil_",gsub("\\.","_",colnames(soilParam)[ii]),".def",sep="")
 		soilHEADER = c(soilHEADER, paste(filename,'patch_default_filename'))
-		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
+		filepth = paste(arg[1],'/',rhessysFolder,'/', filename,sep="")
 		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(soilParam[, ii], soilParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
 	
@@ -719,7 +644,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	for(ii in selectedlulc ){
 		filename = paste(defsFolder,"/landuse_",gsub("\\.","_",colnames(lulcParam)[ii]),".def",sep="")
 		lulcHEADER = c(lulcHEADER, paste(filename,'landuse_default_filename'))
-		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
+		filepth = paste(arg[1],'/',rhessysFolder,'/', filename,sep="")
 		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(lulcParam[, ii], lulcParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
 	
@@ -824,8 +749,6 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     print('starting step I')
     patchInfo = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
         return <- c(
-            # routing patch information
-            index = ii,
             subIDindex = match(mean(subID[ii]),suboutlet_orderedPatch_index_hillID),
             patchID = mean(patch[ii]),             #1 patchID
             elevation = mean(dem[ii]),             #2 elevation
@@ -839,35 +762,26 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             aveSlope = tan(mean(slope[ii])*DtoR),   #13 average slope
             maxSlope = tan(max(slope[ii])*DtoR),    #14 max slope
             
-            ## ... surface routing -- irrigration applied area
-            irrigateQfrac = max(
-                mean(irrigrationCoveredArea[ii],na.rm=T),
-                mean(lawnFrac[ii],na.rm=T) + mean(cropFrac[ii],na.rm=T) ),
-                # constrainted by lawn and crop frac
-            
-            ## ... surface routing -- stream extension (yes/no)
-            strQ = sum(!is.na(stream[ii])),         #11 modeled stream grids
-            nonmodelstrgridQ = sum(!is.na(fullstreamExt[ii])),    #21 non-modeled stream grid (treat as land grids)
-            
-            ## ... surface routing -- road storm drainage
-            pavedRoadQfrac = mean(pavedRoadFrac[ii],na.rm=T) * (sum(!is.na(fullstreamExt[ii]))==0), ##<<--- working
-            roadStormdrainInletQfrac = (sum(!is.na(roadStormDrainInlet[ii]))>0)*mean(pavedRoadFrac[ii],na.rm=T), #18 drainage points on paved road network
-            
-            ## ... surface routing -- surface drainage via pipes
-            nonstrsurfdrainQfrac = mean(additionalSurfaceDrainInlet[ii],na.rm=T), # 22 (non-stream) land grids need surface water drain
-            
-            ## ... surface routing -- housing & drive way
-            drivewayQfrac = mean(drivewayFrac[ii],na.rm=T),
-            roofQfrac = mean(roofFrac[ii],na.rm=T),
-            
-            ## ... subsurface drainages -- pipelines and sewers (yes/no)
+            ## ... 
+            irrigateQfra = mean(lawnFrac[ii],na.rm=T), # 23 lawnFrac for irrigate
+            ## ...
+            riparianQ = sum(!is.na(riparian[ii])),	#16 (checking whether patch contains riparian grids)
             sewerdrainQ = sum(!is.na(sewercover[ii])), #17 (checking whether patch contains sewercover grids)
             subsurfpipedrainQ = sum(!is.na(pipecover[ii])), # other non-sewer pipes
-            
-            ## ... subsurface -- interrcepts
+            compactedsoilQfrac = mean(compactedsoilQ[ii],na.rm=T), # 24 compactedsoilQ
+            ## ... surface routing
+            strQ = sum(!is.na(stream[ii])),         #11 modeled stream grids
+            nonmodelstrgridQ = sum(!is.na(fullstreamExt[ii])),	#21 non-modeled stream grid (treat as land grids)
+            nonstrsurfdrainQ = sum(!is.na(additionalSurfaceDrain[ii])), # 22 (non-stream) land grids need surface water drain
+			stormdrainQ = sum(!is.na(stormdrain[ii])), #18 drainage points on paved road network
+			# note: impFrac = roofFrac + drivewayFrac + pavedroadFrac
+			roofQfrac = mean(roofFrac[ii],na.rm=T), 
+			drivewayQfrac = mean(drivewayFrac[ii],na.rm=T), 
+			pavedRoadQfrac = mean(pavedRoadFrac[ii],na.rm=T), 
+			
+            ## ... roads
+            pavedRoadQ = sum(!is.na(pavedRoadFrac[ii]) & pavedRoadFrac[ii]>0), # assume does not cut watertable
             unpavedRoadQ = sum(!is.na(unpavedroad[ii])) # assume it cuts watertable
-            riparianQ = sum(!is.na(riparian[ii])),    #16 (checking whether patch contains riparian grids)
-            basementQfrac = mean(basement[ii],na.rm=T),
         );
     })#tapply <--- this output is a list of c() in outputOrder
     patch_info_lowest = patchInfo[[ length(patchInfo) ]] ## assume basin outlet
@@ -878,7 +792,8 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 
     ## part 2: sort by 'elevation' & finding neighbor
     print('starting step II')
-    ## .......... Neighbour indexes ... # ii=which(orderedPatch==24110) #500
+    ## .......... Neighbour
+    # ii=which(orderedPatch==24110) #500
     patchNeighbourRC_edge = tapply(fullLength, INDEX=outputOrder, FUN=function(jj){
         withinPatchGridRC = rows[jj]*maxCol+cols[jj]; # within
         
@@ -890,7 +805,9 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         
         #return <- c(table(hold[hold>0])* directEdge, table(hold2[hold2>0])* diagonalEdge)
         return <- c( tapply(hold[hold>0],hold[hold>0],length)*directEdge, tapply(hold2[hold2>0],hold2[hold2>0],length)*diagonalEdge)
+        
     })
+
     patchNeighbourRC_LEN = seq_along(patchNeighbourRC_edge) ## <<--------------------------- ordered patch aggregated neighbours
     patchNeighbourRC = sapply(patchNeighbourRC_LEN, function(ii){
         sapply(names(patchNeighbourRC_edge[[ii]]), function(x){maskRC_string2maskRC_num[[ x ]]})
@@ -903,7 +820,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     })
 
 
-    ## .......... prefer Neighbour ... surface drain dir
+    ## .......... prefer Neighbour
     patchPreferNeighbourRC = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
         withinPatchGridRC = rows[ii]*maxCol+cols[ii]; # within
         drainTO_index = cbind(drain[ii],ii)
@@ -912,16 +829,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         
         return <- sapply(names(tapply(hold3[hold3>0], hold3[hold3>0],length)),function(x){maskRC_string2maskRC_num[[ x ]]})
     })#
-    
-    ## .......... prefer Neighbour ... paved road drain dir (working on)
-    patchPreferNeighbourRC = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
-        withinPatchGridRC = rows[ii]*maxCol+cols[ii]; # within
-        drainTO_index = cbind(drain[ii],ii)
-        hold3 = as.vector(gridSurroundRC[ drainTO_index ])
-        hold3[hold3%in% withinPatchGridRC] = -1
-        
-        return <- sapply(names(tapply(hold3[hold3>0], hold3[hold3>0],length)),function(x){maskRC_string2maskRC_num[[ x ]]})
-    })#
+
 	
 	
 	
@@ -968,10 +876,9 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         				## ...		
         				ifelse(current_patch_info['riparianQ']>0,7,1) * # riparian
         				## ...
-        				ifelse(current_patch_info['irrigateQfrac']>0,13,1) * # lawn irrigration & fertilizer
+        				ifelse(current_patch_info['irrigateQfra']>0,13,1) * # lawn irrigration & fertilizer
         				## ...
-                        ifelse(current_patch_info['roadStormdrainInletQfrac']>0,
-                        ifelse(current_patch_info['nonmodelstrgridQ']>0,1,3), 1)  # count for stream under road bridge
+						ifelse(current_patch_info['stormdrainQ']>0,ifelse(current_patch_info['nonmodelstrgridQ']>0,1,3), 1)  # count for stream under road bridge
 						
 		drainage_type = ifelse(current_patch_info['strQ']>0, 1, # class::stream
 						ifelse(actionCode>1, actionCode,0)
@@ -1008,10 +915,9 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             neighbor_patch_info['roofQfrac'], # roof 8
             neighbor_patch_info['pavedRoadQfrac'], # road 9
             neighbor_patch_info['drivewayQfrac'], # parking 10
-            neighbor_patch_info['irrigateQfrac'], # lawn 11
-            neighbor_patch_info['lawnQfrac']
+            neighbor_patch_info['irrigateQfra'] # lawn 11
             )
-        }))#tapply
+        }))#tapply <<--- not in a right order
         
         ## local prefer
         slope_jj_l = allNeighbourInfo['rise',]/allNeighbourInfo['dist',] # rise / distance
@@ -1052,7 +958,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
             paste(sprintf('%.1f',current_patch_info[c('rr','cc','elevation')]), collapse=' '),
             sprintf('%.2f',1.0),
-            sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['drivewayQfrac']),current_patch_info['drivewayQfrac'],0)*PAVEDROAD_DEPTH),
+            sprintf('%.2f', ifelse(!is.na(current_patch_info['roofQfrac']),current_patch_info['roofQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['drivewayQfrac']),current_patch_info['drivewayQfrac'],0)*PAVEDROAD_DEPTH),
             drainage_type,
             total_gamma, length(withinNeighbourRC),'\n', file=subsurfaceflow_table_buff,sep=' ')
             
@@ -1079,27 +985,26 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	#-------------- surface -------------------# within a for loop
         if( (current_patch_info['roofQfrac']>0 | current_patch_info['drivewayQfrac']>0 | current_patch_info['pavedRoadQfrac']>0 | current_patch_info['nonstrsurfdrainQ']>0) & current_patch_info['strQ']==0 ){
             # debug: surface water is the "detention" in the model; not calculated by gamma/total_gamma
-            # debug: road grids (by frac) has only one drain direction;
+            # debug: road grids (by frac) has only one drain direction; storm drain will overwrite every direction;
             # debug: parking/roof has partial direction by their frac of the grid
-            # this scheme (roof/parking to road and then storm) does not work in RHESSys because surface water only move by 24 grid at most per day!
-            # quick fix: we need to teleport surface water from root/parking/road to stream (storm drain targets)
+            # this scheme (roof/parking to road and then storm) does not work in RHESSys because surface water only move by one grid per day!
+            # correction: we need to teleport surface water from root/parking/road to stream (storm drain targets)
             
             # surface
+            # what needs to be surface:
             # roof / parking / road on current patch
             stormsurfacedrainFrac = c(
                 ifelse(current_patch_info['roofQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0,current_patch_info['roofQfrac'],0),  # roof Frac
-                ifelse(current_patch_info['drivewayQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0,current_patch_info['drivewayQfrac'],0),# parking Frac
-                ifelse(current_patch_info['pavedRoadQfrac']>0 & current_patch_info['roadStormdrainPtQ']>0 &   current_patch_info['nonmodelstrgridQ']==0,current_patch_info['pavedRoadQfrac'],0),  # pavedroad Frac & roadStormdrainPtQ along the road.
-                ifelse(current_patch_info['nonstrsurfdrainQ']>0 & current_patch_info['nonmodelstrgridQ']==0,0.9,0) # additional surface drinage
-            ); names(stormsurfacedrainFrac) = c('roof','parking','drainroad','extenddrain')
-                # correcting the total storm surface drain fractions
-                if(sum(stormsurfacedrainFrac[1:3])>=1){
-                    stormsurfacedrainFrac[1:3] = stormsurfacedrainFrac[1:3]/sum(stormsurfacedrainFrac[1:3]);
-                    stormsurfacedrainFrac[4]=0;
-                }else if(stormsurfacedrainFrac[4]>0 & sum(stormsurfacedrainFrac[1:4])>=1){ stormsurfacedrainFrac[4] = 1 - sum(stormsurfacedrainFrac[1:3]); }
+                ifelse(current_patch_info['drivewayQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0,current_patch_info['drivewayQfrac'],0), # parking Frac
+                ifelse(current_patch_info['pavedRoadQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0,current_patch_info['pavedRoadQfrac'],0),  # road Frac
+                ifelse(current_patch_info['nonstrsurfdrainQ']>0 &
+                    current_patch_info['nonmodelstrgridQ']==0,0.9,0) # e.g., surface drain around the roof/road/parkinglot
+            ); names(stormsurfacedrainFrac) = c('roof','parking','road','extenddrain')
+            if(sum(stormsurfacedrainFrac[1:3])>=1){
+                stormsurfacedrainFrac[1:3] = stormsurfacedrainFrac[1:3]/sum(stormsurfacedrainFrac[1:3]);
+                stormsurfacedrainFrac[4]=0;
+            }else if(stormsurfacedrainFrac[4]>0 & sum(stormsurfacedrainFrac[1:4])>=1){ stormsurfacedrainFrac[4] = 1 - sum(stormsurfacedrainFrac[1:3]); }
             
-            
-            # adjust the gamma fractions
             normal_neighborNum = length(neighbor_frac_gamma)
             normalFrac = 1 - sum(stormsurfacedrainFrac) - ifelse(current_patch_info['nonmodelstrgridQ']>0, 0.4,0.0);
             # current_patch_info[22] = surfaceDrain <= streamExtension
@@ -1108,7 +1013,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             normal_neighbor_frac_gamma = (neighbor_frac_gamma * normalFrac)
             
             
-            ## stop surface routing from current to neighbor roof tops
+            ## stop routing from roof to roof on surface
             normal_neighbor_frac_gammaSUM = sum(normal_neighbor_frac_gamma)
             normal_neighbor_frac_gamma = normal_neighbor_frac_gamma * (1.0 - allNeighbourInfo['roofQfrac',]) # roofFrac of neighbour patch
             if(sum(normal_neighbor_frac_gamma)>0){
@@ -1119,10 +1024,10 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             
             
             ## counting number of neighbours
-            if(stormsurfacedrainFrac['roof']>0) normal_neighborNum = normal_neighborNum + 1; # roof --> lawn?
-            if(stormsurfacedrainFrac['parking']>0) normal_neighborNum = normal_neighborNum + 1; # parking
-            if(stormsurfacedrainFrac['drainroad']>0) normal_neighborNum = normal_neighborNum + 1; # road
-            if( stormsurfacedrainFrac['extenddrain']>0) normal_neighborNum = normal_neighborNum + 1; # surface drain around the roof/road/parkinglot
+            if(current_patch_info['roofQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + 1; # roof
+            if(current_patch_info['drivewayQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + 1; # parking
+            if(current_patch_info['pavedRoadQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + 1; # road
+            if( stormsurfacedrainFrac['extenddrain']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + 1; # surface drain around the roof/road/parkinglot
             if( current_patch_info['nonmodelstrgridQ']>0) normal_neighborNum = normal_neighborNum + 1; # stream ext.
             
             if(as.numeric(templateACTION$outputSurfFlow[2])>0 ){
@@ -1142,7 +1047,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 sprintf('%.2f',allNeighbourInfo[7,]/allNeighbourInfo[4,]),
                 sprintf('%.2f',allNeighbourInfo[7,]),sep=' '), file=surfaceflow_table_buff,sep='\n')
                 
-                # road / storm drain --> sub-catchment outlet
+                # current_patch_info[15]>0    road / storm drain & NOT str grid & NOT strExt
                 if(current_patch_info['pavedRoadQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) cat(
                 patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
                 patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
@@ -1154,7 +1059,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 sprintf('%.2f',1.0),
                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                 
-                # roof tops --> sub-catchment outlet
+                # current_patch_info[19]>0 roof & NOT str grid & NOT strExt
                 if(current_patch_info['roofQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) cat(
                 patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
                 patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
