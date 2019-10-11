@@ -45,6 +45,7 @@ if( sum(is.na(toPatchCond)) ){
     tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$noData>0];
     if(length(tmp)>0){ noDataCode$title = paste('lulc',tmp,sep=''); noDataCode$value = match(tmp,lulcCodeFrac$lulcCode); }
    
+    if(length(arg)>3){suffix = arg[4] }else{ suffix = ''}
     
     #modeList = list()
     gisOrder = match(rast@data[[1]][mask], patchlulcFrac$patchID)
@@ -55,7 +56,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, forestCode$title[ii]]* lulcCodeFrac$lulcComposition_forest[forestCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'forestFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('forestFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     #modeList[[1]] = (patchlulcFrac[, forestCode]/patchlulcFrac$total)[gisOrder]
     
     rast$lulcComposition = rep(0,length(rast@data[[1]]))
@@ -64,7 +65,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, shrubCode$title[ii]]* lulcCodeFrac$lulcComposition_shrub[shrubCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'shrubFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('shrubFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
     rast$lulcComposition = rep(0,length(rast@data[[1]]))
     if(length(cropCode$title)>=1){
@@ -72,7 +73,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, cropCode$title[ii]]* lulcCodeFrac$lulcComposition_crop[cropCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'cropFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('cropFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
     rast$lulcComposition = rep(0,length(rast@data[[1]]))
     if(length(lawCode$title)>=1){
@@ -80,7 +81,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, lawCode$title[ii]]* lulcCodeFrac$lulcComposition_lawn[lawCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'lawnFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('lawnFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
     
     
@@ -91,7 +92,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, impCode$title[ii]]* lulcCodeFrac$lulcComposition_imp[impCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'impFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('impFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
     rast$lulcComposition = rep(0,length(rast@data[[1]]))
     if(length(roofCode$title)>=1){
@@ -99,7 +100,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, roofCode$title[ii]]* lulcCodeFrac$impBreakdownFrac_roof[roofCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'roofFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('roofFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
     rast$lulcComposition = rep(0,length(rast@data[[1]]))
     if(length(drivewayCode$title)>=1){
@@ -107,7 +108,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, drivewayCode$title[ii]]* lulcCodeFrac$impBreakdownFrac_driveway[drivewayCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'drivewayFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('drivewayFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
     rast$lulcComposition = rep(0,length(rast@data[[1]]))
     if(length(pavedroadCode$title)>=1){
@@ -115,7 +116,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, pavedroadCode$title[ii]]* lulcCodeFrac$impBreakdownFrac_pavedRoad[pavedroadCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'pavedroadFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('pavedroadFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
     
     
@@ -125,7 +126,7 @@ if( sum(is.na(toPatchCond)) ){
             patchlulcFrac[, noDataCode$title[ii]]* lulcCodeFrac$noData[noDataCode$value[ii]]
         })))/patchlulcFrac$total)[gisOrder]
     }#if
-    writeRAST(rast,'noDataFrac',zcol='lulcComposition',overwrite=T)
+    writeRAST(rast,paste('noDataFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
 }# if wrong LULC code table
 
