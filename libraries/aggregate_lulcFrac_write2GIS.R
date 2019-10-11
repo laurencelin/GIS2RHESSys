@@ -22,7 +22,7 @@ if( sum(is.na(toPatchCond)) ){
     roofCode = list(); roofCode$title=NULL; roofCode$value=NULL;
     drivewayCode = list(); drivewayCode$title=NULL; drivewayCode$value=NULL;
     pavedroadCode = list(); pavedroadCode$title=NULL; pavedroadCode$value=NULL;
-    
+    noDataCode = list(); noDataCode$title=NULL; noDataCode$value=NULL;
     
     tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_forest>0];
         if(length(tmp)>0){ forestCode$title = paste('lulc',tmp,sep=''); forestCode$value = match(tmp,lulcCodeFrac$lulcCode); }
@@ -41,7 +41,8 @@ if( sum(is.na(toPatchCond)) ){
         if(length(tmp)>0){ drivewayCode$title = paste('lulc',tmp,sep=''); drivewayCode$value = match(tmp,lulcCodeFrac$lulcCode); }
     tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$impBreakdownFrac_pavedRoad>0];
         if(length(tmp)>0){ pavedroadCode$title = paste('lulc',tmp,sep=''); pavedroadCode$value = match(tmp,lulcCodeFrac$lulcCode); }
-    
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$noData>0];
+    if(length(tmp)>0){ noDataCode$title = paste('lulc',tmp,sep=''); noDataCode$value = match(tmp,lulcCodeFrac$lulcCode); }
    
     
     #modeList = list()
@@ -114,6 +115,16 @@ if( sum(is.na(toPatchCond)) ){
         })))/patchlulcFrac$total)[gisOrder]
     }#if
     writeRAST(rast,'pavedroadFrac',zcol='lulcComposition',overwrite=T)
+    
+    
+    
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(noDataCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(noDataCode$title), function(ii){
+            patchlulcFrac[, noDataCode$title[ii]]* lulcCodeFrac$noDataCode[noDataCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,'noDataFrac',zcol='lulcComposition',overwrite=T)
     
 }# if wrong LULC code table
 
