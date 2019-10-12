@@ -1,19 +1,24 @@
-lulcCode,lulcComposition_forest,lulcComposition_shrub,lulcComposition_crop,lulcComposition_lawn,lulcComposition_imp,impBreakdownFrac_roof,impBreakdownFrac_driveway,impBreakdownFrac_pavedRoad,noData
-0,0,0,0,0,0,0,0,0,1
-1,0,0,0,0,1,0,0,1,0
-2,0,0,0,0,1,0,0,0,0
-3,1,0,0,0,1,0,0,0,0
-4,0,0,0,0,0,0,0,0,0
-5,0,1,0,0,0,0,0,0,0
-6,0,1,0,0,0,0,0,0,0
-7,0,1,0,0,0,0,0,0,0
-8,1,0,0,0,0,0,0,0,0
-9,1,0,0,1,0,0,0,0,0
-10,0.1,0.2,0,0.2,0.2,0,0,0,0
-11,0,0,0,0.4,0.6,0,0,0,0
-12,0,0,0,0.6,0.4,0,0,0,0
-13,0,0,0,0.8,0.2,0,0,0,0
-14,0,0,0,0,0.5,0,0,0,0
-15,0,0,0,1,0,0,0,0,0
-16,0,0,1,0,0,0,0,0,0
-17,0,0,0,1,0,0,0,0,0
+lulcCode,Description,lulcComposition_forest,lulcComposition_shrub,lulcComposition_crop,lulcComposition_lawn,lulcComposition_imp,impBreakdownFrac_roof,impBreakdownFrac_driveway,impBreakdownFrac_pavedRoad,noData
+0,noData,0,0,0,0,0,0,0,0,1
+1,Impervious Road,0,0,0,0,1,0,0,0,0
+2,Impervious Non-Road,0,0,0,0,1,0,0,0,0
+3,Tree Canopy over Impervious,1,0,0,0,1,0,0,0,0
+4,Water,0,0,0,0,0,0,0,0,0
+5,Tidal Wetlands,0,1,0,0,0,0,0,0,0
+6,Floodplain Wetlands,0,1,0,0,0,0,0,0,0
+7,Other Wetlands,0,1,0,0,0,0,0,0,0
+8,Forest,1,0,0,0,0,0,0,0,0
+9,Tree Canopy over Turf,1,0,0,1,0,0,0,0,0
+10,Mixed Open,0,0,0,0.2,0,0,0,0,0
+11,Fractional Turf (small),0,0,0,0.4,0,0,0,0,0
+12,Fractional Turf (medium),0,0,0,0.6,0,0,0,0,0
+13,Fractional Turf (large),0,0,0,0.8,0,0,0,0,0
+14,Fractional Impervious,0,0,0,0.5,0.5,0,0.5,0,0
+15,Turf Grass,0,0,0,1,0,0,0,0,0
+16,Cropland,0,0,1,0,0,0,0,0,0
+17,Pasture,0,0,0,1,0,0,0,0,0
+18,canopy over structure,1,0,0,0,1,1,0,0,0
+19,canopy over road,1,0,0,0,1,0,0,1,0
+20,canopy over imp surf,1,0,0,0,1,0,1,0,0
+21,structure,0,0,0,0,1,1,0,0,1
+22,imp surf,0,0,0,0,1,0,1,0,1
