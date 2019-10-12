@@ -1,6 +1,6 @@
 lulcCode,Description,lulcComposition_forest,lulcComposition_shrub,lulcComposition_crop,lulcComposition_lawn,lulcComposition_imp,impBreakdownFrac_roof,impBreakdownFrac_driveway,impBreakdownFrac_pavedRoad,noData
 0,noData,0,0,0,0,0,0,0,0,1
-1,Impervious Road,0,0,0,0,1,0,0,0,0
+1,Impervious Road,0,0,0,0,1,0,0,1,0
 2,Impervious Non-Road,0,0,0,0,1,0,0,0,0
 3,Tree Canopy over Impervious,1,0,0,0,1,0,0,0,0
 4,Water,0,0,0,0,0,0,0,0,0
@@ -20,5 +20,5 @@ lulcCode,Description,lulcComposition_forest,lulcComposition_shrub,lulcCompositio
 18,canopy over structure,1,0,0,0,1,1,0,0,0
 19,canopy over road,1,0,0,0,1,0,0,1,0
 20,canopy over imp surf,1,0,0,0,1,0,1,0,0
-21,structure,0,0,0,0,1,1,0,0,1
-22,imp surf,0,0,0,0,1,0,1,0,1
+21,structure,0,0,0,0,1,1,0,0,0
+22,imp surf,0,0,0,0,1,0,1,0,0
