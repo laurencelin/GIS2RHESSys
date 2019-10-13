@@ -23,6 +23,7 @@ if( sum(is.na(toPatchCond)) ){
     drivewayCode = list(); drivewayCode$title=NULL; drivewayCode$value=NULL;
     pavedroadCode = list(); pavedroadCode$title=NULL; pavedroadCode$value=NULL;
     noDataCode = list(); noDataCode$title=NULL; noDataCode$value=NULL;
+    waterCode = list(); waterCode$title=NULL; waterCode$value=NULL;
     
     tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$lulcComposition_forest>0];
         if(length(tmp)>0){ forestCode$title = paste('lulc',tmp,sep=''); forestCode$value = match(tmp,lulcCodeFrac$lulcCode); }
@@ -44,6 +45,11 @@ if( sum(is.na(toPatchCond)) ){
     
     tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$noData>0];
     if(length(tmp)>0){ noDataCode$title = paste('lulc',tmp,sep=''); noDataCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+    
+    tmp=lulcCodeFrac$lulcCode[lulcCodeFrac$waterFrac>0];
+    if(length(tmp)>0){ waterCode$title = paste('lulc',tmp,sep=''); waterCode$value = match(tmp,lulcCodeFrac$lulcCode); }
+   
+   
    
     if(length(arg)>3){suffix = arg[4] }else{ suffix = ''}
     
@@ -127,6 +133,14 @@ if( sum(is.na(toPatchCond)) ){
         })))/patchlulcFrac$total)[gisOrder]
     }#if
     writeRAST(rast,paste('noDataFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
+    
+    rast$lulcComposition = rep(0,length(rast@data[[1]]))
+    if(length(waterCode$title)>=1){
+        rast$lulcComposition[mask] = (rowSums(do.call(cbind,lapply(seq_along(waterCode$title), function(ii){
+            patchlulcFrac[, waterCode$title[ii]]* lulcCodeFrac$waterFrac[waterCode$value[ii]]
+        })))/patchlulcFrac$total)[gisOrder]
+    }#if
+    writeRAST(rast,paste('waterFrac', suffix,sep=''),zcol='lulcComposition',overwrite=T)
     
 }# if wrong LULC code table
 

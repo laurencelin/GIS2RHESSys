@@ -1,14 +1,14 @@
-lulcCode,lulcComposition_forest,lulcComposition_shrub,lulcComposition_crop,lulcComposition_lawn,lulcComposition_imp,impBreakdownFrac_roof,impBreakdownFrac_driveway,impBreakdownFrac_pavedRoad,noData
-0,0,0,0,0,0,0,0,0,0
-1,0,0,0,0,0,0,0,0,0
-2,0,0.5,0,0.5,0,0,0,0,0
-3,1,0,0,0,0,0,0,0,0
-4,0,1,0,0,0,0,0,0,0
-5,0,0,0,1,0,0,0,0,0
-6,0,0,0,0,0,0,0,0,0
-7,0,0,0,0,1,1,0,0,0
-8,0,0,0,0,1,0,1,0,0
-9,0,0,0,0,1,0,0,1,0
-10,1,0,0,0,1,1,0,0,0
-11,1,0,0,0,1,0,1,0,0
-12,1,0,0,0,1,0,0,1,0
+lulcCode,Description,lulcComposition_forest,lulcComposition_shrub,lulcComposition_crop,lulcComposition_lawn,lulcComposition_imp,impBreakdownFrac_roof,impBreakdownFrac_driveway,impBreakdownFrac_pavedRoad,waterFrac,noData
+0,nodata,0,0,0,0,0,0,0,0,0,1
+1,water,0,0,0,0,0,0,0,0,1,0
+2,wetland,0,0.5,0,0.5,0,0,0,0,0,0
+3,canopy,1,0,0,0,0,0,0,0,0,0
+4,shrub,0,1,0,0,0,0,0,0,0,0
+5,low vegetation,0,0,0,1,0,0,0,0,0,0
+6,barren,0,0,0,0,0,0,0,0,0,0
+7,structure,0,0,0,0,1,1,0,0,0,0
+8,imp surf,0,0,0,0,1,0,1,0,0,0
+9,imp road,0,0,0,0,1,0,0,1,0,0
+10,canopy over structure,1,0,0,0,1,1,0,0,0,0
+11,canopy over imp surf,1,0,0,0,1,0,1,0,0,0
+12,canopy over roads,1,0,0,0,1,0,0,1,0,0
