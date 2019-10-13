@@ -14,10 +14,13 @@ DtoR = pi/180
 
 zoneclassindex = tapply(seq_along(mask)[mask], hill, function(ii){ return <- ii })
 zoneclasshill = tapply(seq_along(hill), hill, function(ii){ return <- hill[ii][1] })
+zoneclassLen = tapply(seq_along(hill), hill, function(ii){ return <- length(ii) })
 zoneclass = tapply(seq_along(hill), hill, function(ii){
 	# ii = seq_along(hill)[hill==65]
 	# In mathematical speak that is 9.8°C per 1,000 meters; Google
 	# form dataset for cluster analysis
+	print(hill[ii][1])
+	
 	clusterData = cbind(
 		(dem[ii]-mean(dem[ii]))*0.02, # 50 m elevation band
 		scale(slope[ii]),
@@ -31,20 +34,25 @@ zoneclass = tapply(seq_along(hill), hill, function(ii){
 	# if( length(ii) < maxNumCluster ) maxNumCluster=length(ii)-1
 	
 	# elevation band first
-	numCluster = ceiling((max(dem[ii])-min(dem[ii]))*0.02)
+	numCluster = max(1,ceiling((max(dem[ii])-min(dem[ii]))*0.02))
 	fit <- kmeans(clusterData[,'dem'], numCluster,iter.max=1000,algorithm="MacQueen") #
 	elevationBand = fit$cluster
 	
 	
 	# slope-aspect second
-	maxNumCluster = 100; if( length(ii) < maxNumCluster ) maxNumCluster=length(ii)-1
-	wss <- (dim(clusterData)[1]-1)*sum(apply(clusterData[,c('slope','aspectx','aspecty')],2,var))
-	for (i in 2: maxNumCluster) wss[i] <- sum(kmeans(clusterData[,c('slope','aspectx','aspecty')], centers=i,iter.max=1000, algorithm="MacQueen")$withinss) 
-	AccumImprovement = cumsum(diff(wss))
-	#plot( AccumImprovement, type='b')
-	numCluster = which( AccumImprovement/min(AccumImprovement) > 0.8)[1]; numCluster
-	fit <- kmeans(clusterData[,c('slope','aspectx','aspecty')], numCluster, iter.max=1000,algorithm="MacQueen")
-	slope_aspect_cluster = fit$cluster	
+	maxNumCluster = 100; if( length(ii) < maxNumCluster ) maxNumCluster=length(ii)-2
+	if(maxNumCluster > 3){
+		wss <- (dim(clusterData)[1]-2)*sum(apply(clusterData[,c('slope','aspectx','aspecty')],2,var))
+		for (i in 2: maxNumCluster) wss[i] <- sum(kmeans(clusterData[,c('slope','aspectx','aspecty')], centers=i,iter.max=1000, algorithm="MacQueen")$withinss)
+		AccumImprovement = cumsum(diff(wss))
+		#plot( AccumImprovement, type='b')
+		numCluster = which( AccumImprovement/min(AccumImprovement) > 0.8)[1]; numCluster
+		fit <- kmeans(clusterData[,c('slope','aspectx','aspecty')], numCluster, iter.max=1000,algorithm="MacQueen")
+		slope_aspect_cluster = fit$cluster	
+	}else{
+		slope_aspect_cluster = rep(1,dim(clusterData)[1])
+	}#if
+	
 	
 	# combine	
 	comb = paste(elevationBand, slope_aspect_cluster,sep='-')	
