@@ -46,7 +46,7 @@ for(ii in clumpID){
 	# into the many-to-many relationship
 	for(jj in seq_along(zonalpoints_x)){
 		distList = sqrt( (roadInlet_x-zonalpoints_x[jj])^2 + (roadInlet_y-zonalpoints_y[jj])^2 )
-		selectedInlet = distList < 60 & roadInlet_dem > zonalpoints_dem[jj]
+		selectedInlet = distList < as.numeric(arg[12]) & roadInlet_dem > zonalpoints_dem[jj]
 		
 		#finalCond = roadInlet_outlet_dem[roadInlet_outlet_index[selectedInlet]] > zonalpoints_dem[jj];
 		
