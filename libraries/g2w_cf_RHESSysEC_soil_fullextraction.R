@@ -501,6 +501,13 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     # is(cropLAI[[2]]); is(cropID[[2]]); is(cropFFrac[[2]])
 
 
+    PRINT_patch=NULL; tryCatch({
+        rast = readRAST(template$PRINT_patchMAP);
+        PRINT_patch <- rast@data[[1]][mask];
+        print('reading pipe ... DONE')},
+        error = function(e){ PRINT_patch <<- emptyMAP }
+        )#tryCatch
+
 
 	## basin centroid and latitude
 	sputm <- SpatialPoints(cbind(mean(xx),mean(yy)), proj4string=CRS(gmeta()$proj4) )  
@@ -627,7 +634,8 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
             if(is.na(subGridAssignment[1,4]) ) subGridAssignment[1,4]=0
             if(is.na(subGridAssignment[1,5]) ) subGridAssignment[1,5]=0
 			
-            land = ifelse(sum(septic[x],na.rm=T)>0, 4, landuseClass[which.max(subGridAssignment[1,])] )#  ### not very useful
+            land = ifelse(sum(septic[x],na.rm=T)>0, 4, landuseClass[which.max(subGridAssignment[1,])] )#  ### not very useful for sub-patch modeling
+            if(sum(PRINT_patch[x],na.rm=T)>0){ land = land + 600}
                 # management ACTIONcodes: < (subpatch scale variable)
                 # 2 = actionIRRIGRATION  {irrigration daily max} < lawnFrac
                 # 3 = actionFERTILIZE {fertilizer application schedule and amount} < lawnFrac
