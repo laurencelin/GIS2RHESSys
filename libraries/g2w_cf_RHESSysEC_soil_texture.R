@@ -165,10 +165,8 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	
 	
 	# extract soil def IDs; how to handle catchments that have no data?
-	rast = readRAST(c(
-        template$soiltexture ## 2 <<--- soil class IDs
-        ),NODATA=0)
-		soiltexture = rast@data[[2]][mask]
+	rast = readRAST(template$soiltexture,NODATA=0)
+		soiltexture = rast@data[[1]][mask]
     print('reading soils ... DONE')
 
 	# extract patch positive numerical values [0 -> +X] (must have)
