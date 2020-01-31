@@ -27,14 +27,11 @@ if( sum(is.na(toPatchCond)) ){
     gisOrder = match(rast@data[[1]][mask], patchCodeFrac$patchID)
     rast$tmp = rep(NA,length(rast@data[[1]]))
     for(i in seq_along(lulcCodeFrac_title)){
+    	
         rast$tmp[mask] = (apply(sapply(which(lulcCodeFrac[,i+1]>0),function(j){patchCodeFrac[,j+2]*lulcCodeFrac[j,i+1]}),1,sum)/patchCodeFrac$total)[gisOrder]
         	# .. sum(Ffrac * codeFrac_in_patch)
-        writeRAST(rast,paste(lulcCodeFrac_title[i],'_Ffrac',sep=''),zcol='tmp',overwrite=T)
+        writeRAST(rast,paste(lulcCodeFrac_title[i], '_lai',sep=''),zcol='tmp',overwrite=T)
         
-        cond = !is.na(rast$tmp[mask]) & rast$tmp[mask]>0
-        rast$id = rep(NA,length(rast@data[[1]]))
-        rast$id[mask][cond] = as.integer(lulcCodeFrac_vegID[i])
-        writeRAST(rast,paste(lulcCodeFrac_title[i],'_vegid',sep=''),zcol='id',overwrite=T)
     }#i
     
 }# if wrong LULC code table
