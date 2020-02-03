@@ -10,6 +10,8 @@ patchlulcFrac = read.csv(arg[2]); patchlulcFracCODE = colnames(patchlulcFrac)[c(
 lulcCodeFrac = read.csv(arg[3]); lulcCodeFracCODE = paste('lulc',lulcCodeFrac$lulcCode,sep=''); print('read lulcCodeFrac')
 toPatchCond = match(patchlulcFracCODE,lulcCodeFracCODE)
 if( sum(is.na(toPatchCond)) ){
+	print(patchlulcFracCODE)
+	print(lulcCodeFracCODE)
     print('ERROR: the LULC composition table does not match with LULC GIS data.')
 }else{
     
