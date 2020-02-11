@@ -242,6 +242,12 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         print('reading strExtension ... DONE')},
         error = function(e){ fullstreamExt <<- stream }
         )#tryCatch
+    waterFrac=NULL;tryCatch({
+        rast = readRAST(template$waterFracMAP);
+        waterFrac <- rast@data[[1]][mask];
+        print('reading str ... DONE')},
+        error = function(e){ waterFrac <<- emptyMAP }
+        )#tryCatch
 
     # extract other LULC information -- surface routing -- road storm drainage
     otherImpFrac=NULL;tryCatch({
@@ -559,13 +565,14 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
             # 7 -> x= 9029
             #patchSTR = sum(fullstreamExt[x], na.rm=T); # patchSTR==0 --> no canopy on all stream extension!
             patchSTR = sum(stream[x], na.rm=T)
+            patchWATER = sum(waterFrac[x], na.rm=T)/length(x) # include any water surface and potential non-vegetated channel
 			subGridAssignment[1,] = c(
-                ifelse(patchSTR==0,mean(forestFrac[x]),0), #1 tree
-                ifelse(patchSTR==0,mean(shrubFrac[x]),0),  #2 shrub
-                ifelse(patchSTR==0,mean(cropFrac[x]),0),   #3 crop
-                ifelse(patchSTR==0,mean(lawnFrac[x]),0),   #4 lawn
-                ifelse(patchSTR==0,mean(impFrac[x]),0)     #5 no veg
-				)
+                ifelse(patchSTR==0,1,1-patchWATER)*sum(forestFrac[x], na.rm=T)/length(x), #1 tree
+                ifelse(patchSTR==0,1,1-patchWATER)*sum(shrubFrac[x], na.rm=T)/length(x),  #2 shrub
+                ifelse(patchSTR==0,1,1-patchWATER)*sum(cropFrac[x], na.rm=T)/length(x),   #3 crop
+                ifelse(patchSTR==0,1,1-patchWATER)*sum(lawnFrac[x], na.rm=T)/length(x),   #4 lawn
+                ifelse(patchSTR==0,1,1-patchWATER)*sum(impFrac[x], na.rm=T)/length(x)     #5 no veg
+                )
 			if(is.na(subGridAssignment[1,1]) ) subGridAssignment[1,1]=0
 			if(is.na(subGridAssignment[1,2]) ) subGridAssignment[1,2]=0
 			if(is.na(subGridAssignment[1,3]) ) subGridAssignment[1,3]=0
