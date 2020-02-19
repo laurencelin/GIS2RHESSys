@@ -27,7 +27,7 @@ if( sum(is.na(toPatchCond)) ){
     gisOrder = match(rast@data[[1]][mask], patchCodeFrac$patchID)
     rast$tmp = rep(NA,length(rast@data[[1]]))
     for(i in seq_along(lulcCodeFrac_title)){
-        rast$tmp[mask] = (apply(sapply(which(lulcCodeFrac[,i+1]>0),function(j){patchCodeFrac[,j+2]*lulcCodeFrac[j,i+1]}),1,sum)/patchCodeFrac$total)[gisOrder]
+        rast$tmp[mask] = (apply(sapply(which(lulcCodeFrac[,i+1]>0),function(j){patchCodeFrac[,j+2]*lulcCodeFrac[j,i+1]}),1,sum) / apply(sapply(which(lulcCodeFrac[,i+1]>0),function(j){patchCodeFrac[,j+2]}),1,sum))[gisOrder]
         	# .. sum(Ffrac * codeFrac_in_patch)
         writeRAST(rast,paste(lulcCodeFrac_title[i],'_Ffrac',sep=''),zcol='tmp',overwrite=T)
         
