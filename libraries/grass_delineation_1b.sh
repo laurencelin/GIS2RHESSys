@@ -22,9 +22,9 @@ eval $(r.univar -g -t map=uaaD8 zones=tmp separator=newline | awk 'NR==20{print 
 r.mapcalc expression="outletRast = if(isnull(tmp),null(),if(uaaD8==$largestUAA,1,null()))" --overwrite
 r.to.vect --overwrite input=outletRast output=outlet type=point
 #
-eval $(r.stats -a -n input=tmp | awk '{print "expectedDrainageArea=" $2}')
-inputLower=$((98*$expectedDrainageArea/$RES/$RES/100)) # (allow 2% error)
-inputUpper=$((102*$expectedDrainageArea/$RES/$RES/100)) # (allow 2% error)
+#eval $(r.stats -a -n input=tmp | awk '{print "expectedDrainageArea=" $2}')
+#inputLower=$((98*$expectedDrainageArea/$RES/$RES/100)) # (allow 2% error)
+#inputUpper=$((102*$expectedDrainageArea/$RES/$RES/100)) # (allow 2% error)
 #
 g.remove -f type=raster name=tmp,outletRast
 # ------------------------------------------------------------------------------
