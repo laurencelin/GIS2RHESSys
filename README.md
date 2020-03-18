@@ -1,6 +1,7 @@
 # GIS2RHESSys Readme
 
 Introduction
+
 There are two branches under this repository. Master branch (default) holds a set of shell / R scripts for processing GIS data and assemble RHESSys model inputs. Tools are designed to run locally on Mac / Linux.  The usage of the scripts are organized by modules documented in workflow guide (links are below).  The second branch is "JupyterNotebook" developed and maintained by Lukey (Choi).  Lukey's goal is to create a user-friendly workflow interface on JupyterNotebook that utilizes the same scripts held on master branch. JupyterNotebooks have been developed for UVA Rivanna and HydroShare Jupyter App.
 
 Requirements / Dependencies:
@@ -40,8 +41,12 @@ Below diagram shows the relationship between GRASS dataset and RHESSys model.
 
 
 Other links:
+
 RHESSysEastCoast https://github.com/laurencelin/RHESSysEastCoast
+
 General RHESSys github: https://github.com/RHESSys/RHESSys
+
 General RHESSys wiki: https://github.com/RHESSys/RHESSys/wiki
+
 General RHESSys tools by Will from U.S. west coast https://github.com/RHESSys/RHESSys/tree/master/RHESSysPreprocessing
 Will's RHESSys tools are written R-studio and designed for general RHESSys model.
