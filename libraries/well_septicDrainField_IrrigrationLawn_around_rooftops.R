@@ -70,7 +70,7 @@ roof_drain_table = do.call(rbind, lapply(roofID,function(id){
     return <-c(id,source_patch,df_patch, irrigration_string,0)
 }))
 colnames(roof_drain_table)=c('rooftopID','inPatch','outPatch','irrigrationString','mode')
-write.csv(roof_drain_table[,1:3],arg[8],row.names=F,quote=F)
+write.csv(roof_drain_table[,c(1:3,5)],arg[8],row.names=F,quote=F)
 
 irrigrationTable = do.call(rbind,lapply(seq_len(dim(roof_drain_table)[1]),function(ii){
     
