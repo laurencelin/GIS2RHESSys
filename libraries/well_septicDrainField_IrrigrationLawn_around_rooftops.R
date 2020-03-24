@@ -17,7 +17,7 @@ cond = !is.na(roof)
 roofID = unique(roof[cond])
 roof_drain_table = do.call(rbind, lapply(roofID,function(id){
     
-    # for(id in roofID){
+    
     roof_patchID = unique(patch[cond][roof[cond]==id])
     roof_dem = mean(dem[cond][roof[cond]==id])
     roof_patch = patch[patch%in%roof_patchID]
@@ -51,7 +51,7 @@ roof_drain_table = do.call(rbind, lapply(roofID,function(id){
         }
     }# if
 
-    # irrigration lawn
+    # irrigration lawn: roof->lawnID->patch->irrigation area
     roof_lawnID = unique(lawn[patch%in%roof_patchID]); roof_lawnID = roof_lawnID[!is.na(roof_lawnID)]
     lawn_patch = patch[lawn%in%roof_lawnID]
     lawn_patchID = unique(lawn_patch)

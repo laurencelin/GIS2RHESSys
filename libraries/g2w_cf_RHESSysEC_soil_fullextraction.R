@@ -97,14 +97,6 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     
     templateACTION = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, len=ifelse(length(arg)==5,7,11),ncolReadin=3);
     template = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, vskip=ifelse(length(arg)==5,7,11), ncolReadin=3, ncolReadout=1 );
-#    if(is.null(template$streamFullextension)) template$streamFullextension=''
-#    if(is.null(template$unpavedroadMap)) template$unpavedroadMap=''
-#    if(is.null(template$riparianMAP)) template$riparianMAP=''
-#    if(is.null(template$sewercoverMAP)) template$sewercoverMAP=''
-#    if(is.null(template$pipecoverMAP)) template$pipecoverMAP=''
-#    if(is.null(template$stormdrainMAP)) template$stormdrainMAP=''
-#    if(is.null(template$compactedsoilMAP)) template$compactedsoilMAP=''
-#    if(is.null(template$additionalSurfaceDrainMAP)) template$additionalSurfaceDrainMAP=''
 
     projectFolder = ifelse(length(arg)==5, arg[1], templateACTION$projdir[1])
     climateStationID = as.numeric(templateACTION$stationID[1])
@@ -208,6 +200,14 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         soilomdecay = rast@data[[19]][mask]
     print('reading soils ... DONE')
 
+    # extract
+    LULCID=NULL;tryCatch({
+        rast = readRAST(template$LULCidMAP);
+        LULCID <- rast@data[[1]][mask];
+        print('reading str ... DONE')},
+        error = function(e){ LULCID <<- emptyMAP }
+        )#tryCatch
+
 	# extract patch positive numerical values [0 -> +X] (must have)
     # aspect ##<<----- 90=north, 360=east, 180=west 270=south
 	rast = readRAST(c(template$xMAP, template$yMAP, template$demMAP, template$slopeMap, template$aspectMAP, template$twiMAP, template$whorizonMAP, template$ehorizonMAP, template$isohyetMAP), NODATA=-1)
@@ -258,15 +258,6 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         lawnFrac <- rast@data[[1]][mask];
         print('reading str ... DONE')},
         error = function(e){ lawnFrac <<- emptyMAP }
-        )#tryCatch
-    
-
-    # extract other LULC information related to management
-    irrigrationCoveredArea=NULL;tryCatch({
-        rast = readRAST(template$irrigrationMAP);
-        irrigrationCoveredArea <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
-        error = function(e){ irrigrationCoveredArea <<- emptyMAP }
         )#tryCatch
 
     # extract other LULC information -- surface routing -- stream extension
@@ -348,13 +339,18 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         print('reading str ... DONE')},
         error = function(e){ roofDrainDir <<- emptyMAP }
         )#tryCatch
-    roofRedirectedOutlet=NULL;tryCatch({
-        rast = readRAST(template$roofRedirectedOutlet);
-        roofRedirectedOutlet <- rast@data[[1]][mask];
+    roofDrainInlet=NULL;tryCatch({
+        rast = readRAST(template$roofRedirectedInlet);
+        roofDrainInlet <- rast@data[[1]][mask];
         print('reading str ... DONE')},
-        error = function(e){ roofRedirectedOutlet <<- emptyMAP }
+        error = function(e){ roofDrainInlet <<- emptyMAP }
         )#tryCatch
-    
+    roofDrainOutlet=NULL;tryCatch({
+        rast = readRAST(template$roofDrainOutlet);
+        roofDrainOutlet <- rast@data[[1]][mask];
+        print('reading str ... DONE')},
+        error = function(e){ roofDrainOutlet <<- emptyMAP }
+        )#tryCatch
 
     # extract other LULC information -- subsurface drainages -- pipelines and sewers
     sewercover=NULL; tryCatch({
@@ -362,12 +358,6 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         sewercover <- rast@data[[1]][mask];
         print('reading sewer ... DONE')},
         error = function(e){ sewercover <<- emptyMAP }
-        )#tryCatch
-    septic=NULL; tryCatch({
-        rast = readRAST(template$septicMAP);
-        septic <- rast@data[[1]][mask];
-        print('reading septic ... DONE')},
-        error = function(e){ septic <<- emptyMAP }
         )#tryCatch
     pipecover=NULL; tryCatch({
         rast = readRAST(template$pipecoverMAP);
@@ -401,6 +391,21 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         print('reading riparian ... DONE')},
         error = function(e){ basement <<- emptyMAP }
         )#tryCatch
+
+
+    septic=NULL; tryCatch({
+        rast = readRAST(template$septicMAP);
+        septic <- rast@data[[1]][mask];
+        print('reading septic ... DONE')},
+        error = function(e){ septic <<- emptyMAP }
+        )#tryCatch 
+    irrigationArea=NULL;tryCatch({
+        rast = readRAST(template$irrigationMAP);
+        irrigationArea <- rast@data[[1]][mask];
+        print('reading irrigationArea ... DONE')},
+        error = function(e){ irrigationArea <<- emptyMAP }
+        )#tryCatch 
+    
     print('reading lulc ... DONE')
 
     # extract strata information
@@ -642,26 +647,9 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
             if(is.na(subGridAssignment[1,4]) ) subGridAssignment[1,4]=0
             if(is.na(subGridAssignment[1,5]) ) subGridAssignment[1,5]=0
 			
-            land = ifelse(sum(septic[x],na.rm=T)>0, 4, landuseClass[which.max(subGridAssignment[1,])] )#  ### not very useful for sub-patch modeling
+            land_ = table(LULCID[x]); if(length(land_)==0){ land_ = 11; names(land_)=11; }
+            land = as.numeric(names(land_)[which.max(land_)])
             if(sum(PRINT_patch[x],na.rm=T)>0){ land = land + 600}
-                # management ACTIONcodes: < (subpatch scale variable)
-                # 2 = actionIRRIGRATION  {irrigration daily max} < lawnFrac
-                # 3 = actionFERTILIZE {fertilizer application schedule and amount} < lawnFrac
-                # 5 = actionGLAZING {lawn/crop glazing} < lawnFrac
-                # 7 = actionHARVEST {harvest schedule and amount and aftermath} < lawnFrac & forestFrac?
-                # 11 = actionSEPTIC {setpic leaks annual Q and N} < lawnFrac
-                # 13 = actionDETENTION {surface detention e.g., very small ponds?, bottom leak, top drainage}
-                
-                # drainage/routing ACTIONcodes: < (subpatch scale variable)
-                # 0 = land (default)
-                # 1 = class::stream
-                # 2 = class::road
-                # 3 = actionSTORMDRAIN {drainage surface Q along roads}
-                # 5 = actionGWDRAIN {gw1} < impFrac
-                # 7 = actionRIPARIAN {gw2riparian}
-                # 17 = actionPIPEDRAIN {drainage surface excessive Q within some areas, e.g., lawn, park}
-                # 11 = actionSEWER {drainge subsurface Q; loss of Q}
-                
                 
 			imp = subGridAssignment[1,5]
             fracQ = c(	subGridAssignment[1,1]>0,   # tree
@@ -992,7 +980,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     # 1.  2. 3.  4. 5.  6. 7.  8. (GRASS from current drainTO code order)
     # NE, N, NW, W, SW, S, SE, E
     colneighbor = c(1,    0,    -1,    -1,    -1,    0,    1,    1)
-    rowneighbor = c(-1,    -1,    -1,    0,    1,    1,    1,    0)
+    rowneighbor = c(-1,  -1,    -1,     0,     1,    1,    1,    0)
     directEdgeIndex = c(2,4,6,8)
     indirectEdgeIndex = c(1,3,5,7)
 
@@ -1042,12 +1030,6 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             aveSlope = tan(mean(slope[ii])*DtoR),   #13 average slope
             maxSlope = tan(max(slope[ii])*DtoR),    #14 max slope
             
-            ## ... surface routing -- irrigration applied area
-            irrigateQfrac = min(
-                sum(irrigrationCoveredArea[ii],na.rm=T),
-                sum(lawnFrac[ii],na.rm=T) + sum(cropFrac[ii],na.rm=T))/numPatch,
-                # constrainted by lawn and crop frac
-            
             ## ... surface routing -- stream extension (yes/no)
             strQ = sum(!is.na(stream[ii])),         #11 modeled stream grids
             nonmodelstrgridQ = sum(!is.na(fullstreamExt[ii])),    #21 non-modeled stream grid (treat as land grids)
@@ -1056,11 +1038,12 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             otherImpQfrac = sum(otherImpFrac[ii],na.rm=T)/numPatch, #<<---
             pavedRoadQfrac = sum(pavedRoadFrac[ii],na.rm=T) * (sum(!is.na(fullstreamExt[ii]))==0)/numPatch,
             roadStormdrainInletQfrac = (sum(!is.na(roadStormDrainInlet[ii]))>0)*sum(pavedRoadFrac[ii],na.rm=T)*(sum(!is.na(fullstreamExt[ii]))==0)/numPatch,
+            
             ## ... surface routing -- surface drainage via pipes
             nonstrsurfdrainQfrac = sum(additionalSurfaceDrainInlet[ii],na.rm=T)*(sum(!is.na(fullstreamExt[ii]))==0)/numPatch, # 22 (non-stream) land grids need surface water drain
                 
             ## ... surface routing -- housing & drive way
-            roofRedirectedQfrac = sum(roofFrac[ii],na.rm=T) * as.numeric(sum(!is.na(roofRedirectedOutlet[ii]))>0)*(sum(!is.na(fullstreamExt[ii]))==0)/numPatch,
+            roofRedirectedQfrac = sum(roofFrac[ii],na.rm=T) * as.numeric(sum(!is.na(roofDrainInlet[ii]))>0)*(sum(!is.na(fullstreamExt[ii]))==0)/numPatch,
             roofQfrac = sum(roofFrac[ii],na.rm=T)/numPatch,
             
             ## ... subsurface drainages -- pipelines and sewers (yes/no)
@@ -1069,8 +1052,17 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             
             ## ... subsurface -- interrcepts
             unpavedRoadQ = sum(!is.na(unpavedroad[ii])), # assume it cuts watertable
+            basementQfrac = sum(basement[ii],na.rm=T)/numPatch,
+            
+            ## ... surface/subsurface -- transfer
             riparianQ = sum(!is.na(riparian[ii])),    #16 (checking whether patch contains riparian grids)
-            basementQfrac = sum(basement[ii],na.rm=T)/numPatch
+            irrigateQfrac = min(
+                sum(irrigationArea[ii],na.rm=T),
+                sum(lawnFrac[ii],na.rm=T) + sum(cropFrac[ii],na.rm=T))/numPatch,
+                # constrainted by lawn and crop frac
+            septicQfrac = min(
+            	sum(septic[ii],na.rm=T),
+            	sum(lawnFrac[ii],na.rm=T) + sum(cropFrac[ii],na.rm=T))/numPatch
         );
     })#tapply <--- this output is a list of c() in outputOrder
     patch_info_lowest = patchInfo[[ length(patchInfo) ]] ## assume basin outlet
@@ -1078,14 +1070,17 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     patch_info_suboulet = lapply(suboutlet_orderedPatch_index, function(ii){ patchInfo[[ii]] })
     #cbind(suboutlet_orderedPatch_index_hillID, suboutlet_orderedPatch_index)
     
-#--------------------------------------------- working, thinking
+    #-------- marking down the drainTO destinations / drainIN sources
     patch_info_patchID = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
         return <- mean(patch[ii])
     })
     patchInfo_surf_roadStormDrainOutlet = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
+        # "roadStormDrainOutlet" documents the outlet patchID at the road storm drain inlet point.
         tmpCond = !is.na(roadStormDrainOutlet[ii]) & roadStormDrainOutlet[ii]>0
         if(sum(tmpCond)>0){
-            return_index = match(roadStormDrainOutlet[ii][tmpCond],patch_info_patchID) # return NA when outlet is outside of subcatchment!
+            return_index = match(roadStormDrainOutlet[ii][tmpCond],patch_info_patchID)
+            # return NA when outlet is outside of subcatchment!
+            # otherwise, return the index location in the patch_info list
             outlet_index_cond = !is.na(return_index);
             if(sum(outlet_index_cond)>0){return <- return_index[outlet_index_cond]; }else{ return <- NULL;}
         }else{
@@ -1093,18 +1088,95 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         }
     }) # tapply
 
-#   patchInfo_surf_additionalSurfaceDrainOutlet = tapply(fullLength, INDEX=outputOrder, #FUN=function(ii){
-#
-#})
-#   patchInfo_surf_additionalSurfaceDrainOutlet = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
-#
-#   })##
+    patchInfo_surf_additionalSurfaceDrainOutlet = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
+        tmpCond = !is.na(additionalSurfaceDrainOutlet[ii]) & additionalSurfaceDrainOutlet[ii]>0
+        if(sum(tmpCond)>0){
+            return_index = match(additionalSurfaceDrainOutlet[ii][tmpCond],patch_info_patchID)
+            outlet_index_cond = !is.na(return_index);
+            if(sum(outlet_index_cond)>0){return <- return_index[outlet_index_cond]; }else{ return <- NULL;}
+        }else{
+            return <- NULL
+        }
+    })##
+
+    patchInfo_surf_roofRedirectedOutlet = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
+        tmpCond = !is.na(roofDrainOutlet[ii]) & roofDrainOutlet[ii]>0
+        if(sum(tmpCond)>0){
+            return_index = match(roofDrainOutlet[ii][tmpCond],patch_info_patchID)
+            outlet_index_cond = !is.na(return_index);
+            if(sum(outlet_index_cond)>0){return <- return_index[outlet_index_cond]; }else{ return <- NULL;}
+        }else{
+            return <- NULL
+        }
+    })##
+
+    ## ... setpic (lots of warnings)
+    patchInfo_septicSource = vector(mode='list',length(fullLength))
+    patchInfo_septicSourceMODE = vector(mode='list',length(fullLength))
+    if( length(template$septicInOutTable)>0 & !is.null(template$septicInOutTable) & !is.na(template$septicInOutTable)){
+        tableInOut = read.csv(template$septicInOutTable)
+        tableOutIndex = match(tableInOut$outPatch,patch_info_patchID)
+        tableInIndex = match(tableInOut$inPatch,patch_info_patchID)
+        
+        tableInIndexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+            tmp = tableInIndex[ii]
+            tmp = tmp[!is.na(tmp)]
+            if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+        });
+        tableInModeList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+            tmp = tableInOut$mode[ii]
+            tmp = tmp[!is.na(tmp)]
+            if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+        });
+        indexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+            return <- tableOutIndex[ii][1]
+        });
+        
+        for(ii in seq_along(indexList)){
+        	patchInfo_septicSource[[ indexList[ii] ]] = tableInIndexList[[ii]]
+        	patchInfo_septicSourceMODE[[ indexList[ii] ]] = tableInModeList[[ii]]
+            patchInfo[[ indexList[ii] ]]['septicQfrac'] = 1 #make sure it has septic release
+        }# end of for loop ii
+    }# vector of source patch index in "patch_info_patchID"
+
+
+    ## ... irrigation (re-use some variables here)
+    patchInfo_irrigationSource = vector(mode='list',length(fullLength))
+    patchInfo_irrigationSourceMODE = vector(mode='list',length(fullLength))
+    if( length(template$irrigationInOutTable)>0 & !is.null(template$irrigationInOutTable) & !is.na(template$irrigationInOutTable)){
+        tableInOut = read.csv(template$irrigationInOutTable)
+        tableOutIndex = match(tableInOut$irrigrationPatchID,patch_info_patchID)
+        tableInIndex = match(tableInOut$sourcePatchID,patch_info_patchID)
+        
+        tableInIndexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+            tmp = tableInIndex[ii]
+            tmp = tmp[!is.na(tmp)]
+            if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+        });
+        tableInModeList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+            tmp = tableInOut$mode[ii]
+            tmp = tmp[!is.na(tmp)]
+            if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+        });
+        indexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+            return <- tableOutIndex[ii][1]
+        });
+        
+        for(ii in seq_along(indexList)){
+        	patchInfo_irrigationSource[[ indexList[ii] ]] = tableInIndexList[[ii]]
+        	patchInfo_irrigationSourceMODE[[ indexList[ii] ]] = tableInModeList[[ii]]
+            patchInfo[[ indexList[ii] ]]['irrigateQfrac'] = 1 # make sure it irrigates
+        }# end of for loop ii
+    }# vector of source patch index in "patch_info_patchID"
+    
+    
+
 #-----------------------------------------------------------------
 
     ## part 2: sort by 'elevation' & finding neighbor
     print('starting step II')
     ## .......... Neighbour
-    # ii=which(orderedPatch==24110) #500
+    
     patchNeighbourRC_edge = tapply(fullLength, INDEX=outputOrder, FUN=function(jj){
         withinPatchGridRC = rows[jj]*maxCol+cols[jj]; # within
         
@@ -1188,34 +1260,37 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         index4neighbour = patchNeighbourPatchIndex[[ii]]
         
         current_patch_info = patchInfo[[ii]]
-        # 0 = land (default)
-        # 1 = class::stream
-        # 2 = class::road
-        # 3 = actionSTORMDRAIN --> a mark to track the surface water directly drinage into stream grid in the rhessys code; so new if target outlet is not stream, it does not count
-        # 5 = actionGWDRAIN
-        # 7 = actionRIPARIAN
-        # 11 = actionSEWER
-        # 13 = actionIRRIGRATION
-        # 17 = actionPIPEDRAIN
-        
         ## actionCode is mostly for subsurface processes; surface storm drain see below.
+        # land (default) = 0
         # impFrac = roofFrac + otherImpFrac + pavedpavedRoadFrac
         # gw_drainage is bounded by imp
+        class_stream = 1
+        class_road = 2
+        actionSTORMDRAIN = 3 # surface water drainage to fixed locations or outlet (for road network)
+        actionGWDRAIN = 5 # surface -> deep gw storage
+        actionRIPARIAN =7 # receive deep gw seeping
+        actionSEWER = 11 # conditional subsurface drain out of system
+        actionPIPEDRAIN = 17 # conditional subsurface drain to outlet
+        #
+        actionIRRIGATION = 13 # = actionFERTILIZER (will be gone)
+        actionSEPTIC = 19 # (will be gone)
         actionCode = 	ifelse(	current_patch_info['pavedRoadQfrac']+
         						current_patch_info['roofQfrac']+
-        						current_patch_info['otherImpQfrac']>=1,1,5) * # GW drain except road/roof/parkinglot
-        				ifelse(current_patch_info['sewerdrainQ']>0,11,1) * # sewer drain (top 3-m)
-						ifelse(current_patch_info['subsurfpipedrainQ']>0,17,1) * # subsurface pipe drain (top 1-m) along the ROAD	
+        						current_patch_info['otherImpQfrac']>=1,1,actionGWDRAIN) * # GW drain except road/roof/parkinglot
+        				ifelse(current_patch_info['sewerdrainQ']>0,actionSEWER,1) * # sewer drain (top 3-m)
+						ifelse(current_patch_info['subsurfpipedrainQ']>0,actionPIPEDRAIN,1) * # subsurface pipe drain (top 1-m) along the ROAD	
         				## ...		
-        				ifelse(current_patch_info['riparianQ']>0,7,1) * # riparian
+        				ifelse(current_patch_info['riparianQ']>0,actionRIPARIAN,1) * # riparian
         				## ...
-        				ifelse(current_patch_info['irrigateQfrac']>0,13,1) * # lawn irrigration & fertilizer
+        				ifelse(current_patch_info['irrigateQfrac']>0,actionIRRIGATION,1) * # lawn irrigation & fertilizer
         				## ...
-                    ifelse(current_patch_info['roadStormdrainInletQfrac']>0,ifelse(current_patch_info['nonmodelstrgridQ']>0,1,3), 1)  # count for stream under road bridge
+        				ifelse(current_patch_info['septicQfrac']>0,actionSEPTIC,1) * # septic
+        				## ...
+                    	ifelse(current_patch_info['roadStormdrainInletQfrac']>0,
+                    		ifelse(current_patch_info['nonmodelstrgridQ']>0,1,actionSTORMDRAIN), 1)  # count for stream under road bridge
 						
 		drainage_type = ifelse(current_patch_info['strQ']>0, 1, # class::stream
-						ifelse(actionCode>1, actionCode,0)
-						)	
+						ifelse(actionCode>1, actionCode,0))	
         
         
         
@@ -1315,53 +1390,85 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         total_gamma = sum(gamma_jj)/total_perimeter*current_patch_info['len']*cellarea; # currrent CF calculation
         if(drainage_type==1) total_gamma = current_patch_info['aveSlope']*current_patch_info['len']*cellarea; # special for stream
             
-        ## ... total_gamma (subsurface)
-        #total_gamma_surf = sum(gamma_jj_s)/total_perimeter*current_patch_info['len']*cellarea; # currrent CF calculation
-        #if(drainage_type==1) total_gamma_surf = current_patch_info['aveSlope']*current_patch_info['len']*cellarea; # special for stream
-        
+        septic_num_drainIN = length(patchInfo_septicSource[[ii]])
+        irrigation_num_drainIN = length(patchInfo_irrigationSource[[ii]])
+        maxWithdrawalDailyWater_mmd = ifelse( length(template$maxWithdrawalDailyWater_mmd)>0,
+            template$maxWithdrawalDailyWater_mmd,
+            4)
       #-------------- subsurface -------------------# within a for loop
         if(as.numeric(templateACTION$outputSubFlow[2])>0){
             
-            if(abs(sum(neighbor_frac_gamma)-1)>1e-10){ print(paste('subsurface',ii,current_patch_info['patchID'],sum(neighbor_frac_gamma)))
-            }
+            if(abs(sum(neighbor_frac_gamma)-1)>1e-10){ print(paste('subsurface',ii,current_patch_info['patchID'],sum(neighbor_frac_gamma))) }
             cat(
-            paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
-            paste(sprintf('%.1f',current_patch_info[c('rr','cc','elevation')]), collapse=' '),
-            sprintf('%.2f',1.0),
-            sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
-            drainage_type,
-            total_gamma, length(withinNeighbourRC),'\n', file=subsurfaceflow_table_buff,sep=' ')
+				paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
+				paste(sprintf('%.1f',current_patch_info[c('rr','cc')]), collapse=' '),
+                paste(sprintf('%.1f', -septic_num_drainIN)), # use negative number because some old file may have 1 here
+                paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
+				sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH), #wttd
+				drainage_type,
+				total_gamma, length(withinNeighbourRC),'\n', file=subsurfaceflow_table_buff,sep=' ')
             
             cat( paste(
-            allNeighbourInfo['patchID',],
-            allNeighbourInfo['zoneID',],
-            allNeighbourInfo['hillID',],
-            sprintf('%.5f',neighbor_frac_gamma),
-            sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
-            sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=subsurfaceflow_table_buff,sep='\n')
+				allNeighbourInfo['patchID',],
+				allNeighbourInfo['zoneID',],
+				allNeighbourInfo['hillID',],
+				sprintf('%.5f',neighbor_frac_gamma),
+				sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
+				sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=subsurfaceflow_table_buff,sep='\n')
             
             # ... traditional road grid, which cannot be stream or outlet grid
             if(drainage_type==2) cat (
-            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-            #patch_info_lowest['patchID'],
-            #patch_info_lowest['zoneID'],
-            #patch_info_lowest['hillID'],
-            roadWidth,'\n', file=subsurfaceflow_table_buff,sep=' ')  #cellsize*current_patch_info[15]
+				patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+				patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+				patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+				#patch_info_lowest['patchID'],
+				#patch_info_lowest['zoneID'],
+				#patch_info_lowest['hillID'],
+				roadWidth,'\n', file=subsurfaceflow_table_buff,sep=' ')  #cellsize*current_patch_info[15]
+            
+            # ... this is for known sources of irrigation / septic water
+            # design note: ACTION_flags (irrigation or septic) enable irrigation or septic release to occur
+            # 			   If drainIN neighbors present then, the release water is constrained by the source available water
+           	#			   If no drainIN neighbors present then, irrigation or septic release is just constrained by the parameter in lulc.def
+            #patchID, zoneID, hillID,
+			#maxDailyDrain: max withdrawal flux (mm/d)
+			#propDrainFrmSurf: drain from surface or SAT at the source --> source Mode: 1 = surf only; 0 = subsurface; 2 = other storage;
+			#DrainFrac: fraction among sources
+			#
+			
+			
+			## septic
+			if( length(patchInfo_septicSource[[ii]])>0 ){
+				drainIN_patch_info = do.call(cbind,patchInfo[ patchInfo_septicSource[[ii]] ]);
+				num_Source = dim(drainIN_patch_info)[2]; 
+				cat( paste(
+				drainIN_patch_info['patchID',],
+				drainIN_patch_info['zoneID',],
+				drainIN_patch_info['hillID',],
+				sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+				sprintf('%.3f',patchInfo_septicSourceMODE[[ii]]), #<<--- check here
+				sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=subsurfaceflow_table_buff,sep='\n')}
+			
+			## irrigation
+			if( length(patchInfo_irrigationSource[[ii]])>0 ){
+				drainIN_patch_info = do.call(cbind,patchInfo[ patchInfo_irrigationSource[[ii]] ]);
+				num_Source = dim(drainIN_patch_info)[2]; 
+				cat( paste(
+				drainIN_patch_info['patchID',],
+				drainIN_patch_info['zoneID',],
+				drainIN_patch_info['hillID',],
+				sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+				sprintf('%.3f',patchInfo_irrigationSourceMODE[[ii]]), #<<--- check here
+				sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=subsurfaceflow_table_buff,sep='\n')}
+                
+            
         }# if subsurface output
         
         #-------------- surface -------------------# within a for loop
         if(as.numeric(templateACTION$outputSurfFlow[2])>0){
             
-            if( (current_patch_info['roofRedirectedQfrac']>0 |     current_patch_info['roadStormdrainInletQfrac']>0 | current_patch_info['nonstrsurfdrainQfrac']>0) & current_patch_info['strQ']==0 ){
-                # debug: surface water is the "detention" in the model; not calculated by gamma/total_gamma
-                # debug: road grids (by frac) has only one drain direction; storm drain will overwrite every direction;
-                # debug: parking/roof has partial direction by their frac of the grid
-                # this scheme (roof/parking to road and then storm) does not work in RHESSys because surface water only move by one grid per day!
-                # correction: we need to teleport surface water from root/parking/road to stream (storm drain targets)
-                # surface
-                # what needs to be surface:
+            if( (current_patch_info['roofRedirectedQfrac']>0 | current_patch_info['roadStormdrainInletQfrac']>0 | current_patch_info['nonstrsurfdrainQfrac']>0) & current_patch_info['strQ']==0 ){
+                
                 # roof / parking / road on current patch
                 stormsurfacedrainFrac = c(
                     ifelse(current_patch_info['roofRedirectedQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0,current_patch_info['roofRedirectedQfrac'],0),  # roof Frac
@@ -1398,31 +1505,31 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 
                 
                 ## counting number of neighbours
-                if(current_patch_info['roofRedirectedQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + 1; # roof (* need update!)
+                if(current_patch_info['roofRedirectedQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + max(1, length(patchInfo_surf_roofRedirectedOutlet[[ii]])); # roof (* need update!)
                 
                 if(current_patch_info['roadStormdrainInletQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + max(1, length(patchInfo_surf_roadStormDrainOutlet[[ii]])); # road
                 
-                if(current_patch_info['nonstrsurfdrainQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + 1; # surface drain around the roof/road/parkinglot (* need update!)
+                if(current_patch_info['nonstrsurfdrainQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) normal_neighborNum = normal_neighborNum + max(1, length(patchInfo_surf_additionalSurfaceDrainOutlet[[ii]])); # surface drain around the roof/road/parkinglot (* need update!)
                 
                 if( current_patch_info['nonmodelstrgridQ']>0) normal_neighborNum = normal_neighborNum + 1; # stream ext.
                 
                 cat(
-                paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
-                paste(sprintf('%.1f',current_patch_info[c('rr','cc','elevation')]), collapse=' '),
-                sprintf('%.2f',1.0),
-                sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
-                drainage_type,
-                total_gamma, normal_neighborNum, '\n', file=surfaceflow_table_buff,sep=' ')
+                    paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
+                    paste(sprintf('%.1f',current_patch_info[c('rr','cc')]), collapse=' '),
+                    paste(sprintf('%.1f', -septic_num_drainIN)), # use negative number because some old file may have 1 here
+               	 	paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
+                    sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
+                    drainage_type,
+                    total_gamma, normal_neighborNum, '\n', file=surfaceflow_table_buff,sep=' ')
                 
                 cat( paste(
-                allNeighbourInfo['patchID',],
-                allNeighbourInfo['zoneID',],
-                allNeighbourInfo['hillID',],
-                sprintf('%.5f',normal_neighbor_frac_gamma),
-                sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
-                sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=surfaceflow_table_buff,sep='\n')
-                #sprintf('%.2f',allNeighbourInfo[7,]/allNeighbourInfo[4,]),
-                #sprintf('%.2f',allNeighbourInfo[7,]),sep=' '), file=surfaceflow_table_buff,sep='\n')
+                    allNeighbourInfo['patchID',],
+                    allNeighbourInfo['zoneID',],
+                    allNeighbourInfo['hillID',],
+                    sprintf('%.5f',normal_neighbor_frac_gamma),
+                    sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
+                    sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=surfaceflow_table_buff,sep='\n')
+                
                 
                 # road / storm drain --> sub-catchment outlet ***
                 if(current_patch_info['roadStormdrainInletQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0){
@@ -1433,14 +1540,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                                 patchInfo[[ outleti ]]['patchID'],
                                 patchInfo[[ outleti ]]['zoneID'],
                                 patchInfo[[ outleti ]]['hillID'],
-                                # ... to sub-basin outlet
-                                #patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-                                #patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-                                #patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-                                # ... to baisn outlet
-                                #patch_info_lowest['patchID'],
-                                #patch_info_lowest['zoneID'],
-                                #patch_info_lowest['hillID'],
+                                # ... to the designed outlet
                                 sprintf('%.5f', stormsurfacedrainFrac['road']),
                                 sprintf('%.2f',1.0),
                                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
@@ -1462,52 +1562,109 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 }#if
                 
                 # roof tops --> sub-catchment outlet ***
-                if(current_patch_info['roofRedirectedQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) cat(
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-                #patch_info_lowest['patchID'],
-                #patch_info_lowest['zoneID'],
-                #patch_info_lowest['hillID'],
-                sprintf('%.5f', stormsurfacedrainFrac['roof']),
-                sprintf('%.2f',1.0),
-                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                if(current_patch_info['roofRedirectedQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0){
+                    if( length(patchInfo_surf_roofRedirectedOutlet[[ii]])>0 & sum(is.na(patchInfo_surf_roofRedirectedOutlet[[ii]]))==0){
+                        for(outleti in patchInfo_surf_roofRedirectedOutlet[[ii]] ){
+                            cat(
+                                # ... to designed outlet
+                                patchInfo[[ outleti ]]['patchID'],
+                                patchInfo[[ outleti ]]['zoneID'],
+                                patchInfo[[ outleti ]]['hillID'],
+                                # ... to the designed outlet
+                                sprintf('%.5f', stormsurfacedrainFrac['roof']),
+                                sprintf('%.2f',1.0),
+                                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        }# for outleti
+                    }else{
+                        cat(
+                            # ... to sub-basin outlet
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                            # ... to baisn outlet
+                            #patch_info_lowest['patchID'],
+                            #patch_info_lowest['zoneID'],
+                            #patch_info_lowest['hillID'],
+                            sprintf('%.5f', stormsurfacedrainFrac['roof']),
+                            sprintf('%.2f',1.0),
+                            sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                    }#else
+                }# if
                 
                 # other imp --> sub-catchment outlet ***
-                if(current_patch_info['nonstrsurfdrainQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0) cat(
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-                #patch_info_lowest['patchID'],
-                #patch_info_lowest['zoneID'],
-                #patch_info_lowest['hillID'],
-                sprintf('%.5f', stormsurfacedrainFrac['parking']),
-                sprintf('%.2f',1.0),
-                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
-                
+                if(current_patch_info['nonstrsurfdrainQfrac']>0 & current_patch_info['nonmodelstrgridQ']==0){
+                    if( length(patchInfo_surf_additionalSurfaceDrainOutlet[[ii]])>0 & sum(is.na(patchInfo_surf_additionalSurfaceDrainOutlet[[ii]]))==0){
+                        for(outleti in patchInfo_surf_additionalSurfaceDrainOutlet[[ii]] ){
+                            cat(
+                                # ... to designed outlet
+                                patchInfo[[ outleti ]]['patchID'],
+                                patchInfo[[ outleti ]]['zoneID'],
+                                patchInfo[[ outleti ]]['hillID'],
+                                # ... to the designed outlet
+                                sprintf('%.5f', stormsurfacedrainFrac['extenddrain']),
+                                sprintf('%.2f',1.0),
+                                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        }# for outleti
+                    }else{
+                        cat(
+                            # ... to sub-basin outlet
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                            # ... to baisn outlet
+                            #patch_info_lowest['patchID'],
+                            #patch_info_lowest['zoneID'],
+                            #patch_info_lowest['hillID'],
+                            sprintf('%.5f', stormsurfacedrainFrac['extenddrain']),
+                            sprintf('%.2f',1.0),
+                            sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                    }#else
+                }# if
 
                 # strExt (surface) & NOT str grid @ outlet
                 if(current_patch_info['nonmodelstrgridQ']>0 & current_patch_info['patchID']!=patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'] ) cat(
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-                #patch_info_lowest['patchID'],
-                #patch_info_lowest['zoneID'],
-                #patch_info_lowest['hillID'],
-                sprintf('%.5f', 0.4),
-                sprintf('%.2f',1.0),
-                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                    patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                    patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                    patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                    #patch_info_lowest['patchID'],
+                    #patch_info_lowest['zoneID'],
+                    #patch_info_lowest['hillID'],
+                    sprintf('%.5f', 0.4),
+                    sprintf('%.2f',1.0),
+                    sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                 
                 # strExt (surface) & str grid @ outlet
                 if(current_patch_info['nonmodelstrgridQ']>0 & current_patch_info['patchID']==patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID']) cat(
-                patch_info_basinoutlet['patchID'],
-                patch_info_basinoutlet['zoneID'],
-                patch_info_basinoutlet['hillID'],
-                sprintf('%.5f', 0.4),
-                sprintf('%.2f',1.0),
-                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                    patch_info_basinoutlet['patchID'],
+                    patch_info_basinoutlet['zoneID'],
+                    patch_info_basinoutlet['hillID'],
+                    sprintf('%.5f', 0.4),
+                    sprintf('%.2f',1.0),
+                    sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                 
+                ## septic
+                if( length(patchInfo_septicSource[[ii]])>0 ){
+                    drainIN_patch_info = do.call(cbind,patchInfo[ patchInfo_septicSource[[ii]] ]);
+                    num_Source = dim(drainIN_patch_info)[2];
+                    cat( paste(
+                    drainIN_patch_info['patchID',],
+                    drainIN_patch_info['zoneID',],
+                    drainIN_patch_info['hillID',],
+                    sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+                    sprintf('%.3f',patchInfo_septicSourceMODE[[ii]]), #<<--- check here
+                    sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=surfaceflow_table_buff,sep='\n')}
                 
+                ## irrigation
+                if( length(patchInfo_irrigationSource[[ii]])>0 ){
+                    drainIN_patch_info = do.call(cbind,patchInfo[ patchInfo_irrigationSource[[ii]] ]);
+                    num_Source = dim(drainIN_patch_info)[2];
+                    cat( paste(
+                    drainIN_patch_info['patchID',],
+                    drainIN_patch_info['zoneID',],
+                    drainIN_patch_info['hillID',],
+                    sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+                    sprintf('%.3f',patchInfo_irrigationSourceMODE[[ii]]), #<<--- check here
+                    sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=surfaceflow_table_buff,sep='\n')}
                 
             }else{
                 # same as subsurface flow
@@ -1522,22 +1679,46 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                     
                 cat(
                     paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
-                    paste(sprintf('%.1f',current_patch_info[c('rr','cc','elevation')]), collapse=' '),
-                    sprintf('%.2f',1.0),
+                    paste(sprintf('%.1f',current_patch_info[c('rr','cc')]), collapse=' '),
+                    paste(sprintf('%.1f', -septic_num_drainIN)), # use negative number because some old file may have 1 here
+                	paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
                     sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
                     drainage_type,
                     total_gamma,length(withinNeighbourRC),'\n', file=surfaceflow_table_buff,sep=' ')
                 
                 cat( paste(
-                allNeighbourInfo['patchID',],
-                allNeighbourInfo['zoneID',],
-                allNeighbourInfo['hillID',],
-                sprintf('%.5f', normal_neighbor_frac_gamma),
-                sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
-                sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=surfaceflow_table_buff,sep='\n')
-                #sprintf('%.2f',allNeighbourInfo[7,]/allNeighbourInfo[4,]),
-                #sprintf('%.2f',allNeighbourInfo[7,]),sep=' '), file=surfaceflow_table_buff,sep='\n')
+                    allNeighbourInfo['patchID',],
+                    allNeighbourInfo['zoneID',],
+                    allNeighbourInfo['hillID',],
+                    sprintf('%.5f', normal_neighbor_frac_gamma),
+                    sprintf('%.2f',allNeighbourInfo['sharedEdge',]/allNeighbourInfo['dist',]),
+                    sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=surfaceflow_table_buff,sep='\n')
+                    #sprintf('%.2f',allNeighbourInfo[7,]/allNeighbourInfo[4,]),
+                    #sprintf('%.2f',allNeighbourInfo[7,]),sep=' '), file=surfaceflow_table_buff,sep='\n')
                 
+                ## septic
+                if( length(patchInfo_septicSource[[ii]])>0 ){
+                    drainIN_patch_info = do.call(cbind,patchInfo[ patchInfo_septicSource[[ii]] ]);
+                    num_Source = dim(drainIN_patch_info)[2];
+                    cat( paste(
+                    drainIN_patch_info['patchID',],
+                    drainIN_patch_info['zoneID',],
+                    drainIN_patch_info['hillID',],
+                    sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+                    sprintf('%.3f',patchInfo_septicSourceMODE[[ii]]), #<<--- check here
+                    sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=surfaceflow_table_buff,sep='\n')}
+                
+                ## irrigation
+                if( length(patchInfo_irrigationSource[[ii]])>0 ){
+                    drainIN_patch_info = do.call(cbind,patchInfo[ patchInfo_irrigationSource[[ii]] ]);
+                    num_Source = dim(drainIN_patch_info)[2];
+                    cat( paste(
+                    drainIN_patch_info['patchID',],
+                    drainIN_patch_info['zoneID',],
+                    drainIN_patch_info['hillID',],
+                    sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+                    sprintf('%.3f',patchInfo_irrigationSourceMODE[[ii]]), #<<--- check here
+                    sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=surfaceflow_table_buff,sep='\n')}
                 
             }# else
 
