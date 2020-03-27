@@ -19,6 +19,11 @@ This is a two-step process from scratch:
 1) Setup a workflow script (see below) to construct GIS database for eco-hydrological modeling, processing the raw gis data into the database, and calculating the necessary information for the model. 
 2) Run the script in command line, e.g., bash <script file> if you have installed and configured the require software and library on your computer. 
 
+Correcting / updating / modifying the pre-existing workflow script (many options here): 
+* option 1: you can open and edit the pre-existing workflow script; Take this approach, you are going to rebuild the evreything from scratch again
+* option 2: you can make a second workflow script with the same project directory and gis settings (e.g., resolution and projection) and put in the new calculations; Take this approach, you are building new information onto the existing GIS database (not overwriting). By updating or making new "template" (see guide below), you can build a new model. 
+
+
 ## Workflow script guides (one of the links below):
 * https://nbviewer.jupyter.org/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb 
 * https://colab.research.google.com/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb
