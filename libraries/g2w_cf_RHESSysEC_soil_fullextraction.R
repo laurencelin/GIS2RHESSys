@@ -208,7 +208,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         explicitSoilQ = T
     }else{
         rast = readRAST(template$soiltexture,NODATA=0)
-        soiltexture = rast@data[[2]][mask]
+        soiltexture = rast@data[[1]][mask]
         soil_extID = soiltexture
         
         soilksat0 = emptyMAP
