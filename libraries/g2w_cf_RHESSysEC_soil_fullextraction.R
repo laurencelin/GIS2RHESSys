@@ -9,6 +9,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	RtoD = 1/DtoR
     BASEMENT_DEPTH = 3 #meter
     PAVEDROAD_DEPTH = 0 #0.3 #meter
+    explicitSoilQ = T
 
     # initial worldfile write out
     defaultWorldName = c('world_ID')
@@ -157,7 +158,12 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	
 	
 	# extract soil def IDs; how to handle catchments that have no data?
-	rast = readRAST(c(
+    if( length(template$soilidMAP)>0 & length(template$soilksat0)>0 & length(template$soilksatdecay)>0 & length(template$soilpor0)>0 &
+        length(template$soilpordecay)>0 & length(template$soilsand)>0 & length(template$soilsilt)>0 & length(template$soilclay)>0 &
+        length(template$soilbulkdensity)>0 & length(template$soilparticledensity)>0 & length(template$soilsoildepth)>0 & length(template$soilactivedepth)>0 &
+        length(template$soilmaxrootdepth)>0 & length(template$soilalbedo)>0 & length(template$soilpor_size_index)>0 & length(template$soilpsi_air_entry)>0 &
+        length(template$soilalbedo)>0 & length(template$soilpor_size_index)>0 & length(template$soilpsi_air_entry)>0 & length(template$soilomdecay)>0){
+        rast = readRAST(c(
         template$soilidMAP, ## 1   <<--- unique gis polygon IDs, e.g., the cat key
         template$soiltexture, ## 2 <<--- soil class IDs
         template$soilksat0, ## 3
@@ -179,7 +185,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         template$soilomdecay ## 19
         ),NODATA=0)
 
-		soil_extID = rast@data[[1]][mask]
+        soil_extID = rast@data[[1]][mask]
         soiltexture = rast@data[[2]][mask]
         soilksat0 = rast@data[[3]][mask]
         soilksatdecay = rast@data[[4]][mask]
@@ -198,6 +204,34 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         soilpsi_air_entry = rast@data[[17]][mask]
         soilsoilc = rast@data[[18]][mask]
         soilomdecay = rast@data[[19]][mask]
+        
+        explicitSoilQ = T
+    }else{
+        rast = readRAST(template$soiltexture,NODATA=0)
+        soiltexture = rast@data[[2]][mask]
+        soil_extID = soiltexture
+        
+        soilksat0 = emptyMAP
+        soilksatdecay = emptyMAP
+        soilpor0 = emptyMAP
+        soilpordecay = emptyMAP
+        soilsand = emptyMAP
+        soilsilt = emptyMAP
+        soilclay = emptyMAP
+        soilbulkdensity = emptyMAP
+        soilparticledensity = emptyMAP
+        soilsoildepth = emptyMAP
+        soilactivedepth = emptyMAP
+        soilmaxrootdepth = emptyMAP
+        soilalbedo = emptyMAP
+        soilpor_size_index = emptyMAP
+        soilpsi_air_entry = emptyMAP
+        soilsoilc = emptyMAP
+        soilomdecay = emptyMAP
+        
+        explicitSoilQ = F
+    }
+	
     print('reading soils ... DONE')
 
     # extract
@@ -868,27 +902,28 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             cond = ssurgo_info[,1]==jj ## select ONE of the dominated soil_extID
             soil_char = soilParam[, ii]
             soil_char[1] = jj # id
-            ## ... below ...  soilParam[,1:2] for checking index
-            soil_char[match('Ksat_0',soilParam[,2])] = ssurgo_info[cond,'soilksat0'] # ksat0 (m/day)
-            soil_char[match('Ksat_0_v',soilParam[,2])] = ssurgo_info[cond,'soilksat0']
-            soil_char[match('m',soilParam[,2])] = ssurgo_info[cond,'soilksatdecay'] # it's meter (horizontal)
-            soil_char[match('m_z',soilParam[,2])] = ssurgo_info[cond,'soilksatdecay'] # it's meter (vertical)
-            soil_char[match('porosity_0',soilParam[,2])] = ssurgo_info[cond,'soilpor0'] # porosity_0
-            soil_char[match('porosity_decay',soilParam[,2])] = ssurgo_info[cond,'soilpordecay'] # porosity_decay (m) <<----- disabled for now June 20th, 2019
-            soil_char[match('active_zone_z',soilParam[,2])] = ssurgo_info[cond,'soilactivedepth']
-            soil_char[match('soil_depth',soilParam[,2])] = ssurgo_info[cond,'soilsoildepth']
-            soil_char[match('albedo',soilParam[,2])] = ssurgo_info[cond,'soilalbedo']
-            soil_char[match('clay',soilParam[,2])] = ssurgo_info[cond,'soilclay']
-            soil_char[match('silt',soilParam[,2])] = ssurgo_info[cond,'soilsilt']
-            soil_char[match('sand',soilParam[,2])] = ssurgo_info[cond,'soilsand']
-            soil_char[match('pore_size_index',soilParam[,2])] = ssurgo_info[cond,'soilpor_size_index']
-            soil_char[match('psi_air_entry',soilParam[,2])] = ssurgo_info[cond,'soilpsi_air_entry']
-            soil_char[match('maxrootdepth',soilParam[,2])] = ssurgo_info[cond,'soilmaxrootdepth'] 
-            soil_char[match('particledensity',soilParam[,2])] = ssurgo_info[cond,'soilparticledensity'] 
-            soil_char[match('soilc',soilParam[,2])] = ssurgo_info[cond,'soilsoilc']
-            soil_char[match('DOM_decay_rate',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']
-            soil_char[match('N_decay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']
-            
+            if(explicitSoilQ){
+                ## ... below ...  soilParam[,1:2] for checking index
+                soil_char[match('Ksat_0',soilParam[,2])] = ssurgo_info[cond,'soilksat0'] # ksat0 (m/day)
+                soil_char[match('Ksat_0_v',soilParam[,2])] = ssurgo_info[cond,'soilksat0']
+                soil_char[match('m',soilParam[,2])] = ssurgo_info[cond,'soilksatdecay'] # it's meter (horizontal)
+                soil_char[match('m_z',soilParam[,2])] = ssurgo_info[cond,'soilksatdecay'] # it's meter (vertical)
+                soil_char[match('porosity_0',soilParam[,2])] = ssurgo_info[cond,'soilpor0'] # porosity_0
+                soil_char[match('porosity_decay',soilParam[,2])] = ssurgo_info[cond,'soilpordecay'] # porosity_decay (m)
+                soil_char[match('active_zone_z',soilParam[,2])] = ssurgo_info[cond,'soilactivedepth']
+                soil_char[match('soil_depth',soilParam[,2])] = ssurgo_info[cond,'soilsoildepth']
+                soil_char[match('albedo',soilParam[,2])] = ssurgo_info[cond,'soilalbedo']
+                soil_char[match('clay',soilParam[,2])] = ssurgo_info[cond,'soilclay']
+                soil_char[match('silt',soilParam[,2])] = ssurgo_info[cond,'soilsilt']
+                soil_char[match('sand',soilParam[,2])] = ssurgo_info[cond,'soilsand']
+                soil_char[match('pore_size_index',soilParam[,2])] = ssurgo_info[cond,'soilpor_size_index']
+                soil_char[match('psi_air_entry',soilParam[,2])] = ssurgo_info[cond,'soilpsi_air_entry']
+                soil_char[match('maxrootdepth',soilParam[,2])] = ssurgo_info[cond,'soilmaxrootdepth']
+                soil_char[match('particledensity',soilParam[,2])] = ssurgo_info[cond,'soilparticledensity']
+                soil_char[match('soilc',soilParam[,2])] = ssurgo_info[cond,'soilsoilc']
+                soil_char[match('DOM_decay_rate',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']
+                soil_char[match('N_decay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']
+            }# if
             if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(soil_char, soilParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
         }#jj
     }#i
