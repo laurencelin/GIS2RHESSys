@@ -14,7 +14,12 @@ There are two branches under this repository. Master branch (default) holds a se
 * Experiences in command lines, being comfortable to use commands to operate computer
 * Backgrounds in Hydrology and Ecology; After all, RHESSys is an eco-hydrological model used for hydrology and ecosystem studies.
 
-## Workflow guide for running commandline tools on local Mac / Linux (one of the links below):
+## Usage of the tools here
+This is a two-step process from scratch:
+1) Setup a workflow script (see below) to construct GIS database for eco-hydrological modeling, processing the raw gis data into the database, and calculating the necessary information for the model. 
+2) Run the script in command line, e.g., bash <script file> if you have installed and configured the require software and library on your computer. 
+
+## Workflow script guides (one of the links below):
 * https://nbviewer.jupyter.org/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb 
 * https://colab.research.google.com/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb
 
