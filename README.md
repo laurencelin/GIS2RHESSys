@@ -8,6 +8,7 @@ There are two branches under this repository. Master branch (default) holds a se
 * GRASS GIS 7.x.x installed and its associated dependencies and libraries (please see offical GRASS GIS website)
 * R 3.6.x and above installed
 * Bash scripting environment installed or supported by the OS
+* Run this script to test if the required software has been properly installed on Mac OS. (https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/workflows_test_script.sh)
 
 ## Recommended backgrounds for using GIS2RHESSys to setup RHESSysEastCoast model:
 * Any experiences in GIS, including finding data sources, pre- and post- processing data
