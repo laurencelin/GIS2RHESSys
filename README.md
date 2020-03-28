@@ -15,16 +15,17 @@ There are two branches under this repository. Master branch (default) holds a se
 * Backgrounds in Hydrology and Ecology; After all, RHESSys is an eco-hydrological model used for hydrology and ecosystem studies.
 
 ## Usage of the tools here
-This is a two-step process from scratch:
-1) Setup a workflow script (see below) to construct GIS database for eco-hydrological modeling, processing the raw gis data into the database, and calculating the necessary information for the model. 
-2) Run the script in command line, e.g., bash <script file> if you have installed and configured the require software and library on your computer. 
+GIS2RHESSys has two parts: GIS setup part (I) and building RHESSys part (II). 
 
-Correcting / updating / modifying the pre-existing workflow script (many options here): 
-* option 1: you can open and edit the pre-existing workflow script; Take this approach, you are going to rebuild the evreything from scratch again
-* option 2: you can make a second workflow script with the same project directory and gis settings (e.g., resolution and projection) and put in the new calculations; Take this approach, you are building new information onto the existing GIS database (not overwriting). By updating or making new "template" (see guide below), you can build a new model. 
+The GIS setup part contains GIS (command line) modules to initiate GIS dataset with a desired projection and resolution, import and process raw GIS data, calculated variables and information used to for RHESSys modeling. User has options to perform these tasks on their own or GUI interface as long as user is responsible to understand what variables and information the model requried. A figure below (in data requirement section) summarizes the required GIS information for building RHESSys. 
 
+The building RHESSys part is to fill out a template used by the R script to read in maps from an established GRASS GIS database and write out into RHESSys input files, including def files, flow tables, worldfile, and worldfiles header. User is responsible for making the climate data available to the model. Note that vegetation carbon pools in the output worldfile have been initiated, i.e., no need of using LAIread. However, growth simulation is still required spin-up. The guide on template file and use of R scripts is at https://nbviewer.jupyter.org/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb  or  https://colab.research.google.com/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb
 
-## Workflow script guides (one of the links below):
+## GIS setup modules (one of the links below):
+* https://nbviewer.jupyter.org/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb 
+* https://colab.research.google.com/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb
+
+## Template guides (one of the links below):
 * https://nbviewer.jupyter.org/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb 
 * https://colab.research.google.com/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb
 
@@ -44,7 +45,7 @@ When setup a RHESSys model for a catchment, we are expecting certain directory s
 * Soil texture
 * Climate time series (daily) 
 Below diagram shows the relationship between GRASS dataset and RHESSys model.
-![Alt text](GIS2RHESSys.png?raw=true "Title")
+![Alt text](GIS_rhessys.png?raw=true "Title")
 
 ## Other links:
 * RHESSysEastCoast https://github.com/laurencelin/RHESSysEastCoast
