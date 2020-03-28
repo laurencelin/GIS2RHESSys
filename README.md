@@ -26,8 +26,8 @@ The building RHESSys part is to fill out a template used by the R script to read
 * https://colab.research.google.com/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb
 
 ## Template guides (one of the links below):
-* https://nbviewer.jupyter.org/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb 
-* https://colab.research.google.com/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_workflow_script_master.ipynb
+* https://nbviewer.jupyter.org/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_template_script_master.ipynb
+* https://colab.research.google.com/github/laurencelin/GIS2RHESSys/blob/master/GIS2RHESSys_template_script_master.ipynb
 
 ## Directory structures for RHESSys modeling:
 When setup a RHESSys model for a catchment, we are expecting certain directory structure (Figure below).
