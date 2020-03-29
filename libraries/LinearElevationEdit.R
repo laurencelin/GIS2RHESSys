@@ -3,6 +3,8 @@ options(scipen=999)
 arg=commandArgs(T)
 
 library(rgrass7)
+library(sp)
+use_sp()
 rast = readRAST(arg[1:3])
 xx = rast@data[[1]]
 yy = rast@data[[2]]

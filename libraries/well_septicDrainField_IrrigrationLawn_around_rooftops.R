@@ -2,6 +2,8 @@ arg=commandArgs(T)
 
 
 library(rgrass7)
+library(sp)
+use_sp()
 #arg=c('patch30m','demRAW','lawnfieldIDs','rooftopIDs','rooftopIDlawnIDs','xmap','ymap')
 rast = readRAST(arg[1:7])
 mask = !is.na(rast@data[[1]])

@@ -3,6 +3,8 @@ arg=commandArgs(T)
 # arg=c('dem', 'slope', 'aspect', 'hill', 'zone_cluster')
 
 library(rgrass7)
+library(sp)
+use_sp()
 rast = readRAST(arg[1:4])
 mask = !is.na(rast@data[[1]])
 dem = rast@data[[1]][mask]

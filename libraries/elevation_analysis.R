@@ -3,6 +3,8 @@ arg=commandArgs(T)
 
 library(rgrass7)
 library(rgdal)
+library(sp)
+use_sp()
 # arg=c('dem','colmap', 'rowmap', 'drain','hill', 'strExt')
 
 rast = readRAST(arg,NODATA=0)

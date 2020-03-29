@@ -1,6 +1,8 @@
 options(scipen=999)
 arg = commandArgs(T)
 library(rgrass7)
+library(sp)
+use_sp()
 
 #arg=c('basin','roadExitDEM','roadExit_neighbor_id','roadExit_neighbor_usdDEM','dem','xmap','ymap','patch','roadExit_neighbor_usdDEMmed','roadExitOutletPatchID','roadExitOutlet', '120')
 

@@ -2,6 +2,8 @@ arg=commandArgs(T)
 
 
 library(rgrass7)
+library(sp)
+use_sp()
 
 rast = readRAST(arg[1])
 mask = !is.na(rast@data[[1]])

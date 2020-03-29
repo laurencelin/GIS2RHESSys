@@ -1,4 +1,6 @@
 library(rgrass7)
+library(sp)
+use_sp()
 rast=readRAST(c('tmp','basin_','sub_','hill_','str_','drain'))
 mask = !is.na(rast@data[[1]]) # use sub as mask
 basin=rast@data[[2]][mask]

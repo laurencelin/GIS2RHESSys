@@ -9,7 +9,9 @@
 	# read in rast
 	library(rgrass7)
 	library(rgdal)
-	
+	library(sp)
+	use_sp()
+
 	# bounded by GIS mask
 	basinMap = 'basin'
 	rast0 = readRAST(basinMap)
