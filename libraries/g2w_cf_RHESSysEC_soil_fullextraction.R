@@ -55,6 +55,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     library(XML)
     library(rgrass7)
     library(rgdal)
+    use_sp()
     gis = gmeta()
     gridarea = round(gis$nsres * gis$ewres)
 
