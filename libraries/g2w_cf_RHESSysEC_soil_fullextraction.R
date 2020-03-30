@@ -1114,60 +1114,64 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     ## ... setpic (lots of warnings)
     patchInfo_septicSource = vector(mode='list',length(fullLength))
     patchInfo_septicSourceMODE = vector(mode='list',length(fullLength))
-    if( length(template$septicInOutTable)>0 & !is.null(template$septicInOutTable) & !is.na(template$septicInOutTable)){
-        tableInOut = read.csv(template$septicInOutTable)
-        tableOutIndex = match(tableInOut$outPatch,patch_info_patchID)
-        tableInIndex = match(tableInOut$inPatch,patch_info_patchID)
-        
-        tableInIndexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
-            tmp = tableInIndex[ii]
-            tmp = tmp[!is.na(tmp)]
-            if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
-        });
-        tableInModeList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
-            tmp = tableInOut$mode[ii]
-            tmp = tmp[!is.na(tmp)]
-            if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
-        });
-        indexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
-            return <- tableOutIndex[ii][1]
-        });
-        
-        for(ii in seq_along(indexList)){
-        	patchInfo_septicSource[[ indexList[ii] ]] = tableInIndexList[[ii]]
-        	patchInfo_septicSourceMODE[[ indexList[ii] ]] = tableInModeList[[ii]]
-            patchInfo[[ indexList[ii] ]]['septicQfrac'] = 1 #make sure it has septic release
-        }# end of for loop ii
+    if( length(template$septicInOutTable)>0 ){
+        if(!is.na(template$septicInOutTable)){
+            tableInOut = read.csv(template$septicInOutTable)
+            tableOutIndex = match(tableInOut$outPatch,patch_info_patchID)
+            tableInIndex = match(tableInOut$inPatch,patch_info_patchID)
+            
+            tableInIndexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+                tmp = tableInIndex[ii]
+                tmp = tmp[!is.na(tmp)]
+                if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+            });
+            tableInModeList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+                tmp = tableInOut$mode[ii]
+                tmp = tmp[!is.na(tmp)]
+                if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+            });
+            indexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+                return <- tableOutIndex[ii][1]
+            });
+            
+            for(ii in seq_along(indexList)){
+                patchInfo_septicSource[[ indexList[ii] ]] = tableInIndexList[[ii]]
+                patchInfo_septicSourceMODE[[ indexList[ii] ]] = tableInModeList[[ii]]
+                patchInfo[[ indexList[ii] ]]['septicQfrac'] = 1 #make sure it has septic release
+            }# end of for loop ii
+        }#if
     }# vector of source patch index in "patch_info_patchID"
 
 
     ## ... irrigation (re-use some variables here)
     patchInfo_irrigationSource = vector(mode='list',length(fullLength))
     patchInfo_irrigationSourceMODE = vector(mode='list',length(fullLength))
-    if( length(template$irrigationInOutTable)>0 & !is.null(template$irrigationInOutTable) & !is.na(template$irrigationInOutTable)){
-        tableInOut = read.csv(template$irrigationInOutTable)
-        tableOutIndex = match(tableInOut$irrigrationPatchID,patch_info_patchID)
-        tableInIndex = match(tableInOut$sourcePatchID,patch_info_patchID)
-        
-        tableInIndexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
-            tmp = tableInIndex[ii]
-            tmp = tmp[!is.na(tmp)]
-            if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
-        });
-        tableInModeList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
-            tmp = tableInOut$mode[ii]
-            tmp = tmp[!is.na(tmp)]
-            if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
-        });
-        indexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
-            return <- tableOutIndex[ii][1]
-        });
-        
-        for(ii in seq_along(indexList)){
-        	patchInfo_irrigationSource[[ indexList[ii] ]] = tableInIndexList[[ii]]
-        	patchInfo_irrigationSourceMODE[[ indexList[ii] ]] = tableInModeList[[ii]]
-            patchInfo[[ indexList[ii] ]]['irrigateQfrac'] = 1 # make sure it irrigates
-        }# end of for loop ii
+    if( length(template$irrigationInOutTable)>0 ){
+        if( !is.na(template$irrigationInOutTable) ){
+            tableInOut = read.csv(template$irrigationInOutTable)
+            tableOutIndex = match(tableInOut$irrigrationPatchID,patch_info_patchID)
+            tableInIndex = match(tableInOut$sourcePatchID,patch_info_patchID)
+            
+            tableInIndexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+                tmp = tableInIndex[ii]
+                tmp = tmp[!is.na(tmp)]
+                if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+            });
+            tableInModeList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+                tmp = tableInOut$mode[ii]
+                tmp = tmp[!is.na(tmp)]
+                if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+            });
+            indexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+                return <- tableOutIndex[ii][1]
+            });
+            
+            for(ii in seq_along(indexList)){
+                patchInfo_irrigationSource[[ indexList[ii] ]] = tableInIndexList[[ii]]
+                patchInfo_irrigationSourceMODE[[ indexList[ii] ]] = tableInModeList[[ii]]
+                patchInfo[[ indexList[ii] ]]['irrigateQfrac'] = 1 # make sure it irrigates
+            }# end of for loop ii
+        }# if
     }# vector of source patch index in "patch_info_patchID"
     
     
