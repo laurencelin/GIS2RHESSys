@@ -4,7 +4,7 @@ arg=commandArgs(T)
 
 library(rgrass7)
 library(sp)
-use_sp()
+tryCatch({ use_sp() },error=function(cond){message(cond)},warning=function(cond){message(cond)},finally={message("Please update the rgrass7 package on R")})
 rast = readRAST(arg[1:4])
 mask = !is.na(rast@data[[1]])
 dem = rast@data[[1]][mask]

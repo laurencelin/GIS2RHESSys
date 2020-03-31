@@ -2,7 +2,7 @@ arg=commandArgs(T)
 
 library(rgrass7)
 library(sp)
-use_sp()
+tryCatch({ use_sp() },error=function(cond){message(cond)},warning=function(cond){message(cond)},finally={message("Please update the rgrass7 package on R")})
 # need to set comuptation region. it does change how much memory R uses to hold raster vectors
 rast = readRAST(c(arg[1],arg[2]))
 mask = !is.na(rast@data[[1]])

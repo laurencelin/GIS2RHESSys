@@ -3,7 +3,7 @@ arg=commandArgs(T)
 
 library(rgrass7)
 library(sp)
-use_sp()
+tryCatch({ use_sp() },error=function(cond){message(cond)},warning=function(cond){message(cond)},finally={message("Please update the rgrass7 package on R")})
 #arg=c('patch30m','demRAW','lawnfieldIDs','rooftopIDs','rooftopIDlawnIDs','xmap','ymap')
 rast = readRAST(arg[1:7])
 mask = !is.na(rast@data[[1]])

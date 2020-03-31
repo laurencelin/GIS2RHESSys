@@ -6,7 +6,7 @@ library(XML)
 library(rgrass7)
 library(rgdal)
 gis = gmeta()
-
+tryCatch({ use_sp() },error=function(cond){message(cond)},warning=function(cond){message(cond)},finally={message("Please update the rgrass7 package on R")})
 DtoR = pi/180
 RtoD = 1/DtoR
 # bounded by GIS mask

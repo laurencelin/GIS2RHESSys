@@ -1,6 +1,6 @@
 library(rgrass7)
 library(sp)
-use_sp()
+tryCatch({ use_sp() },error=function(cond){message(cond)},warning=function(cond){message(cond)},finally={message("Please update the rgrass7 package on R")})
 rast=readRAST(c('tmp','basin_','sub_','hill_','str_','drain'))
 mask = !is.na(rast@data[[1]]) # use sub as mask
 basin=rast@data[[2]][mask]

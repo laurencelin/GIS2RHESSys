@@ -55,7 +55,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     library(XML)
     library(rgrass7)
     library(rgdal)
-    use_sp()
+    tryCatch({ use_sp() },error=function(cond){message(cond)},warning=function(cond){message(cond)},finally={message("Please update the rgrass7 package on R")})
     gis = gmeta()
     gridarea = round(gis$nsres * gis$ewres)
 
