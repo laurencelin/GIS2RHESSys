@@ -209,7 +209,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         }},
         error = function(e){ }
         )#tryCatch
-
+    print('reading hillGWiniQ, hillGWiniNO3, hillGWiniNH4, hillGWiniDOC, hillGWiniDON ... DONE')
 	
     
 	# extract soil def IDs; how to handle catchments that have no data?
