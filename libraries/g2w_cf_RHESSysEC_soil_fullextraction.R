@@ -158,47 +158,99 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	
 	
 	# extract soil def IDs; how to handle catchments that have no data?
-	rast = readRAST(c(
-        template$soilidMAP, ## 1   <<--- unique gis polygon IDs, e.g., the cat key
-        template$soiltexture, ## 2 <<--- soil class IDs
-        template$soilksat0, ## 3
-        template$soilksatdecay, ## 4
-        template$soilpor0, ## 5
-        template$soilpordecay, ## 6
-        template$soilsand, ## 7
-        template$soilsilt, ## 8
-        template$soilclay, ## 9
-        template$soilbulkdensity, ## 10
-        template$soilparticledensity, ## 11
-        template$soilsoildepth, ## 12
-        template$soilactivedepth, ## 13
-        template$soilmaxrootdepth, ## 14
-        template$soilalbedo, ## 15
-        template$soilpor_size_index, ## 16
-        template$soilpsi_air_entry, ## 17
-        template$soilsoilc, ## 18
-        template$soilomdecay ## 19
-        ),NODATA=0)
-
-		soil_extID = rast@data[[1]][mask]
-        soiltexture = rast@data[[2]][mask]
-        soilksat0 = rast@data[[3]][mask]
-        soilksatdecay = rast@data[[4]][mask]
-        soilpor0 = rast@data[[5]][mask]
-        soilpordecay = rast@data[[6]][mask]
-        soilsand = rast@data[[7]][mask]
-        soilsilt = rast@data[[8]][mask]
-        soilclay = rast@data[[9]][mask]
-        soilbulkdensity = rast@data[[10]][mask]
-        soilparticledensity = rast@data[[11]][mask]
-        soilsoildepth = rast@data[[12]][mask]
-        soilactivedepth = rast@data[[13]][mask]
-        soilmaxrootdepth = rast@data[[14]][mask]
-        soilalbedo = rast@data[[15]][mask]
-        soilpor_size_index = rast@data[[16]][mask]
-        soilpsi_air_entry = rast@data[[17]][mask]
-        soilsoilc = rast@data[[18]][mask]
-        soilomdecay = rast@data[[19]][mask]
+    rast = readRAST(template$soiltexture,NODATA=0)
+        soiltexture = rast@data[[1]][mask]
+        
+    soil_extID=NULL;tryCatch({
+        rast = readRAST(template$soilidMAP);
+        soil_extID <- rast@data[[1]][mask];
+        error = function(e){ soil_extID <<- soiltexture }
+        )#tryCatch
+    soilksat0=NULL;tryCatch({
+        rast = readRAST(template$soilksat0);
+        soilksat0 <- rast@data[[1]][mask];
+        error = function(e){ soilksat0 <<- emptyMAP }
+        )#tryCatch
+    soilksatdecay=NULL;tryCatch({
+        rast = readRAST(template$soilksatdecay);
+        soilksatdecay <- rast@data[[1]][mask];
+        error = function(e){ soilksatdecay <<- emptyMAP }
+        )#tryCatch
+    soilpor0=NULL;tryCatch({
+        rast = readRAST(template$soilpor0);
+        soilpor0 <- rast@data[[1]][mask];
+        error = function(e){ soilpor0 <<- emptyMAP }
+        )#tryCatch
+    soilpordecay=NULL;tryCatch({
+        rast = readRAST(template$soilpordecay);
+        soilpordecay <- rast@data[[1]][mask];
+        error = function(e){ soilpordecay <<- emptyMAP }
+        )#tryCatch
+    soilsand=NULL;tryCatch({
+        rast = readRAST(template$soilsand);
+        soilsand <- rast@data[[1]][mask];
+        error = function(e){ soilsand <<- emptyMAP }
+        )#tryCatch
+    soilsilt=NULL;tryCatch({
+        rast = readRAST(template$soilsilt);
+        soilsilt <- rast@data[[1]][mask];
+        error = function(e){ soilsilt <<- emptyMAP }
+        )#tryCatch
+    soilclay=NULL;tryCatch({
+        rast = readRAST(template$soilclay);
+        soilclay <- rast@data[[1]][mask];
+        error = function(e){ soilclay <<- emptyMAP }
+        )#tryCatch
+    soilbulkdensity=NULL;tryCatch({
+        rast = readRAST(template$soilbulkdensity);
+        soilbulkdensity <- rast@data[[1]][mask];
+        error = function(e){ soilbulkdensity <<- emptyMAP }
+        )#tryCatch
+    soilparticledensity=NULL;tryCatch({
+        rast = readRAST(template$soilparticledensity);
+        soilparticledensity <- rast@data[[1]][mask];
+        error = function(e){ soilparticledensity <<- emptyMAP }
+        )#tryCatch
+    soilsoildepth=NULL;tryCatch({
+        rast = readRAST(template$soilsoildepth);
+        soilsoildepth <- rast@data[[1]][mask];
+        error = function(e){ soilsoildepth <<- emptyMAP }
+        )#tryCatch
+    soilactivedepth=NULL;tryCatch({
+        rast = readRAST(template$soilactivedepth);
+        soilactivedepth <- rast@data[[1]][mask];
+        error = function(e){ soilactivedepth <<- emptyMAP }
+        )#tryCatch
+    soilmaxrootdepth=NULL;tryCatch({
+        rast = readRAST(template$soilmaxrootdepth);
+        soilmaxrootdepth <- rast@data[[1]][mask];
+        error = function(e){ soilmaxrootdepth <<- emptyMAP }
+        )#tryCatch
+    soilalbedo=NULL;tryCatch({
+        rast = readRAST(template$soilalbedo);
+        soilalbedo <- rast@data[[1]][mask];
+        error = function(e){ soilalbedo <<- emptyMAP }
+        )#tryCatch
+    soilpor_size_index=NULL;tryCatch({
+        rast = readRAST(template$soilpor_size_index);
+        soilpor_size_index <- rast@data[[1]][mask];
+        error = function(e){ soilpor_size_index <<- emptyMAP }
+        )#tryCatch
+    soilpsi_air_entry=NULL;tryCatch({
+        rast = readRAST(template$soilpsi_air_entry);
+        soilpsi_air_entry <- rast@data[[1]][mask];
+        error = function(e){ soilpsi_air_entry <<- emptyMAP }
+        )#tryCatch
+    soilsoilc=NULL;tryCatch({
+        rast = readRAST(template$soilsoilc);
+        soilsoilc <- rast@data[[1]][mask];
+        error = function(e){ soilsoilc <<- emptyMAP }
+        )#tryCatch
+    soilomdecay=NULL;tryCatch({
+       rast = readRAST(template$soilomdecay);
+       soilomdecay <- rast@data[[1]][mask];
+       error = function(e){ soilomdecay <<- emptyMAP }
+       )#tryCatch
     print('reading soils ... DONE')
 
     # extract
@@ -870,25 +922,25 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             soil_char = soilParam[, ii]
             soil_char[1] = jj # id
             ## ... below ...  soilParam[,1:2] for checking index
-            soil_char[match('Ksat_0',soilParam[,2])] = ssurgo_info[cond,'soilksat0'] # ksat0 (m/day)
-            soil_char[match('Ksat_0_v',soilParam[,2])] = ssurgo_info[cond,'soilksat0']
-            soil_char[match('m',soilParam[,2])] = ssurgo_info[cond,'soilksatdecay'] # it's meter (horizontal)
-            soil_char[match('m_z',soilParam[,2])] = ssurgo_info[cond,'soilksatdecay'] # it's meter (vertical)
-            soil_char[match('porosity_0',soilParam[,2])] = ssurgo_info[cond,'soilpor0'] # porosity_0
-            soil_char[match('porosity_decay',soilParam[,2])] = ssurgo_info[cond,'soilpordecay'] # porosity_decay (m) <<----- disabled for now June 20th, 2019
-            soil_char[match('active_zone_z',soilParam[,2])] = ssurgo_info[cond,'soilactivedepth']
-            soil_char[match('soil_depth',soilParam[,2])] = ssurgo_info[cond,'soilsoildepth']
-            soil_char[match('albedo',soilParam[,2])] = ssurgo_info[cond,'soilalbedo']
-            soil_char[match('clay',soilParam[,2])] = ssurgo_info[cond,'soilclay']
-            soil_char[match('silt',soilParam[,2])] = ssurgo_info[cond,'soilsilt']
-            soil_char[match('sand',soilParam[,2])] = ssurgo_info[cond,'soilsand']
-            soil_char[match('pore_size_index',soilParam[,2])] = ssurgo_info[cond,'soilpor_size_index']
-            soil_char[match('psi_air_entry',soilParam[,2])] = ssurgo_info[cond,'soilpsi_air_entry']
-            soil_char[match('maxrootdepth',soilParam[,2])] = ssurgo_info[cond,'soilmaxrootdepth'] 
-            soil_char[match('particledensity',soilParam[,2])] = ssurgo_info[cond,'soilparticledensity'] 
-            soil_char[match('soilc',soilParam[,2])] = ssurgo_info[cond,'soilsoilc']
-            soil_char[match('DOM_decay_rate',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']
-            soil_char[match('N_decay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']
+            if(!is.na(ssurgo_info[cond,'soilksat0'])){soil_char[match('Ksat_0',soilParam[,2])] = ssurgo_info[cond,'soilksat0']} # ksat0 (m/day)
+            if(!is.na(ssurgo_info[cond,'soilksat0'])){soil_char[match('Ksat_0_v',soilParam[,2])] = ssurgo_info[cond,'soilksat0']}
+            if(!is.na(ssurgo_info[cond,'soilksatdecay'])){soil_char[match('m',soilParam[,2])] = ssurgo_info[cond,'soilksatdecay']} # it's meter (horizontal)
+            if(!is.na(ssurgo_info[cond,'soilksatdecay'])){soil_char[match('m_z',soilParam[,2])] = ssurgo_info[cond,'soilksatdecay']} # it's meter (vertical)
+            if(!is.na(ssurgo_info[cond,'soilpor0'])){soil_char[match('porosity_0',soilParam[,2])] = ssurgo_info[cond,'soilpor0']} # porosity_0
+            if(!is.na(ssurgo_info[cond,'soilpordecay'])){soil_char[match('porosity_decay',soilParam[,2])] = ssurgo_info[cond,'soilpordecay']} # porosity_decay (m) <<----- disabled for now June 20th, 2019
+            if(!is.na(ssurgo_info[cond,'soilactivedepth'])){soil_char[match('active_zone_z',soilParam[,2])] = ssurgo_info[cond,'soilactivedepth']}
+            if(!is.na(ssurgo_info[cond,'soilsoildepth'])){soil_char[match('soil_depth',soilParam[,2])] = ssurgo_info[cond,'soilsoildepth']}
+            if(!is.na(ssurgo_info[cond,'soilalbedo'])){soil_char[match('albedo',soilParam[,2])] = ssurgo_info[cond,'soilalbedo']}
+            if(!is.na(ssurgo_info[cond,'soilclay'])){soil_char[match('clay',soilParam[,2])] = ssurgo_info[cond,'soilclay']}
+            if(!is.na(ssurgo_info[cond,'soilsilt'])){soil_char[match('silt',soilParam[,2])] = ssurgo_info[cond,'soilsilt']}
+            if(!is.na(ssurgo_info[cond,'soilsand'])){soil_char[match('sand',soilParam[,2])] = ssurgo_info[cond,'soilsand']}
+            if(!is.na(ssurgo_info[cond,'soilpor_size_index'])){soil_char[match('pore_size_index',soilParam[,2])] = ssurgo_info[cond,'soilpor_size_index']}
+            if(!is.na(ssurgo_info[cond,'soilpsi_air_entry'])){soil_char[match('psi_air_entry',soilParam[,2])] = ssurgo_info[cond,'soilpsi_air_entry']}
+            if(!is.na(ssurgo_info[cond,'soilmaxrootdepth'])){soil_char[match('maxrootdepth',soilParam[,2])] = ssurgo_info[cond,'soilmaxrootdepth']}
+            if(!is.na(ssurgo_info[cond,'soilparticledensity'])){soil_char[match('particledensity',soilParam[,2])] = ssurgo_info[cond,'soilparticledensity']}
+            if(!is.na(ssurgo_info[cond,'soilsoilc'])){soil_char[match('soilc',soilParam[,2])] = ssurgo_info[cond,'soilsoilc']}
+            if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('DOM_decay_rate',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
+            if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('N_decay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
             
             if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(soil_char, soilParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
         }#jj
