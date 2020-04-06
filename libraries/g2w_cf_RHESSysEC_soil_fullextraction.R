@@ -14,6 +14,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     defaultWorldName = c('world_ID')
 	defaultBasinName = c('basin_ID','x','y','z','latitude')
 	defaultHillName = c('hillslope_ID','x','y','z')
+    defaultHillGWName = c('gw.storage','gw.NO3','gw.NH4','gw.DOC','gw.DON')
 	defaultZoneName = c('zone_ID','x','y','z','area','slope','aspect','precip_lapse_rate','e_horizon','w_horizon','base_station_ID')
 	defaultPatchName = c('patch_ID','x','y','z','soil_parm_ID','landuse_parm_ID','area','slope','lna','Ksat_vertical')
 
@@ -46,7 +47,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         'epv.wstress_days',
         'epv.max_fparabs',
         'epv.min_vwc')
-	title = c(defaultWorldName, defaultBasinName, defaultHillName, defaultZoneName, defaultPatchName, defaultStratumName)
+	#title = c(defaultWorldName, defaultBasinName, defaultHillName, defaultZoneName, defaultPatchName, defaultStratumName)
 	
 
 #----------------------------------------------------------------------------------------------
@@ -149,6 +150,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	
 	##--------- climate station (assume one zone for one station)
 	if(is.na(climateStationID)){
+        # climateStationID = as.numeric(templateACTION$stationID[1]) above; if it's not a single integer, then it's NA
         rast = readRAST(templateACTION$stationID[1])
 		climateStationID = rast@data[[1]][mask]
         print(paste('multiple base stations',templateACTION$stationID[1],'...DONE'))
@@ -156,104 +158,157 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 		climateStationID = rep(as.numeric(templateACTION$stationID[1]), sum(mask))
 	}#if else
 	
+    ## GW
+    hillGWiniQ=NULL;tryCatch({
+        tmpnum = as.numeric(template$GWiniStorage)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$GWiniStorage);
+            hillGWiniQ <- tapply(rast@data[[1]][mask],INDEX=hill, FUN=mean)
+        }else{
+            hillGWiniQ <- rep(tmpnum, length(unique(hill)))
+        }},
+        error = function(e){ }
+        )#tryCatch
+    hillGWiniNO3=NULL;tryCatch({
+        tmpnum = as.numeric(template$GWiniNO3)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$GWiniStorage);
+            hillGWiniNO3 <- tapply(rast@data[[1]][mask],INDEX=hill, FUN=mean)
+        }else{
+            hillGWiniNO3 <- rep(tmpnum, length(unique(hill)))
+        }},
+        error = function(e){ }
+        )#tryCatch
+    hillGWiniNH4=NULL;tryCatch({
+        tmpnum = as.numeric(template$GWiniNH4)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$GWiniStorage);
+            hillGWiniNH4 <- tapply(rast@data[[1]][mask],INDEX=hill, FUN=mean)
+        }else{
+            hillGWiniNH4 <- rep(tmpnum, length(unique(hill)))
+        }},
+        error = function(e){ }
+        )#tryCatch
+    hillGWiniDOC=NULL;tryCatch({
+        tmpnum = as.numeric(template$GWiniDOC)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$GWiniStorage);
+            hillGWiniDOC <- tapply(rast@data[[1]][mask],INDEX=hill, FUN=mean)
+        }else{
+            hillGWiniDOC <- rep(tmpnum, length(unique(hill)))
+        }},
+        error = function(e){ }
+        )#tryCatch
+    hillGWiniDON=NULL;tryCatch({
+        tmpnum = as.numeric(template$GWiniDON)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$GWiniStorage);
+            hillGWiniDON <- tapply(rast@data[[1]][mask],INDEX=hill, FUN=mean)
+        }else{
+            hillGWiniDON <- rep(tmpnum, length(unique(hill)))
+        }},
+        error = function(e){ }
+        )#tryCatch
+
 	
+    
 	# extract soil def IDs; how to handle catchments that have no data?
     rast = readRAST(template$soiltexture,NODATA=0)
         soiltexture = rast@data[[1]][mask]
         
     soil_extID=NULL;tryCatch({
         rast = readRAST(template$soilidMAP);
-        soil_extID <- rast@data[[1]][mask];
+        soil_extID <- rast@data[[1]][mask]},
         error = function(e){ soil_extID <<- soiltexture }
         )#tryCatch
     soilksat0=NULL;tryCatch({
         rast = readRAST(template$soilksat0);
-        soilksat0 <- rast@data[[1]][mask];
+        soilksat0 <- rast@data[[1]][mask]},
         error = function(e){ soilksat0 <<- emptyMAP }
         )#tryCatch
     soilksatdecay=NULL;tryCatch({
         rast = readRAST(template$soilksatdecay);
-        soilksatdecay <- rast@data[[1]][mask];
+        soilksatdecay <- rast@data[[1]][mask]},
         error = function(e){ soilksatdecay <<- emptyMAP }
         )#tryCatch
     soilpor0=NULL;tryCatch({
         rast = readRAST(template$soilpor0);
-        soilpor0 <- rast@data[[1]][mask];
+        soilpor0 <- rast@data[[1]][mask]},
         error = function(e){ soilpor0 <<- emptyMAP }
         )#tryCatch
     soilpordecay=NULL;tryCatch({
         rast = readRAST(template$soilpordecay);
-        soilpordecay <- rast@data[[1]][mask];
+        soilpordecay <- rast@data[[1]][mask]},
         error = function(e){ soilpordecay <<- emptyMAP }
         )#tryCatch
     soilsand=NULL;tryCatch({
         rast = readRAST(template$soilsand);
-        soilsand <- rast@data[[1]][mask];
+        soilsand <- rast@data[[1]][mask]},
         error = function(e){ soilsand <<- emptyMAP }
         )#tryCatch
     soilsilt=NULL;tryCatch({
         rast = readRAST(template$soilsilt);
-        soilsilt <- rast@data[[1]][mask];
+        soilsilt <- rast@data[[1]][mask]},
         error = function(e){ soilsilt <<- emptyMAP }
         )#tryCatch
     soilclay=NULL;tryCatch({
         rast = readRAST(template$soilclay);
-        soilclay <- rast@data[[1]][mask];
+        soilclay <- rast@data[[1]][mask]},
         error = function(e){ soilclay <<- emptyMAP }
         )#tryCatch
     soilbulkdensity=NULL;tryCatch({
         rast = readRAST(template$soilbulkdensity);
-        soilbulkdensity <- rast@data[[1]][mask];
+        soilbulkdensity <- rast@data[[1]][mask]},
         error = function(e){ soilbulkdensity <<- emptyMAP }
         )#tryCatch
     soilparticledensity=NULL;tryCatch({
         rast = readRAST(template$soilparticledensity);
-        soilparticledensity <- rast@data[[1]][mask];
+        soilparticledensity <- rast@data[[1]][mask]},
         error = function(e){ soilparticledensity <<- emptyMAP }
         )#tryCatch
     soilsoildepth=NULL;tryCatch({
         rast = readRAST(template$soilsoildepth);
-        soilsoildepth <- rast@data[[1]][mask];
+        soilsoildepth <- rast@data[[1]][mask]},
         error = function(e){ soilsoildepth <<- emptyMAP }
         )#tryCatch
     soilactivedepth=NULL;tryCatch({
         rast = readRAST(template$soilactivedepth);
-        soilactivedepth <- rast@data[[1]][mask];
+        soilactivedepth <- rast@data[[1]][mask]},
         error = function(e){ soilactivedepth <<- emptyMAP }
         )#tryCatch
     soilmaxrootdepth=NULL;tryCatch({
         rast = readRAST(template$soilmaxrootdepth);
-        soilmaxrootdepth <- rast@data[[1]][mask];
+        soilmaxrootdepth <- rast@data[[1]][mask]},
         error = function(e){ soilmaxrootdepth <<- emptyMAP }
         )#tryCatch
     soilalbedo=NULL;tryCatch({
         rast = readRAST(template$soilalbedo);
-        soilalbedo <- rast@data[[1]][mask];
+        soilalbedo <- rast@data[[1]][mask]},
         error = function(e){ soilalbedo <<- emptyMAP }
         )#tryCatch
     soilpor_size_index=NULL;tryCatch({
         rast = readRAST(template$soilpor_size_index);
-        soilpor_size_index <- rast@data[[1]][mask];
+        soilpor_size_index <- rast@data[[1]][mask]},
         error = function(e){ soilpor_size_index <<- emptyMAP }
         )#tryCatch
     soilpsi_air_entry=NULL;tryCatch({
         rast = readRAST(template$soilpsi_air_entry);
-        soilpsi_air_entry <- rast@data[[1]][mask];
+        soilpsi_air_entry <- rast@data[[1]][mask]},
         error = function(e){ soilpsi_air_entry <<- emptyMAP }
         )#tryCatch
     soilsoilc=NULL;tryCatch({
         rast = readRAST(template$soilsoilc);
-        soilsoilc <- rast@data[[1]][mask];
+        soilsoilc <- rast@data[[1]][mask]},
         error = function(e){ soilsoilc <<- emptyMAP }
         )#tryCatch
     soilomdecay=NULL;tryCatch({
        rast = readRAST(template$soilomdecay);
-       soilomdecay <- rast@data[[1]][mask];
+       soilomdecay <- rast@data[[1]][mask]},
        error = function(e){ soilomdecay <<- emptyMAP }
        )#tryCatch
     print('reading soils ... DONE')
 
-    # extract
+    # extract RHESSys LULC IDs
     LULCID=NULL;tryCatch({
         rast = readRAST(template$LULCidMAP);
         LULCID <- rast@data[[1]][mask];
@@ -836,17 +891,31 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 #----------------------------------------------------------------------------------------------		
 if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     outWorldFilePath = templateACTION$outputWorldfile[1]
-	title = c(defaultWorldName, defaultBasinName, defaultHillName, defaultZoneName, defaultPatchName, defaultStratumName)
+	title = c(defaultWorldName, defaultBasinName, defaultHillName,
+        switch( is.null(hillGWiniQ)+1,'gw.storage',NULL),
+        switch( is.null(hillGWiniNO3)+1,'gw.NO3',NULL),
+        switch( is.null(hillGWiniNH4)+1,'gw.NH4',NULL),
+        switch( is.null(hillGWiniDOC)+1,'gw.DOC',NULL),
+        switch( is.null(hillGWiniDON)+1,'gw.DON',NULL),
+        defaultZoneName,
+        defaultPatchName,
+        defaultStratumName)
 	write( title, outWorldFilePath, ncolumns=length(title), append=F, sep=',')
 		
 		
 	WorldBasinColumn = rep(1, sum(patchVegnum)) %o% c(1,1, mean(xx), mean(yy), mean(dem), latitude)
 	
 	hillColumn = cbind(
-        hillID,hillX, hillY, hillZ#,
+        hillID,hillX, hillY, hillZ,
+        switch( is.null(hillGWiniQ)+1,hillGWiniQ,NULL),
+        switch( is.null(hillGWiniNO3)+1,hillGWiniNO3,NULL),
+        switch( is.null(hillGWiniNH4)+1,hillGWiniNH4,NULL),
+        switch( is.null(hillGWiniDOC)+1,hillGWiniDOC,NULL),
+        switch( is.null(hillGWiniDON)+1,hillGWiniDON,NULL)
         #rep(1, numhill) %o% c(1,0,0,0)
 		)[rep(hillIDrhessysOrder, times=patchVegnum),]## hill
-		
+   
+        
 	zoneColumn = cbind(
 		zoneID, zoneX, zoneY, zoneZ, 
         #rep(1, numzone), ##<<---- zone def ID
