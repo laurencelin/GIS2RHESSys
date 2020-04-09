@@ -145,7 +145,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 		hill = rast@data[[2]][mask]
 		zone = rast@data[[3]][mask]
 		patch = rast@data[[4]][mask]
-        emptyMAP = rep(NA,length(mask))
+        emptyMAP = rep(NA,sum(mask))
 	print('reading basin, hill, zone, patch ... DONE')
 	
 	##--------- climate station (assume one zone for one station)
@@ -217,95 +217,185 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         soiltexture = rast@data[[1]][mask]
         
     soil_extID=NULL;tryCatch({
-        rast = readRAST(template$soilidMAP);
-        soil_extID <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilidMAP)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilidMAP);
+            soil_extID <- rast@data[[1]][mask]},
+        }else{
+            soil_extID <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soil_extID <<- soiltexture }
         )#tryCatch
     soilksat0=NULL;tryCatch({
-        rast = readRAST(template$soilksat0);
-        soilksat0 <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilksat0)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilksat0);
+            soilksat0 <- rast@data[[1]][mask]},
+        }else{
+            soilksat0 <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilksat0 <<- emptyMAP }
         )#tryCatch
     soilksatdecay=NULL;tryCatch({
-        rast = readRAST(template$soilksatdecay);
-        soilksatdecay <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilksatdecay)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilksatdecay);
+            soilksatdecay <- rast@data[[1]][mask]},
+        }else{
+            soilksatdecay <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilksatdecay <<- emptyMAP }
         )#tryCatch
     soilpor0=NULL;tryCatch({
-        rast = readRAST(template$soilpor0);
-        soilpor0 <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilpor0)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilpor0);
+            soilpor0 <- rast@data[[1]][mask]},
+        }else{
+            soilpor0 <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilpor0 <<- emptyMAP }
         )#tryCatch
     soilpordecay=NULL;tryCatch({
-        rast = readRAST(template$soilpordecay);
-        soilpordecay <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilpordecay)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilpordecay);
+            soilpordecay <- rast@data[[1]][mask]},
+        }else{
+            soilpordecay <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilpordecay <<- emptyMAP }
         )#tryCatch
     soilsand=NULL;tryCatch({
-        rast = readRAST(template$soilsand);
-        soilsand <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilsand)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilsand);
+            soilsand <- rast@data[[1]][mask]},
+        }else{
+            soilsand <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilsand <<- emptyMAP }
         )#tryCatch
     soilsilt=NULL;tryCatch({
-        rast = readRAST(template$soilsilt);
-        soilsilt <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilsilt)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilsilt);
+            soilsilt <- rast@data[[1]][mask]},
+        }else{
+            soilsilt <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilsilt <<- emptyMAP }
         )#tryCatch
     soilclay=NULL;tryCatch({
-        rast = readRAST(template$soilclay);
-        soilclay <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilclay)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilclay);
+            soilclay <- rast@data[[1]][mask]},
+        }else{
+            soilclay <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilclay <<- emptyMAP }
         )#tryCatch
     soilbulkdensity=NULL;tryCatch({
-        rast = readRAST(template$soilbulkdensity);
-        soilbulkdensity <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilbulkdensity)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilbulkdensity);
+            soilbulkdensity <- rast@data[[1]][mask]},
+        }else{
+            soilbulkdensity <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilbulkdensity <<- emptyMAP }
         )#tryCatch
     soilparticledensity=NULL;tryCatch({
-        rast = readRAST(template$soilparticledensity);
-        soilparticledensity <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilparticledensity)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilparticledensity);
+            soilparticledensity <- rast@data[[1]][mask]},
+        }else{
+            soilparticledensity <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilparticledensity <<- emptyMAP }
         )#tryCatch
     soilsoildepth=NULL;tryCatch({
-        rast = readRAST(template$soilsoildepth);
-        soilsoildepth <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilsoildepth)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilsoildepth);
+            soilsoildepth <- rast@data[[1]][mask]},
+        }else{
+            soilsoildepth <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilsoildepth <<- emptyMAP }
         )#tryCatch
     soilactivedepth=NULL;tryCatch({
-        rast = readRAST(template$soilactivedepth);
-        soilactivedepth <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilactivedepth)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilactivedepth);
+            soilactivedepth <- rast@data[[1]][mask]},
+        }else{
+            soilactivedepth <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilactivedepth <<- emptyMAP }
         )#tryCatch
     soilmaxrootdepth=NULL;tryCatch({
-        rast = readRAST(template$soilmaxrootdepth);
-        soilmaxrootdepth <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilmaxrootdepth)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilmaxrootdepth);
+            soilmaxrootdepth <- rast@data[[1]][mask]},
+        }else{
+            soilmaxrootdepth <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilmaxrootdepth <<- emptyMAP }
         )#tryCatch
     soilalbedo=NULL;tryCatch({
-        rast = readRAST(template$soilalbedo);
-        soilalbedo <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilalbedo)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilalbedo);
+            soilalbedo <- rast@data[[1]][mask]},
+        }else{
+            soilalbedo <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilalbedo <<- emptyMAP }
         )#tryCatch
     soilpor_size_index=NULL;tryCatch({
-        rast = readRAST(template$soilpor_size_index);
-        soilpor_size_index <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilpor_size_index)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilpor_size_index);
+            soilpor_size_index <- rast@data[[1]][mask]},
+        }else{
+            soilpor_size_index <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilpor_size_index <<- emptyMAP }
         )#tryCatch
     soilpsi_air_entry=NULL;tryCatch({
-        rast = readRAST(template$soilpsi_air_entry);
-        soilpsi_air_entry <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilpsi_air_entry)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilpsi_air_entry);
+            soilpsi_air_entry <- rast@data[[1]][mask]},
+        }else{
+            soilpsi_air_entry <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilpsi_air_entry <<- emptyMAP }
         )#tryCatch
     soilsoilc=NULL;tryCatch({
-        rast = readRAST(template$soilsoilc);
-        soilsoilc <- rast@data[[1]][mask]},
+        tmpnum = as.numeric(template$soilsoilc)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilsoilc);
+            soilsoilc <- rast@data[[1]][mask]},
+        }else{
+            soilsoilc <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ soilsoilc <<- emptyMAP }
         )#tryCatch
     soilomdecay=NULL;tryCatch({
-       rast = readRAST(template$soilomdecay);
-       soilomdecay <- rast@data[[1]][mask]},
-       error = function(e){ soilomdecay <<- emptyMAP }
-       )#tryCatch
+        tmpnum = as.numeric(template$soilomdecay)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilomdecay);
+            soilomdecay <- rast@data[[1]][mask]},
+        }else{
+            soilomdecay <- rep(tmpnum, sum(mask))
+        }},
+        error = function(e){ soilomdecay <<- emptyMAP }
+        )#tryCatch
     print('reading soils ... DONE')
 
     # extract RHESSys LULC IDs
@@ -733,7 +823,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	subGridAssignment[2:4,3] = c(NA,	NA,	NA) # crop [LAI, vegID, rootz]
 	subGridAssignment[2:4,4] = c(NA,	NA,	NA) # lawn [LAI, vegID, rootz]
 	subGridAssignment[2:4,5] = c(0.0,	4,	0) # no veg [LAI, vegID, rootz]		
-	landuseClass = c(2,2,1,1,3) # RHESSys def (update RHESSys LULC! need these at all? detention size, fertilizer?, what exact does lulc class do? )
+	#landuseClass = c(2,2,1,1,3) # RHESSys def (update RHESSys LULC! need these at all? detention size, fertilizer?, what exact does lulc class do? )
 	
 		## scanning each grid within a patch and forming within patch configuration using the subgrid information
 	subGrid_buff = 'patchID frac lai vegID rootz land imp'
