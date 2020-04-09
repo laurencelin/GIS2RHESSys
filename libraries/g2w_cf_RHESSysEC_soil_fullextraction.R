@@ -220,7 +220,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilidMAP)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilidMAP);
-            soil_extID <- rast@data[[1]][mask]},
+            soil_extID <- rast@data[[1]][mask]
         }else{
             soil_extID <- rep(tmpnum, sum(mask))
         }},
@@ -230,7 +230,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilksat0)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilksat0);
-            soilksat0 <- rast@data[[1]][mask]},
+            soilksat0 <- rast@data[[1]][mask]
         }else{
             soilksat0 <- rep(tmpnum, sum(mask))
         }},
@@ -240,7 +240,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilksatdecay)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilksatdecay);
-            soilksatdecay <- rast@data[[1]][mask]},
+            soilksatdecay <- rast@data[[1]][mask]
         }else{
             soilksatdecay <- rep(tmpnum, sum(mask))
         }},
@@ -250,7 +250,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilpor0)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilpor0);
-            soilpor0 <- rast@data[[1]][mask]},
+            soilpor0 <- rast@data[[1]][mask]
         }else{
             soilpor0 <- rep(tmpnum, sum(mask))
         }},
@@ -260,7 +260,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilpordecay)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilpordecay);
-            soilpordecay <- rast@data[[1]][mask]},
+            soilpordecay <- rast@data[[1]][mask]
         }else{
             soilpordecay <- rep(tmpnum, sum(mask))
         }},
@@ -270,7 +270,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilsand)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilsand);
-            soilsand <- rast@data[[1]][mask]},
+            soilsand <- rast@data[[1]][mask]
         }else{
             soilsand <- rep(tmpnum, sum(mask))
         }},
@@ -280,7 +280,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilsilt)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilsilt);
-            soilsilt <- rast@data[[1]][mask]},
+            soilsilt <- rast@data[[1]][mask]
         }else{
             soilsilt <- rep(tmpnum, sum(mask))
         }},
@@ -290,7 +290,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilclay)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilclay);
-            soilclay <- rast@data[[1]][mask]},
+            soilclay <- rast@data[[1]][mask]
         }else{
             soilclay <- rep(tmpnum, sum(mask))
         }},
@@ -300,7 +300,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilbulkdensity)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilbulkdensity);
-            soilbulkdensity <- rast@data[[1]][mask]},
+            soilbulkdensity <- rast@data[[1]][mask]
         }else{
             soilbulkdensity <- rep(tmpnum, sum(mask))
         }},
@@ -310,7 +310,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilparticledensity)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilparticledensity);
-            soilparticledensity <- rast@data[[1]][mask]},
+            soilparticledensity <- rast@data[[1]][mask]
         }else{
             soilparticledensity <- rep(tmpnum, sum(mask))
         }},
@@ -320,7 +320,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilsoildepth)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilsoildepth);
-            soilsoildepth <- rast@data[[1]][mask]},
+            soilsoildepth <- rast@data[[1]][mask]
         }else{
             soilsoildepth <- rep(tmpnum, sum(mask))
         }},
@@ -330,7 +330,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilactivedepth)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilactivedepth);
-            soilactivedepth <- rast@data[[1]][mask]},
+            soilactivedepth <- rast@data[[1]][mask]
         }else{
             soilactivedepth <- rep(tmpnum, sum(mask))
         }},
@@ -340,7 +340,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilmaxrootdepth)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilmaxrootdepth);
-            soilmaxrootdepth <- rast@data[[1]][mask]},
+            soilmaxrootdepth <- rast@data[[1]][mask]
         }else{
             soilmaxrootdepth <- rep(tmpnum, sum(mask))
         }},
@@ -350,7 +350,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilalbedo)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilalbedo);
-            soilalbedo <- rast@data[[1]][mask]},
+            soilalbedo <- rast@data[[1]][mask]
         }else{
             soilalbedo <- rep(tmpnum, sum(mask))
         }},
@@ -360,7 +360,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilpor_size_index)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilpor_size_index);
-            soilpor_size_index <- rast@data[[1]][mask]},
+            soilpor_size_index <- rast@data[[1]][mask]
         }else{
             soilpor_size_index <- rep(tmpnum, sum(mask))
         }},
@@ -370,7 +370,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilpsi_air_entry)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilpsi_air_entry);
-            soilpsi_air_entry <- rast@data[[1]][mask]},
+            soilpsi_air_entry <- rast@data[[1]][mask]
         }else{
             soilpsi_air_entry <- rep(tmpnum, sum(mask))
         }},
@@ -380,7 +380,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilsoilc)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilsoilc);
-            soilsoilc <- rast@data[[1]][mask]},
+            soilsoilc <- rast@data[[1]][mask]
         }else{
             soilsoilc <- rep(tmpnum, sum(mask))
         }},
@@ -390,7 +390,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         tmpnum = as.numeric(template$soilomdecay)
         if(is.na(tmpnum)){
             rast = readRAST(template$soilomdecay);
-            soilomdecay <- rast@data[[1]][mask]},
+            soilomdecay <- rast@data[[1]][mask]
         }else{
             soilomdecay <- rep(tmpnum, sum(mask))
         }},
