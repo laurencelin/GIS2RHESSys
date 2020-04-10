@@ -1,0 +1,11 @@
+,placeholder,
+,placeholder,
+,placeholder,
+,placeholder,
+order,name,setting1
+1,hillslope_default_ID,1
+2,gw_loss_coeff,1
+3,n_routing_timesteps,24
+4,gw_loss_fast_threshold,-1
+5,gw_loss_fast_coeff,3
+6,sat_to_gw_coeff (not in model),1

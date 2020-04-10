@@ -14,7 +14,6 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     defaultWorldName = c('world_ID')
 	defaultBasinName = c('basin_ID','x','y','z','latitude')
 	defaultHillName = c('hillslope_ID','x','y','z')
-    defaultHillGWName = c('gw.storage','gw.NO3','gw.NH4','gw.DOC','gw.DON')
 	defaultZoneName = c('zone_ID','x','y','z','area','slope','aspect','precip_lapse_rate','e_horizon','w_horizon','base_station_ID')
 	defaultPatchName = c('patch_ID','x','y','z','soil_parm_ID','landuse_parm_ID','area','slope','lna','Ksat_vertical')
 
@@ -136,6 +135,17 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	lulcParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam)); 
 	colnames(lulcParamCOL) = c('lulcID','lulcDefIndex')
 	lulcParam_len = ncol(lulcParam)
+
+
+    hillParam = read.csv(templateACTION$hillCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
+    hillParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam));
+    colnames(hillParamCOL) = c('hillID','hillDefIndex')
+    hillParam_len = ncol(hillParam)
+
+    zoneParam = read.csv(templateACTION$zoneCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
+    zoneParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam));
+    colnames(zoneParamCOL) = c('zoneID','zoneDefIndex')
+    zoneParam_len = ncol(zoneParam)
 	
 #----------------------------------------------------------------------------------------------
 
@@ -159,6 +169,16 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	}#if else
 	
     ## GW
+    hillDefID=NULL;tryCatch({
+           tmpnum = as.numeric(template$hillDefID)
+           if(is.na(tmpnum)){
+               rast = readRAST(template$hillDefID);
+               hillDefID <- tapply(rast@data[[1]][mask],INDEX=hill, FUN=most)
+           }else{
+               hillDefID <- rep(tmpnum, length(unique(hill)))
+           }},
+           error = function(e){ }
+           )#tryCatch
     hillGWiniQ=NULL;tryCatch({
         tmpnum = as.numeric(template$GWiniStorage)
         if(is.na(tmpnum)){
@@ -211,6 +231,19 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         )#tryCatch
     print('reading hillGWiniQ, hillGWiniNO3, hillGWiniNH4, hillGWiniDOC, hillGWiniDON ... DONE')
 	
+
+
+    zoneDefID=NULL;tryCatch({
+        tmpnum = as.numeric(template$zoneDefID)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$zoneDefID);
+            zoneDefID <- tapply(rast@data[[1]][mask],INDEX=zone, FUN=most)
+        }else{
+            zoneDefID <- rep(tmpnum, length(unique(zone)))
+        }},
+        error = function(e){ }
+        )#tryCatch
+
     
 	# extract soil def IDs; how to handle catchments that have no data?
     rast = readRAST(template$soiltexture,NODATA=0)
@@ -982,12 +1015,14 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     outWorldFilePath = templateACTION$outputWorldfile[1]
 	title = c(defaultWorldName, defaultBasinName, defaultHillName,
+        switch( is.null(hillDefID)+1,'hill_parm_ID',NULL),
         switch( is.null(hillGWiniQ)+1,'gw.storage',NULL),
         switch( is.null(hillGWiniNO3)+1,'gw.NO3',NULL),
         switch( is.null(hillGWiniNH4)+1,'gw.NH4',NULL),
         switch( is.null(hillGWiniDOC)+1,'gw.DOC',NULL),
         switch( is.null(hillGWiniDON)+1,'gw.DON',NULL),
         defaultZoneName,
+        switch( is.null(zoneDefID)+1,'zone_parm_ID',NULL),
         defaultPatchName,
         defaultStratumName)
 	write( title, outWorldFilePath, ncolumns=length(title), append=F, sep=',')
@@ -997,6 +1032,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	
 	hillColumn = cbind(
         hillID,hillX, hillY, hillZ,
+        switch( is.null(hillDefID)+1,hillDefID,NULL),
         switch( is.null(hillGWiniQ)+1,hillGWiniQ,NULL),
         switch( is.null(hillGWiniNO3)+1,hillGWiniNO3,NULL),
         switch( is.null(hillGWiniNH4)+1,hillGWiniNH4,NULL),
@@ -1016,7 +1052,8 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 		zoneEast, 
 		zoneWest,
         #rep(1, numzone), #<<---- number of base station
-		zoneStationID  #<<---- base station ID -> id of .base file
+		zoneStationID,  #<<---- base station ID -> id of .base file
+        switch( is.null(zoneDefID)+1,zoneDefID,NULL)
 		#rep(1, numzone) %o% c(1, climateStationID) 
 		)[rep(zoneIDrhessysOrder, times=patchVegnum),]## zone
 	
@@ -1118,40 +1155,38 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(lulcParam[, ii], lulcParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
 	
-	zoneDEF = NULL
-	zoneDEF = c(zoneDEF, '1 zone_default_ID')
-	zoneDEF = c(zoneDEF, '0.000029 atm_trans_lapse_rate')
-	zoneDEF = c(zoneDEF, '0.0015 dewpoint_lapse_rate')
-	zoneDEF = c(zoneDEF, '0.0064 lapse_rate')
-	zoneDEF = c(zoneDEF, '10 max_effective_lai')  
-	zoneDEF = c(zoneDEF, '1 max_snow_temp')  
-	zoneDEF = c(zoneDEF, '-1 min_rain_temp')  
-	zoneDEF = c(zoneDEF, '0.001 n_deposition')  
-	zoneDEF = c(zoneDEF, '0.0254 pptmin')  
-	zoneDEF = c(zoneDEF, '0.75 sea_level_clear_sky_trans')  
-	zoneDEF = c(zoneDEF, '0.4 temcf')  
-	zoneDEF = c(zoneDEF, '0.003 trans_coeff1')  
-	zoneDEF = c(zoneDEF, '2.2 trans_coeff2')  
-	zoneDEF = c(zoneDEF, '1 wind')  
-	if(as.numeric(templateACTION$outputDefs[2])>0) write(zoneDEF, paste(templateACTION$outputDefs[1],"/zone_zone.def",sep=""))
+
+    zoneHEADER = NULL
+    if(is.null(zoneDefID)){ zoneDefID = 1; }
+    selectedzone = zoneParamCOL[match(unique(zoneDefID), zoneParamCOL[,'zoneID']), 'zoneDefIndex']
+    for(ii in selectedzone ){
+        filename = paste(defsFolder,"/zone_",gsub("\\.","_",colnames(zoneParam)[ii]),".def",sep="")
+        zoneHEADER = c(zoneHEADER, paste(filename,'zone_default_filename'))
+        filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
+        if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(zoneParam[, ii], zoneParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
+    }#i
 	
 	basinDEF = NULL
 	basinDEF = c(basinDEF, '1 basin_default_ID')
 	if(as.numeric(templateACTION$outputDefs[2])>0) write(basinDEF, paste(templateACTION$outputDefs[1],"/basin_basin.def",sep=""))
 	
-	hillDEF = NULL
-	hillDEF = c(hillDEF, '1 hillslope_default_ID')
-	hillDEF = c(hillDEF, '1.0 gw_loss_coeff')
-	hillDEF = c(hillDEF, '1.0 sat_to_gw_coeff')
-	if(as.numeric(templateACTION$outputDefs[2])>0) write(hillDEF, paste(templateACTION$outputDefs[1],"/hillslope_hillslope.def",sep=""))
-	
+    hillHEADER = NULL
+    if(is.null(hillDefID)){ hillDefID = 1; }
+    selectedhill = hillParamCOL[match(unique(hillDefID), hillParamCOL[,'hillID']), 'hillDefIndex']
+    for(ii in selectedhill ){
+        filename = paste(defsFolder,"/hill_",gsub("\\.","_",colnames(hillParam)[ii]),".def",sep="")
+        hillHEADER = c(hillHEADER, paste(filename,'hillslope_default_filename'))
+        filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
+        if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(hillParam[, ii], hillParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
+    }#i
+
 	worldHEADER = NULL
 	worldHEADER = c(worldHEADER, paste(1,'num_basin_files'))
 	worldHEADER = c(worldHEADER, paste(defsFolder,'/basin_basin.def basin_default_filename',sep=''))	
-	worldHEADER = c(worldHEADER, paste(1,'num_hillslope_files'))	
-	worldHEADER = c(worldHEADER, paste(defsFolder,'/hillslope_hillslope.def hillslope_default_filename',sep=''))	
-	worldHEADER = c(worldHEADER, paste(1,'num_zone_files'))	
-	worldHEADER = c(worldHEADER, paste(defsFolder,'/zone_zone.def zone_default_filename',sep=''))	
+	worldHEADER = c(worldHEADER, paste(length(hillHEADER),'num_hillslope_files'))
+    worldHEADER = c(worldHEADER, hillHEADER)
+	worldHEADER = c(worldHEADER, paste(length(zoneHEADER),'num_zone_files'))
+	worldHEADER = c(worldHEADER, zoneHEADER)
 	
 	worldHEADER = c(worldHEADER, paste(length(soilHEADER),'num_patch_files'))	
 	worldHEADER = c(worldHEADER, soilHEADER)
