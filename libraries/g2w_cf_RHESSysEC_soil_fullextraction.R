@@ -96,8 +96,9 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     }#function
     print(arg)
     
-    templateACTION = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, len=ifelse(length(arg)==5,7,11),ncolReadin=3);
-    template = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, vskip=ifelse(length(arg)==5,7,11), ncolReadin=3, ncolReadout=1 );
+    headerEndLine = min(grep('MAP|Map',readLines(arg[1])))-1
+    templateACTION = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, len=headerEndLine,ncolReadin=3);
+    template = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, vskip=headerEndLine, ncolReadin=3, ncolReadout=1);
 
     projectFolder = ifelse(length(arg)==5, arg[1], templateACTION$projdir[1])
     climateStationID = as.numeric(templateACTION$stationID[1])
@@ -137,12 +138,14 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	lulcParam_len = ncol(lulcParam)
 
 
-    hillParam = read.csv(templateACTION$hillCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
+    ParamFileName = ifelse(is.null(templateACTION$hillCollection[1]),'https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/hillCollection.csv',templateACTION$hillCollection[1])
+    hillParam = read.csv(ParamFileName,skip=4,header=T,stringsAsFactors=F) #<<------
     hillParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam));
     colnames(hillParamCOL) = c('hillID','hillDefIndex')
     hillParam_len = ncol(hillParam)
 
-    zoneParam = read.csv(templateACTION$zoneCollection[1],skip=4,header=T,stringsAsFactors=F) #<<------
+    ParamFileName = ifelse(is.null(templateACTION$zoneCollection[1]),'https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/zoneCollection.csv',templateACTION$zoneCollection[1])
+    zoneParam = read.csv(ParamFileName,skip=4,header=T,stringsAsFactors=F) #<<------
     zoneParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam));
     colnames(zoneParamCOL) = c('zoneID','zoneDefIndex')
     zoneParam_len = ncol(zoneParam)

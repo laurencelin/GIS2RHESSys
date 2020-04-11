@@ -41,3 +41,10 @@ echo "grassApp" "$grassApp"
 echo "grassVersion" "$grassVersion"
 echo "grassCMD" "$grassCMD"
 rm -rf "$PROJDIR"
+##################################################################################
+echo "installed.packages()[,c(1,3)]" | R --slave | grep sp | awk 'END{print (NR>0? "yes, you have installed sp" : "no, you have not installed sp") }'
+echo "installed.packages()[,c(1,3)]" | R --slave | grep xml | awk 'END{print (NR>0? "yes, you have installed xml" : "no, you have not installed xml") }'
+echo "installed.packages()[,c(1,3)]" | R --slave | grep rgdal | awk 'END{print (NR>0? "yes, you have installed rgdal" : "no, you have not installed rgdal") }'
+echo "installed.packages()[,c(1,3)]" | R --slave | grep SQLite | awk 'END{print (NR>0? "yes, you have installed SQLite" : "no, you have not installed SQLite") }'
+#echo "installed.packages()[,c(1,3)]" | R --slave | grep sf | awk 'END{print (NR>0? "yes, you have installed sf" : "no, you have not installed sf") }'
+#echo "installed.packages()[,c(1,3)]" | R --slave | grep stars | awk 'END{print (NR>0? "yes, you have installed stars" : "no, you have not installed stars") }'
