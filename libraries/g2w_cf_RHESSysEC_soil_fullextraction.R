@@ -96,13 +96,13 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     }#function
     print(arg)
     
-    headerEndLine = min(grep('MAP|Map',readLines(arg[1])))-1
+    headerEndLine = max(grep('projdir|output',readLines(arg[1])))
     templateACTION = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, len=headerEndLine,ncolReadin=3);
     template = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, vskip=headerEndLine, ncolReadin=3, ncolReadout=1);
 
     projectFolder = ifelse(length(arg)==5, arg[1], templateACTION$projdir[1])
-    climateStationID = as.numeric(templateACTION$stationID[1])
-	climateStationNAME = templateACTION$stationFile[1] # prefix-like
+    climateStationID = as.numeric(template$stationID[1])
+	climateStationNAME = template$stationFile[1] # prefix-like (single station)
 	
 		
 	## user provides a customized vegetation.csv containing all vegetation vegParameters.
@@ -140,13 +140,13 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 
     ParamFileName = ifelse(is.null(templateACTION$hillCollection[1]),'https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/hillCollection.csv',templateACTION$hillCollection[1])
     hillParam = read.csv(ParamFileName,skip=4,header=T,stringsAsFactors=F) #<<------
-    hillParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam));
+    hillParamCOL = cbind(as.numeric(unique(hillParam[1,3:ncol(hillParam)])), 3:ncol(hillParam));
     colnames(hillParamCOL) = c('hillID','hillDefIndex')
     hillParam_len = ncol(hillParam)
 
     ParamFileName = ifelse(is.null(templateACTION$zoneCollection[1]),'https://raw.githubusercontent.com/laurencelin/GIS2RHESSys/master/zoneCollection.csv',templateACTION$zoneCollection[1])
     zoneParam = read.csv(ParamFileName,skip=4,header=T,stringsAsFactors=F) #<<------
-    zoneParamCOL = cbind(as.numeric(unique(lulcParam[1,3:ncol(lulcParam)])), 3:ncol(lulcParam));
+    zoneParamCOL = cbind(as.numeric(unique(zoneParam[1,3:ncol(zoneParam)])), 3:ncol(zoneParam));
     colnames(zoneParamCOL) = c('zoneID','zoneDefIndex')
     zoneParam_len = ncol(zoneParam)
 	
@@ -163,12 +163,12 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	
 	##--------- climate station (assume one zone for one station)
 	if(is.na(climateStationID)){
-        # climateStationID = as.numeric(templateACTION$stationID[1]) above; if it's not a single integer, then it's NA
-        rast = readRAST(templateACTION$stationID[1])
+        # climateStationID = as.numeric(template$stationID[1]) above; if it's not a single integer, then it's NA
+        rast = readRAST(template$stationID[1])
 		climateStationID = rast@data[[1]][mask]
-        print(paste('multiple base stations',templateACTION$stationID[1],'...DONE'))
+        print(paste('multiple base stations',template$stationID[1],'...DONE'))
 	}else{
-		climateStationID = rep(as.numeric(templateACTION$stationID[1]), sum(mask))
+		climateStationID = rep(as.numeric(template$stationID[1]), sum(mask))
 	}#if else
 	
     ## GW
@@ -436,11 +436,16 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 
     # extract RHESSys LULC IDs
     LULCID=NULL;tryCatch({
-        rast = readRAST(template$LULCidMAP);
-        LULCID <- rast@data[[1]][mask];
-        print('reading str ... DONE')},
+        tmpnum = as.numeric(template$LULCidMAP)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$LULCidMAP);
+            LULCID <- rast@data[[1]][mask]
+        }else{
+            LULCID <- rep(tmpnum, sum(mask))
+        }},
         error = function(e){ LULCID <<- emptyMAP }
         )#tryCatch
+
 
 	# extract patch positive numerical values [0 -> +X] (must have)
     # aspect ##<<----- 90=north, 360=east, 180=west 270=south
