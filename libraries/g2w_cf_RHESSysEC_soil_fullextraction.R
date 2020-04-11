@@ -96,7 +96,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     }#function
     print(arg)
     
-    headerEndLine = max(grep('projdir|output',readLines(arg[1])))
+    headerEndLine = max(grep('projdir|output|Collection',readLines(arg[1]))); print(headerEndLine)
     templateACTION = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, len=headerEndLine,ncolReadin=3);
     template = read.tcsv(ifelse(length(arg)==5,arg[5],arg[1]),stringsAsFactors=F, vskip=headerEndLine, ncolReadin=3, ncolReadout=1);
 
