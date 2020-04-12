@@ -432,6 +432,16 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         }},
         error = function(e){ soilomdecay <<- emptyMAP }
         )#tryCatch
+    soilLegecyCNScaler=NULL;tryCatch({
+        tmpnum = as.numeric(template$soilLegecyCNScaler)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilLegecyCNScaler);
+            soilLegecyCNScaler <- tapply(rast@data[[1]][mask],INDEX=patch, FUN=mean)
+        }else{
+            soilLegecyCNScaler <- rep(tmpnum, length(unique(patch)))
+        }},
+        error = function(e){ }
+        )#tryCatch
     print('reading soils ... DONE')
 
     # extract RHESSys LULC IDs
@@ -849,7 +859,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     }));colnames(ssurgo_info)=c('soil_extID','soilksat0','soilksatdecay','soilpor0','soilpordecay','soilsand','soilsilt','soilclay','soilbulkdensity','soilparticledensity','soilsoildepth','soilactivedepth','soilmaxrootdepth','soilalbedo','soilpor_size_index','soilpsi_air_entry','soilsoilc','soilomdecay')
 
 
-
+    
 	patchSLOPE = tapply(slope,INDEX=patch, FUN=mean)
 	patchTWI = tapply(abs(twi),INDEX=patch, FUN=mean); patchTWI[is.na(patchTWI)]=0;
 		patchID = as.numeric(names(patchX))
@@ -1032,6 +1042,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         defaultZoneName,
         switch( is.null(zoneDefID)+1,'zone_parm_ID',NULL),
         defaultPatchName,
+        switch( is.null(soilLegecyCNScaler)+1,'legacySoilCNScaler',NULL),
         defaultStratumName)
 	write( title, outWorldFilePath, ncolumns=length(title), append=F, sep=',')
 		
@@ -1069,7 +1080,10 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 		patchID, patchX, patchY, patchZ, patchSOIL)[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
 	
 	patchColumn2 = cbind(
-		patchArea, patchSLOPE, patchTWI)[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
+		patchArea,
+        patchSLOPE,
+        patchTWI,
+        switch( is.null(soilLegecyCNScaler)+1,soilLegecyCNScaler,NULL))[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
 		
         #patchColumn3 = cbind(rep(1, numpatch) %o% c(0.12, 0,0,0, 0.28, 0, -10, 0, -0.5,1,0, 0.0000001,0.0,0.0,0.0,0.0,0.0000001, 0,0, 0.0000002,2,6,0))[rep(patchIDrhessysOrder, times=patchVegnum),]## patch
 						
