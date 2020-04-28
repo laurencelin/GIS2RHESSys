@@ -47,9 +47,9 @@ roof_drain_table = do.call(rbind, lapply(roofID,function(id){
         if(sum(nearlawnCond)>0){
             dist = tapply(sqrt((xx[nearlawnCond] - roof_x)^2 + (yy[nearlawnCond] - roof_y)^2), patch[nearlawnCond], mean)
             selectCond = which.min(dist[table(patch[nearlawnCond])>4])
-            df_patch = ifelse(sum(selectCond)>0,as.numeric(names(dist)[selectCond]),NA)
+            df_patch = ifelse(sum(selectCond)>0,as.numeric(names(dist)[selectCond]),as.numeric(names(dist)[which.min(dist)]) )
         }else{
-            df_patch = NA
+            df_patch = (patch[cond][roof[cond]==id])[which.min(dem[cond][roof[cond]==id])] # if no lawn, find the lowest roottopp patch
         }
     }# if
 
