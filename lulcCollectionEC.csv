@@ -6,8 +6,9 @@ order,name,setting1
 1,landuse_default_ID,11
 2,detention_store_size,0.001
 3,fertilizer_NH4 (kg/m2/application),0
-4,fertilizer_NO3 (kg/m2/application),0.00665
-5,fertilizer_freq (day),30
-6,irrigation (mm/day),0
-7,septic_NO3_load (kgN/year),4.942442
-8,septic_water_load (m3/year),30
+4,fertilizer_NO3 (kg/m2/application),0.004394185
+5,fertilizer_freq (day),90
+6,irrigation (mm/day),4
+7,septic_NO3_load (kgN/year/capita),4.989516667
+8,septic_water_load (m3/year/capita),121.5873333
+9,numPPLinHouse,2.4
