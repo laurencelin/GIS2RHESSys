@@ -1157,8 +1157,9 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             if(!is.na(ssurgo_info[cond,'soilmaxrootdepth'])){soil_char[match('maxrootdepth',soilParam[,2])] = ssurgo_info[cond,'soilmaxrootdepth']}
             if(!is.na(ssurgo_info[cond,'soilparticledensity'])){soil_char[match('particledensity',soilParam[,2])] = ssurgo_info[cond,'soilparticledensity']}
             if(!is.na(ssurgo_info[cond,'soilsoilc'])){soil_char[match('soilc',soilParam[,2])] = ssurgo_info[cond,'soilsoilc']}
-            if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('DOM_decay_rate',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
-            if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('N_decay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
+            #if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('DOM_decay_rate',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
+            #if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('N_decay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
+            if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('soilcDecay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
             
             if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(soil_char, soilParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
         }#jj
