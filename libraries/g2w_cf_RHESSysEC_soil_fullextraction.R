@@ -1332,7 +1332,9 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 # constrainted by lawn and crop frac
             septicQfrac = min(
             	sum(septic[ii],na.rm=T),
-            	sum(lawnFrac[ii],na.rm=T) + sum(cropFrac[ii],na.rm=T))/numPatch
+            	sum(lawnFrac[ii],na.rm=T) + sum(cropFrac[ii],na.rm=T))/numPatch,
+            ## ... surface -- storage
+            waterFracQ = sum(waterFrac[ii],na.rm=T)/numPatch
         );
     })#tapply <--- this output is a list of c() in outputOrder
     patch_info_lowest = patchInfo[[ length(patchInfo) ]] ## assume basin outlet
@@ -1675,7 +1677,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             if(abs(sum(neighbor_frac_gamma)-1)>1e-10){ print(paste('subsurface',ii,current_patch_info['patchID'],sum(neighbor_frac_gamma))) }
             cat(
 				paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
-				paste(sprintf('%.1f',current_patch_info[c('rr','cc')]), collapse=' '),
+				paste(sprintf('%.2f',current_patch_info[c('waterFracQ','cc')]), collapse=' '),
                 paste(sprintf('%.1f', -septic_num_drainIN)), # use negative number because some old file may have 1 here
                 paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
 				sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH), #wttd
@@ -1789,7 +1791,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 
                 cat(
                     paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
-                    paste(sprintf('%.1f',current_patch_info[c('rr','cc')]), collapse=' '),
+                    paste(sprintf('%.2f',current_patch_info[c('waterFracQ','cc')]), collapse=' '),
                     paste(sprintf('%.1f', -septic_num_drainIN)), # use negative number because some old file may have 1 here
                	 	paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
                     sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),

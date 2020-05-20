@@ -4,7 +4,7 @@
 ,placeholder,
 order,name,setting1
 1,landuse_default_ID,11
-2,detention_store_size,0.001
+2,detention_store_size (m/impFrac),0.001
 3,fertilizer_NH4 (kg/m2/application),0
 4,fertilizer_NO3 (kg/m2/application),0.004394185
 5,fertilizer_freq (day),90
@@ -12,3 +12,4 @@ order,name,setting1
 7,septic_NO3_load (kgN/year/capita),4.989516667
 8,septic_water_load (m3/year/capita),121.5873333
 9,numPPLinHouse,2.4
+10,pondDepth (m/pondFrac),1.5
