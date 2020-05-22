@@ -1657,9 +1657,12 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         # cbind(gamma_jj_l,gamma_jj_r,gamma_jj_s)
         
         ## ... neighbour gamma fraction
-        neighbor_frac_gamma = gamma_jj/ifelse(sum(gamma_jj)>0,sum(gamma_jj),1)
-        neighbor_frac_gamma_surf = gamma_jj_s/sum(gamma_jj_s)
-        cbind(allNeighbourInfo[1,], neighbor_frac_gamma_surf, neighbor_frac_gamma)
+        neighbor_frac_gamma = sapply(gamma_jj,function(x){return <- ifelse(x>0,x,0)})
+        neighbor_frac_gamma = neighbor_frac_gamma / ifelse(sum(neighbor_frac_gamma)>0,sum(neighbor_frac_gamma),1)
+    
+        neighbor_frac_gamma_surf = sapply(gamma_jj_s,function(x){return <- ifelse(x>0,x,0)}) 
+        neighbor_frac_gamma_surf = neighbor_frac_gamma_surf / ifelse(sum(neighbor_frac_gamma_surf)>0,sum(neighbor_frac_gamma_surf),1)
+        #cbind(allNeighbourInfo[1,], neighbor_frac_gamma_surf, neighbor_frac_gamma)
         
         ## ... total_gamma (subsurface)
         total_perimeter = sum( allNeighbourInfo['sharedEdge', selectedFlow2neigbour] )
