@@ -1693,14 +1693,16 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 				sprintf('%.2f',allNeighbourInfo['sharedEdge',]),sep=' '), file=subsurfaceflow_table_buff,sep='\n')
             
             # ... traditional road grid, which cannot be stream or outlet grid
-            if(drainage_type==2) cat (
-				patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-				patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-				patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-				#patch_info_lowest['patchID'],
-				#patch_info_lowest['zoneID'],
-				#patch_info_lowest['hillID'],
+            if(drainage_type==2 & is.na(current_patch_info['subIDindex'])) cat (
+				patch_info_lowest['patchID'],
+				patch_info_lowest['zoneID'],
+				patch_info_lowest['hillID'],
 				roadWidth,'\n', file=subsurfaceflow_table_buff,sep=' ')  #cellsize*current_patch_info[15]
+            if(drainage_type==2 & !is.na(current_patch_info['subIDindex'])) cat (
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                roadWidth,'\n', file=subsurfaceflow_table_buff,sep=' ')  #cellsize*current_patch_info[15]
             
             # ... this is for known sources of irrigation / septic water
             # design note: ACTION_flags (irrigation or septic) enable irrigation or septic release to occur
@@ -1822,18 +1824,25 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                         }# for outleti
                     }else{
-                        cat(
-                            # ... to sub-basin outlet
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-                            # ... to baisn outlet
-                            #patch_info_lowest['patchID'],
-                            #patch_info_lowest['zoneID'],
-                            #patch_info_lowest['hillID'],
-                            sprintf('%.5f', stormsurfacedrainFrac['road']),
-                            sprintf('%.2f',1.0),
-                            sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        if(is.na(current_patch_info['subIDindex'])){
+                            cat(
+                                # ... to baisn outlet
+                                patch_info_lowest['patchID'],
+                                patch_info_lowest['zoneID'],
+                                patch_info_lowest['hillID'],
+                                sprintf('%.5f', stormsurfacedrainFrac['road']),
+                                sprintf('%.2f',1.0),
+                                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        }else{
+                            cat(
+                                # ... to sub-basin outlet
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                                sprintf('%.5f', stormsurfacedrainFrac['road']),
+                                sprintf('%.2f',1.0),
+                                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        }# if
                     }#else
                 }#if
                 
@@ -1852,18 +1861,25 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                         }# for outleti
                     }else{
-                        cat(
-                            # ... to sub-basin outlet
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-                            # ... to baisn outlet
-                            #patch_info_lowest['patchID'],
-                            #patch_info_lowest['zoneID'],
-                            #patch_info_lowest['hillID'],
-                            sprintf('%.5f', stormsurfacedrainFrac['roof']),
-                            sprintf('%.2f',1.0),
-                            sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        if(is.na(current_patch_info['subIDindex'])){
+                           cat(
+                                # ... to baisn outlet
+                                patch_info_lowest['patchID'],
+                                patch_info_lowest['zoneID'],
+                                patch_info_lowest['hillID'],
+                                sprintf('%.5f', stormsurfacedrainFrac['roof']),
+                                sprintf('%.2f',1.0),
+                                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        }else{
+                            cat(
+                                # ... to sub-basin outlet
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                                sprintf('%.5f', stormsurfacedrainFrac['roof']),
+                                sprintf('%.2f',1.0),
+                                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        }#if
                     }#else
                 }# if
                 
@@ -1882,41 +1898,60 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                                 sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
                         }# for outleti
                     }else{
-                        cat(
-                            # ... to sub-basin outlet
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-                            # ... to baisn outlet
-                            #patch_info_lowest['patchID'],
-                            #patch_info_lowest['zoneID'],
-                            #patch_info_lowest['hillID'],
-                            sprintf('%.5f', stormsurfacedrainFrac['extenddrain']),
-                            sprintf('%.2f',1.0),
-                            sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        if(is.na(current_patch_info['subIDindex'])){
+                           cat(
+                                # ... to baisn outlet
+                                patch_info_lowest['patchID'],
+                                patch_info_lowest['zoneID'],
+                                patch_info_lowest['hillID'],
+                                sprintf('%.5f', stormsurfacedrainFrac['extenddrain']),
+                                sprintf('%.2f',1.0),
+                                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        }else{
+                            cat(
+                                # ... to sub-basin outlet
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                                patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                                sprintf('%.5f', stormsurfacedrainFrac['extenddrain']),
+                                sprintf('%.2f',1.0),
+                                sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        }
                     }#else
                 }# if
 
                 # strExt (surface) & NOT str grid @ outlet
-                if(current_patch_info['nonmodelstrgridQ']>0 & current_patch_info['patchID']!=patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'] ) cat(
-                    patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
-                    patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
-                    patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
-                    #patch_info_lowest['patchID'],
-                    #patch_info_lowest['zoneID'],
-                    #patch_info_lowest['hillID'],
-                    sprintf('%.5f', 0.4),
-                    sprintf('%.2f',1.0),
-                    sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
-                
-                # strExt (surface) & str grid @ outlet
-                if(current_patch_info['nonmodelstrgridQ']>0 & current_patch_info['patchID']==patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID']) cat(
-                    patch_info_basinoutlet['patchID'],
-                    patch_info_basinoutlet['zoneID'],
-                    patch_info_basinoutlet['hillID'],
-                    sprintf('%.5f', 0.4),
-                    sprintf('%.2f',1.0),
-                    sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                if(current_patch_info['nonmodelstrgridQ']>0){
+                    if(is.na(current_patch_info['subIDindex'])){
+                        cat(
+                            patch_info_basinoutlet['patchID'],
+                            patch_info_basinoutlet['zoneID'],
+                            patch_info_basinoutlet['hillID'],
+                            sprintf('%.5f', 0.4),
+                            sprintf('%.2f',1.0),
+                            sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                    }else{
+                        if(current_patch_info['patchID']!=patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID']) cat(
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID'],
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['zoneID'],
+                            patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['hillID'],
+                            #patch_info_lowest['patchID'],
+                            #patch_info_lowest['zoneID'],
+                            #patch_info_lowest['hillID'],
+                            sprintf('%.5f', 0.4),
+                            sprintf('%.2f',1.0),
+                            sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                        
+                        if(current_patch_info['patchID']==patch_info_suboulet[[ current_patch_info['subIDindex'] ]]['patchID']) cat(
+                            patch_info_basinoutlet['patchID'],
+                            patch_info_basinoutlet['zoneID'],
+                            patch_info_basinoutlet['hillID'],
+                            sprintf('%.5f', 0.4),
+                            sprintf('%.2f',1.0),
+                            sprintf('%.2f',1.0),'\n', file=surfaceflow_table_buff,sep=' ')
+                    }# if else
+                }#if
+              
                 
                 ## septic
                 if( length(patchInfo_septicSource[[ii]])>0 ){
