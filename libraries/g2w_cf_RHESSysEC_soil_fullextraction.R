@@ -182,7 +182,6 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         }},
         error = function(e){ spatailAGG <<- emptyMAP }
     )#tryCatch
-   
 
     ## GW
     hillDefID=NULL;tryCatch({
@@ -1359,9 +1358,10 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     patch_info_patchID = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
         return <- mean(patch[ii])
     })
+
     if(sum(is.na(spatailAGG))==0){
         patchSPAGG=tapply(spatailAGG,INDEX=outputOrder, FUN=most);
-        patchSPAGGomdex = match(patchSPAGG, unique(patchSPAGG))-1;
+        patchSPAGGindex = match(patchSPAGG, unique(patchSPAGG))-1;
     }else{
         patchSPAGG=NULL;
         patchSPAGGindex=NULL;
@@ -1706,9 +1706,8 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
 				sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH), #wttd
 				drainage_type,
-                total_gamma, length(withinNeighbourRC),0,0,'\n', file=subsurfaceflow_table_buff,sep=' ')
-                print(ifelse(is.null(patchSPAGG),NULL,patchSPAGG[ii]) ) #
-                print(ifelse(is.null(patchSPAGG),NULL,patchSPAGGindex[ii]) ) #
+                total_gamma, length(withinNeighbourRC),ifelse(is.null(patchSPAGG),NULL,patchSPAGG[ii]),ifelse(is.null(patchSPAGG),NULL,patchSPAGGindex[ii]),'\n', file=subsurfaceflow_table_buff,sep=' ')
+              
                 
             cat( paste(
 				allNeighbourInfo['patchID',],
@@ -1824,7 +1823,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                	 	paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
                     sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
                     drainage_type,
-                    total_gamma, normal_neighborNum,0,0, '\n', file=surfaceflow_table_buff,sep=' ')
+                    total_gamma, normal_neighborNum,ifelse(is.null(patchSPAGG),NULL,patchSPAGG[ii]),ifelse(is.null(patchSPAGG),NULL,patchSPAGGindex[ii]), '\n', file=surfaceflow_table_buff,sep=' ')
                 
                 cat( paste(
                     allNeighbourInfo['patchID',],
@@ -2021,7 +2020,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 	paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
                     sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
                     drainage_type,
-                    total_gamma,length(withinNeighbourRC),0,0,'\n', file=surfaceflow_table_buff,sep=' ')
+                    total_gamma,length(withinNeighbourRC),ifelse(is.null(patchSPAGG),NULL,patchSPAGG[ii]),ifelse(is.null(patchSPAGG),NULL,patchSPAGGindex[ii]),'\n', file=surfaceflow_table_buff,sep=' ')
                 
                 cat( paste(
                     allNeighbourInfo['patchID',],
