@@ -171,6 +171,19 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 		climateStationID = rep(as.numeric(template$stationID[1]), sum(mask))
 	}#if else
 	
+    ## spatial aggregation for outputs
+    spatailAGG=NULL;tryCatch({
+        tmpnum = as.numeric(template$spatailAGG)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$spatailAGG);
+            spatailAGG <- rast@data[[1]][mask]
+        }else{
+            spatailAGG <- rep(tmpnum, sum(mask))
+        }},
+        error = function(e){ spatailAGG <<- emptyMAP }
+    )#tryCatch
+   
+
     ## GW
     hillDefID=NULL;tryCatch({
            tmpnum = as.numeric(template$hillDefID)
@@ -1346,6 +1359,14 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     patch_info_patchID = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
         return <- mean(patch[ii])
     })
+    if(sum(is.na(spatailAGG))==0){
+        patchSPAGG=tapply(spatailAGG,INDEX=outputOrder, FUN=most);
+        patchSPAGGomdex = match(patchSPAGG, unique(patchSPAGG))-1;
+    }else{
+        patchSPAGG=NULL;
+        patchSPAGGindex=NULL;
+    }
+
     patchInfo_surf_roadStormDrainOutlet = tapply(fullLength, INDEX=outputOrder, FUN=function(ii){
         # "roadStormDrainOutlet" documents the outlet patchID at the road storm drain inlet point.
         tmpCond = !is.na(roadStormDrainOutlet[ii]) & roadStormDrainOutlet[ii]>0
@@ -1685,7 +1706,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
 				sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH), #wttd
 				drainage_type,
-				total_gamma, length(withinNeighbourRC),'\n', file=subsurfaceflow_table_buff,sep=' ')
+                total_gamma, length(withinNeighbourRC),ifelse(is.null(patchSPAGG),NULL,patchSPAGG[ii]),ifelse(is.null(patchSPAGG),NULL,patchSPAGGindex[ii]),'\n', file=subsurfaceflow_table_buff,sep=' ')
             
             cat( paste(
 				allNeighbourInfo['patchID',],
@@ -1998,7 +2019,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 	paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
                     sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
                     drainage_type,
-                    total_gamma,length(withinNeighbourRC),'\n', file=surfaceflow_table_buff,sep=' ')
+                    total_gamma,length(withinNeighbourRC),ifelse(is.null(patchSPAGG),NULL,patchSPAGG[ii]),ifelse(is.null(patchSPAGG),NULL,patchSPAGGindex[ii]),'\n', file=surfaceflow_table_buff,sep=' ')
                 
                 cat( paste(
                     allNeighbourInfo['patchID',],
