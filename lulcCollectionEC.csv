@@ -13,3 +13,13 @@ order,name,setting1
 8,septic_water_load (m3/year/capita),121.5873333
 9,numPPLinHouse,2.4
 10,pondDepth (m/pondFrac),1.5
+11,sewerDiamInch,8.5
+12,sewerDensityMileAcre,0
+13,sewerDepthft,11
+14,MaxExf_gpimd,9061
+15,MaxExf_Percent,0.491
+16,emptyPercent,0.25
+17,sewerNO3mgNL,2.5
+18,sewerNH4mgNL,2.5
+19,sewerDONmgNL,2.5
+20,sewerDOCmgCL,2.5
