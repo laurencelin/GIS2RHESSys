@@ -183,6 +183,17 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         error = function(e){ spatailAGG <<- emptyMAP }
     )#tryCatch
 
+    treeRootzScaler=NULL;tryCatch({
+        tmpnum = as.numeric(template$treeRootzScaler)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$treeRootzScaler);
+            treeRootzScaler <- rast@data[[1]][mask]
+        }else{
+            treeRootzScaler <- rep(tmpnum, sum(mask))
+        }},
+        error = function(e){ spatailAGG <<- emptyMAP }
+    )#tryCatch
+
     ## GW
     hillDefID=NULL;tryCatch({
            tmpnum = as.numeric(template$hillDefID)
@@ -895,6 +906,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
             #patchSTR = sum(fullstreamExt[x], na.rm=T); # patchSTR==0 --> no canopy on all stream extension!
             patchSTR = sum(stream[x], na.rm=T)/length(x)
             patchWATER = sum(waterFrac[x], na.rm=T)/length(x) # include any water surface and potential non-vegetated channel
+            patchTreeRootzScaler = sum(treeRootzScaler[x],na.rm=T)/length(x); if(patchTreeRootzScaler<=0) patchTreeRootzScaler = 1.0;
 			subGridAssignment[1,] = c(
                 ifelse(patchSTR==0,1,1-patchWATER)*sum(forestFrac[x], na.rm=T)/length(x), #1 tree
                 ifelse(patchSTR==0,1,1-patchWATER)*sum(shrubFrac[x], na.rm=T)/length(x),  #2 shrub
@@ -933,7 +945,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 				numVeg = numVeg + sum(vegCount)		
 				subGrid_buff_string = c(subGrid_buff_string,
 					sapply(seq_len(15)[vegCount], function(i){
-						paste(patch[x][1], FFraclist[i], LAIlist[i], vegIDlist[i], 1, land,imp, sep=' ')
+						paste(patch[x][1], FFraclist[i], LAIlist[i], vegIDlist[i], patchTreeRootzScaler, land,imp, sep=' ')
 						})
 					)#c		
 			}# fracQ[1] 
@@ -946,7 +958,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 				numVeg = numVeg + sum(vegCount)	
 				subGrid_buff_string = c(subGrid_buff_string,
 					sapply(seq_len(15)[vegCount], function(i){
-						paste(patch[x][1], FFraclist[i], LAIlist[i], vegIDlist[i], 1, land,imp, sep=' ')
+                        paste(patch[x][1], FFraclist[i], LAIlist[i], vegIDlist[i], patchTreeRootzScaler, land,imp, sep=' ')
 						})
 					)#c	
 			}#fracQ[2]
