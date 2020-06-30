@@ -887,26 +887,26 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     ssurgo_info = do.call(rbind,tapply(seq_along(patch), INDEX=soil_extID, FUN=function(ii){
         return <- c(
         soil_extID = soil_extID[ii][1], # soil_cat
-        soilksat0 = soilksat0[ii][1],
-        soilksatdecay = soilksatdecay[ii][1],
-        soilpor0 = soilpor0[ii][1],
-        soilpordecay = soilpordecay[ii][1],
-        soilsand = soilsand[ii][1],
-        soilsilt = soilsilt[ii][1],
-        soilclay = soilclay[ii][1],
-        soilbulkdensity = soilbulkdensity[ii][1],
-        soilparticledensity = soilparticledensity[ii][1],
-        soilsoildepth = soilsoildepth[ii][1],
-        soilactivedepth = soilactivedepth[ii][1],
-        soilmaxrootdepth = soilmaxrootdepth[ii][1],
-        soilalbedo = soilalbedo[ii][1],
-        soilpor_size_index = soilpor_size_index[ii][1],
-        soilpsi_air_entry = soilpsi_air_entry[ii][1],
-        soilsoilc = soilsoilc[ii][1],
-        soilomdecay = soilomdecay[ii][1],
-        soilph = soilpH[ii][1],
-        soilthetap1 = soil_theta_mean_std_p1[ii][1],
-        soilthetap2 = soil_theta_mean_std_p2[ii][1]
+        soilksat0 = mean(soilksat0[ii]),
+        soilksatdecay = mean(soilksatdecay[ii]),
+        soilpor0 = mean(soilpor0[ii]),
+        soilpordecay = mean(soilpordecay[ii]),
+        soilsand = mean(soilsand[ii]),
+        soilsilt = mean(soilsilt[ii]),
+        soilclay = mean(soilclay[ii]),
+        soilbulkdensity = mean(soilbulkdensity[ii]),
+        soilparticledensity = mean(soilparticledensity[ii]),
+        soilsoildepth = mean(soilsoildepth[ii]),
+        soilactivedepth = mean(soilactivedepth[ii]),
+        soilmaxrootdepth = mean(soilmaxrootdepth[ii]),
+        soilalbedo = mean(soilalbedo[ii]),
+        soilpor_size_index = mean(soilpor_size_index[ii]),
+        soilpsi_air_entry = mean(soilpsi_air_entry[ii]),
+        soilsoilc = mean(soilsoilc[ii]),
+        soilomdecay = mean(soilomdecay[ii]),
+        soilph = mean(soilpH[ii]),
+        soilthetap1 = most(soil_theta_mean_std_p1[ii]),
+        soilthetap2 = most(soil_theta_mean_std_p2[ii])
         )
     }));
 
