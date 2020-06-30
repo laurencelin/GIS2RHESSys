@@ -455,6 +455,38 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         }},
         error = function(e){ soilomdecay <<- emptyMAP }
         )#tryCatch
+
+    soilpH=NULL;tryCatch({
+        tmpnum = as.numeric(template$soilpH)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soilpH);
+            soilpH <- rast@data[[1]][mask]
+        }else{
+            soilpH <- rep(tmpnum, sum(mask))
+        }},
+        error = function(e){ soilpH <<- emptyMAP }
+        )#tryCatch
+    soil_theta_mean_std_p1=NULL;tryCatch({
+        tmpnum = as.numeric(template$soil_theta_mean_std_p1)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soil_theta_mean_std_p1);
+            soil_theta_mean_std_p1 <- rast@data[[1]][mask]
+        }else{
+            soil_theta_mean_std_p1 <- rep(tmpnum, sum(mask))
+        }},
+        error = function(e){ soil_theta_mean_std_p1 <<- emptyMAP }
+        )#tryCatch
+    soil_theta_mean_std_p2=NULL;tryCatch({
+        tmpnum = as.numeric(template$soil_theta_mean_std_p2)
+        if(is.na(tmpnum)){
+            rast = readRAST(template$soil_theta_mean_std_p2);
+            soil_theta_mean_std_p2 <- rast@data[[1]][mask]
+        }else{
+            soil_theta_mean_std_p2 <- rep(tmpnum, sum(mask))
+        }},
+        error = function(e){ soil_theta_mean_std_p2 <<- emptyMAP }
+        )#tryCatch
+
     soilLegecyCNScaler=NULL;tryCatch({
         tmpnum = as.numeric(template$soilLegecyCNScaler)
         if(is.na(tmpnum)){
@@ -639,12 +671,6 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         )#tryCatch
 
     # extract other LULC information -- subsurface drainages -- interrcepts
-    compactedsoilQ=NULL; tryCatch({
-        rast = readRAST(template$compactedSoilMAP);
-        compactedsoilQ <- rast@data[[1]][mask];
-        print('reading non-impacted soil ... DONE')},
-        error = function(e){ compactedsoilQ <<- emptyMAP }
-        )#tryCatch
     unpavedroad=NULL; tryCatch({
         rast = readRAST(template$unpavedRoadMap);
         unpavedroad <- rast@data[[1]][mask];
@@ -860,26 +886,29 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     # pull the dominated soil_extID information together
     ssurgo_info = do.call(rbind,tapply(seq_along(patch), INDEX=soil_extID, FUN=function(ii){
         return <- c(
-        soil_extID[ii][1], # soil_cat
-        soilksat0[ii][1],
-        soilksatdecay[ii][1],
-        soilpor0[ii][1],
-        soilpordecay[ii][1],
-        soilsand[ii][1],
-        soilsilt[ii][1],
-        soilclay[ii][1],
-        soilbulkdensity[ii][1],
-        soilparticledensity[ii][1],
-        soilsoildepth[ii][1],
-        soilactivedepth[ii][1],
-        soilmaxrootdepth[ii][1],
-        soilalbedo[ii][1],
-        soilpor_size_index[ii][1],
-        soilpsi_air_entry[ii][1],
-        soilsoilc[ii][1],
-        soilomdecay[ii][1]
+        soil_extID = soil_extID[ii][1], # soil_cat
+        soilksat0 = soilksat0[ii][1],
+        soilksatdecay = soilksatdecay[ii][1],
+        soilpor0 = soilpor0[ii][1],
+        soilpordecay = soilpordecay[ii][1],
+        soilsand = soilsand[ii][1],
+        soilsilt = soilsilt[ii][1],
+        soilclay = soilclay[ii][1],
+        soilbulkdensity = soilbulkdensity[ii][1],
+        soilparticledensity = soilparticledensity[ii][1],
+        soilsoildepth = soilsoildepth[ii][1],
+        soilactivedepth = soilactivedepth[ii][1],
+        soilmaxrootdepth = soilmaxrootdepth[ii][1],
+        soilalbedo = soilalbedo[ii][1],
+        soilpor_size_index = soilpor_size_index[ii][1],
+        soilpsi_air_entry = soilpsi_air_entry[ii][1],
+        soilsoilc = soilsoilc[ii][1],
+        soilomdecay = soilomdecay[ii][1],
+        soilph = soilpH[ii][1],
+        soilthetap1 = soil_theta_mean_std_p1[ii][1],
+        soilthetap2 = soil_theta_mean_std_p2[ii][1]
         )
-    }));colnames(ssurgo_info)=c('soil_extID','soilksat0','soilksatdecay','soilpor0','soilpordecay','soilsand','soilsilt','soilclay','soilbulkdensity','soilparticledensity','soilsoildepth','soilactivedepth','soilmaxrootdepth','soilalbedo','soilpor_size_index','soilpsi_air_entry','soilsoilc','soilomdecay')
+    }));
 
 
     
@@ -1184,6 +1213,10 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             #if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('DOM_decay_rate',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
             #if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('N_decay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
             if(!is.na(ssurgo_info[cond,'soilomdecay'])){soil_char[match('soilcDecay',soilParam[,2])] = ssurgo_info[cond,'soilomdecay']}
+            
+            if(!is.na(ssurgo_info[cond,'soilph'])){soil_char[match('PH',soilParam[,2])] = ssurgo_info[cond,'soilph']}
+            if(!is.na(ssurgo_info[cond,'soilthetap1'])){soil_char[match('theta_mean_std_p1',soilParam[,2])] = ssurgo_info[cond,'soilthetap1']}
+            if(!is.na(ssurgo_info[cond,'soilthetap2'])){soil_char[match('theta_mean_std_p2',soilParam[,2])] = ssurgo_info[cond,'soilthetap2']}
             
             if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(soil_char, soilParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
         }#jj
