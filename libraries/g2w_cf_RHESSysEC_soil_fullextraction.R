@@ -191,7 +191,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         }else{
             treeRootzScaler <- rep(tmpnum, sum(mask))
         }},
-        error = function(e){ spatailAGG <<- emptyMAP }
+        error = function(e){ treeRootzScaler <<- emptyMAP }
     )#tryCatch
 
     ## GW
