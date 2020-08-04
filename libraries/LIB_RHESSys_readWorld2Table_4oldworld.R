@@ -43,11 +43,11 @@ num_patch=0;
 
 title=c(
 	"worldID",
-	"basinID","basinX","basinY","basinZ","basinDefID","basinLatitude","basinBase", #8
+	"basinID","x","y","z","basinDefID","latitude","basinBase", #8
 	
-	"hillID","hillX","hillY","hillZ","hillDefID","hillgws","hillgwno3","hillBase", #16
+	"hillslope_ID","x","y","z","hillDefID","hillgws","hillgwno3","hillBase", #16
 	
-	"zoneID","zoneX","zoneY","zoneZ","zoneDefID","zoneArea","zoneSlope","zoneAspect","zoneIso","zoneEH","zoneWH", "zoneBase","zoneBaseID", #29
+	"zoneID","x","y","z","zoneDefID","zoneArea","zoneSlope","zoneAspect","zoneIso","zoneEH","zoneWH", "zoneBase","zoneBaseID", #29
 	
 	"patchID","patchX","patchY","patchZ","patchsoilID","patchLandID","patchArea","patchSlope","patchLNA","patchKsat","patchMpar",
 	"patchRZstorage","patchUnsat","patchSat",
