@@ -951,7 +951,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 			
             land_ = table(LULCID[x]); if(length(land_)==0){ land_ = 11; names(land_)=11; }
             land = as.numeric(names(land_)[which.max(land_)])
-            if(sum(PRINT_patch[x],na.rm=T)>0){ land = land + 600}
+            if(sum(PRINT_patch[x],na.rm=T)>0){ land = land + 1000} ## here
                 
 			imp = subGridAssignment[1,5]
             fracQ = c(	subGridAssignment[1,1]>0,   # tree
@@ -1226,13 +1226,18 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 
 	
 	## write out selected lulc definition files
+    allPatchLand = unique(patchLAND)
 	lulcHEADER = NULL
-	selectedlulc = lulcParamCOL[match(unique(patchLAND), lulcParamCOL[,'lulcID']), 'lulcDefIndex']
-	for(ii in selectedlulc ){
-		filename = paste(defsFolder,"/landuse_",gsub("\\.","_",colnames(lulcParam)[ii]),".def",sep="")
+	selectedlulc = lulcParamCOL[match(allPatchLand%%1000, lulcParamCOL[,'lulcID']), 'lulcDefIndex']
+	for(ii in seq_along(selectedlulc) ){
+        ## here need updates
+        iii = selectedlulc[ii]
+		filename = paste(defsFolder,"/landuse_",gsub("\\.","_",colnames(lulcParam)[iii]),switch(allPatchLand[ii]<=1000,NULL,"print"),".def",sep="")
 		lulcHEADER = c(lulcHEADER, paste(filename,'landuse_default_filename'))
 		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
-		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(lulcParam[, ii], lulcParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
+        lulc_char = lulcParam[, iii]
+        lulc_char[match('landuse_default_ID',lulcParam[,2])] = allPatchLand[ii]
+		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(lulc_char, lulcParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
 	
 
