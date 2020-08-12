@@ -814,7 +814,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
     PRINT_patch=NULL; tryCatch({
         rast = readRAST(template$PRINT_patchMAP);
         PRINT_patch <- rast@data[[1]][mask];
-        print('reading pipe ... DONE')},
+        print('reading PRINT_patch ... DONE')},
         error = function(e){ PRINT_patch <<- emptyMAP }
         )#tryCatch
 
@@ -1226,7 +1226,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 
 	
 	## write out selected lulc definition files
-    allPatchLand = unique(patchLAND)
+    allPatchLand = unique(patchLAND); print('all LULC: ',allPatchLand)
 	lulcHEADER = NULL
 	selectedlulc = lulcParamCOL[match(allPatchLand%%1000, lulcParamCOL[,'lulcID']), 'lulcDefIndex']
 	for(ii in seq_along(selectedlulc) ){
