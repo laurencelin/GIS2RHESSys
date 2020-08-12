@@ -1226,16 +1226,18 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 
 	
 	## write out selected lulc definition files
-    allPatchLand = unique(patchLAND); print(paste('all LULC: ',allPatchLand))
+    allPatchLand = unique(patchLAND);
 	lulcHEADER = NULL
 	selectedlulc = lulcParamCOL[match(allPatchLand%%1000, lulcParamCOL[,'lulcID']), 'lulcDefIndex']
+    #print(paste('all LULC: ',allPatchLand,selectedlulc))
 	for(ii in seq_along(selectedlulc) ){
         ## here need updates
         iii = selectedlulc[ii]
-		filename = paste(defsFolder,"/landuse_",gsub("\\.","_",colnames(lulcParam)[iii]),switch(allPatchLand[ii]<=1000,NULL,"print"),".def",sep="")
+		filename = paste(defsFolder,"/landuse_",gsub("\\.","_",colnames(lulcParam)[iii]),switch(1+(allPatchLand[ii]<=1000),NULL,"print"),".def",sep="")
+        #print(paste("debug: ",ii,iii,allPatchLand[ii],filename, switch(1+(allPatchLand[ii]<=1000),NULL,"print") ))
 		lulcHEADER = c(lulcHEADER, paste(filename,'landuse_default_filename'))
 		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
-        lulc_char = lulcParam[, iii]
+        lulc_char = lulcParam[,iii]
         lulc_char[match('landuse_default_ID',lulcParam[,2])] = allPatchLand[ii]
 		if(as.numeric(templateACTION$outputDefs[2])>0) write.table(cbind(lulc_char, lulcParam[,2]), filepth,sep="\t",row.names=F,col.names=F, quote=F)
 	}#i
