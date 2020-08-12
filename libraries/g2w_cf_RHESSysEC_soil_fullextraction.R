@@ -1226,7 +1226,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 
 	
 	## write out selected lulc definition files
-    allPatchLand = unique(patchLAND); print('all LULC: ',allPatchLand)
+    allPatchLand = unique(patchLAND); print(paste('all LULC: ',allPatchLand))
 	lulcHEADER = NULL
 	selectedlulc = lulcParamCOL[match(allPatchLand%%1000, lulcParamCOL[,'lulcID']), 'lulcDefIndex']
 	for(ii in seq_along(selectedlulc) ){
