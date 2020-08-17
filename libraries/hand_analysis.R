@@ -38,7 +38,7 @@ list2env(setNames(as.list(seq_along(dem)),maskRC),envir=hashenv) #<<---- native 
 		
 		cii = ii; traceIndex[[traceIndex_ii]]=ii; traceIndex_ii=traceIndex_ii+1
 		downIndex = hashenv[[ toString((rows[cii] + rowneighbor[drain[cii]])*maxCol + (cols[cii] + colneighbor[drain[cii]])) ]]
-		if( is.null(downIndex) | length(downIndex)==0 | !is.na(str[ii]){
+		if( is.null(downIndex) | length(downIndex)==0 | !is.na(str[ii]) ){
 			rast$handsDEM[mask][ii] = 0
 		}else{
 			while( traceIndex_ii<=maxlen & (is.na(str[downIndex]) | is.na(rast$handsDEM[mask][downIndex]) ) ){
