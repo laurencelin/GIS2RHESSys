@@ -6,6 +6,7 @@ library(rgdal)
 library(sp)
 tryCatch({ use_sp() },error=function(cond){message(cond)},warning=function(cond){message(cond)},finally={message("Please update the rgrass7 package on R")})
 # arg=c('dem','colmap', 'rowmap', 'drain','hill', 'strExt')
+print(arg)
 
 rast = readRAST(arg[1:6],NODATA=0)
 mask = !is.na(rast@data[[1]])
@@ -37,10 +38,10 @@ list2env(setNames(as.list(seq_along(dem)),maskRC),envir=hashenv) #<<---- native 
 		
 		cii = ii; traceIndex[[traceIndex_ii]]=ii; traceIndex_ii=traceIndex_ii+1
 		downIndex = hashenv[[ toString((rows[cii] + rowneighbor[drain[cii]])*maxCol + (cols[cii] + colneighbor[drain[cii]])) ]]
-		if( is.null(downIndex) | length(downIndex)==0 ){
+		if( is.null(downIndex) | length(downIndex)==0 | !is.na(str[ii]){
 			rast$handsDEM[mask][ii] = 0
 		}else{
-			while( traceIndex_ii<=maxlen &(is.na(str[downIndex]) | is.na(rast$handsDEM[mask][downIndex])) ){
+			while( traceIndex_ii<=maxlen & (is.na(str[downIndex]) | is.na(rast$handsDEM[mask][downIndex]) ) ){
 				cii = downIndex; traceIndex[[traceIndex_ii]]=downIndex; traceIndex_ii=traceIndex_ii+1
 				downIndex = hashenv[[ toString((rows[cii] + rowneighbor[drain[cii]])*maxCol + (cols[cii] + colneighbor[drain[cii]])) ]]
 				if(is.null(downIndex) | length(downIndex)==0 ){ downIndex=traceIndex[[traceIndex_ii-1]]; break; } 
