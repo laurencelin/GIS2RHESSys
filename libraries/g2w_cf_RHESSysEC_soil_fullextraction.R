@@ -1233,7 +1233,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 	for(ii in seq_along(selectedlulc) ){
         ## here need updates
         iii = selectedlulc[ii]
-		filename = paste(defsFolder,"/landuse_",gsub("\\.","_",colnames(lulcParam)[iii]),switch(1+(allPatchLand[ii]<=1000),NULL,"print"),".def",sep="")
+		filename = paste(defsFolder,"/landuse_",gsub("\\.","_",colnames(lulcParam)[iii]),switch(1+(allPatchLand[ii]>1000),NULL,"print"),".def",sep="")
         #print(paste("debug: ",ii,iii,allPatchLand[ii],filename, switch(1+(allPatchLand[ii]<=1000),NULL,"print") ))
 		lulcHEADER = c(lulcHEADER, paste(filename,'landuse_default_filename'))
 		filepth = paste(projectFolder,'/',rhessysFolder,'/', filename,sep="")
