@@ -1381,7 +1381,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             roofQfrac = sum(roofFrac[ii],na.rm=T)/numPatch,
             
             ## ... subsurface drainages -- pipelines and sewers (yes/no)
-            sewerdrainQ = sum(!is.na(sewercover[ii])), #17 (checking whether patch contains sewercover grids)
+            sewerdrainQFrac = sum(sewercover[ii],na.rm=T)/numPatch, #17 (checking whether patch contains sewercover grids)
             subsurfpipedrainQ = sum(!is.na(pipecover[ii])), # other non-sewer pipes
             
             ## ... subsurface -- interrcepts
@@ -1626,7 +1626,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         actionCode = 	ifelse(	current_patch_info['pavedRoadQfrac']+
         						current_patch_info['roofQfrac']+
         						current_patch_info['otherImpQfrac']>=1,1,actionGWDRAIN) * # GW drain except road/roof/parkinglot
-        				ifelse(current_patch_info['sewerdrainQ']>0,actionSEWER,1) * # sewer drain (top 3-m)
+        				ifelse(current_patch_info['sewerdrainQFrac']>0,actionSEWER,1) * # sewer drain (top 3-m)
 						ifelse(current_patch_info['subsurfpipedrainQ']>0,actionPIPEDRAIN,1) * # subsurface pipe drain (top 1-m) along the ROAD	
         				## ...		
         				ifelse(current_patch_info['riparianQ']>0,actionRIPARIAN,1) * # riparian
@@ -1753,7 +1753,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             if(abs(sum(neighbor_frac_gamma)-1)>1e-10){ print(paste('subsurface',ii,current_patch_info['patchID'],sum(neighbor_frac_gamma))) }
             cat(
 				paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
-				paste(sprintf('%.2f',current_patch_info[c('waterFracQ','cc')]), collapse=' '),
+				paste(sprintf('%.2f',current_patch_info[c('waterFracQ','sewerdrainQFrac')]), collapse=' '),
                 paste(sprintf('%.1f', -septic_num_drainIN)), # use negative number because some old file may have 1 here
                 paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
 				sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH), #wttd
@@ -1870,7 +1870,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 
                 cat(
                     paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
-                    paste(sprintf('%.2f',current_patch_info[c('waterFracQ','cc')]), collapse=' '),
+                    paste(sprintf('%.2f',current_patch_info[c('waterFracQ','sewerdrainQFrac')]), collapse=' '),
                     paste(sprintf('%.1f', -septic_num_drainIN)), # use negative number because some old file may have 1 here
                	 	paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
                     sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
@@ -2067,7 +2067,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                     
                 cat(
                     paste(current_patch_info[c('patchID','zoneID','hillID')], collapse=' '),
-                    paste(sprintf('%.1f',current_patch_info[c('rr','cc')]), collapse=' '),
+                    paste(sprintf('%.2f',current_patch_info[c('waterFracQ','sewerdrainQFrac')]), collapse=' '),
                     paste(sprintf('%.1f', -septic_num_drainIN)), # use negative number because some old file may have 1 here
                 	paste(sprintf('%.1f', -irrigation_num_drainIN)), # use negative number because some old file may have 1 here
                     sprintf('%.2f', ifelse(!is.na(current_patch_info['basementQfrac']),current_patch_info['basementQfrac'],0)*BASEMENT_DEPTH + ifelse(!is.na(current_patch_info['pavedRoadQfrac']),current_patch_info['pavedRoadQfrac'],0)*PAVEDROAD_DEPTH + ifelse(!is.na(current_patch_info['otherImpQfrac']),current_patch_info['otherImpQfrac'],0)*PAVEDROAD_DEPTH),
