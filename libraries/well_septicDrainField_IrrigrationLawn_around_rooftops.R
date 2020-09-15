@@ -17,8 +17,7 @@ yy = rast@data[[7]][mask]
 
 cond = !is.na(roof)
 roofID = unique(roof[cond])
-roof_drain_table = do.call(rbind, lapply(roofID,function(id){
-    
+roof_drain_table = as.data.frame(do.call(rbind, lapply(roofID,function(id){
     
     roof_patchID = unique(patch[cond][roof[cond]==id])
     roof_dem = mean(dem[cond][roof[cond]==id])
@@ -70,11 +69,12 @@ roof_drain_table = do.call(rbind, lapply(roofID,function(id){
     #}
     
     return <-c(id,source_patch,df_patch, irrigration_string,0)
-}))
-colnames(roof_drain_table)=c('rooftopID','inPatch','outPatch','irrigrationString','mode')
+})))
+roof_drain_table$dailymax = 4 # 4mm/d
+colnames(roof_drain_table)=c('rooftopID','inPatch','outPatch','irrigationString','mode','dailymax')
 write.csv(roof_drain_table[,c(1:3,5)],arg[8],row.names=F,quote=F)
 
-irrigrationTable = do.call(rbind,lapply(seq_len(dim(roof_drain_table)[1]),function(ii){
+irrigrationTable = as.data.frame(do.call(rbind,lapply(seq_len(dim(roof_drain_table)[1]),function(ii){
     
     source_patchID = as.numeric(roof_drain_table[ii,2])
     stringVar = unlist(strsplit(roof_drain_table[ii,4],'_',fixed=T))
@@ -90,8 +90,9 @@ irrigrationTable = do.call(rbind,lapply(seq_len(dim(roof_drain_table)[1]),functi
     }else{
         return <- NULL
     }
-}))#
-colnames(irrigrationTable)=c('sourcePatchID','irrigrationPatchID','frac','mode')
+})))#
+irrigrationTable$dailymax = 4 # 4mm/d
+colnames(irrigrationTable)=c('sourcePatchID','irrigrationPatchID','frac','mode','dailymax')
 write.csv(irrigrationTable,arg[9],row.names=F,quote=F)
 
 ## need to update this one to write out surface, subsurface, mode

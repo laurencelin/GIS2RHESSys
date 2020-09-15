@@ -1458,6 +1458,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     ## ... setpic (lots of warnings)
     patchInfo_septicSource = vector(mode='list',length(fullLength))
     patchInfo_septicSourceMODE = vector(mode='list',length(fullLength))
+    patchInfo_septicMaxWithdraw = vector(mode='list',length(fullLength))
     if( length(template$septicInOutTable)>0 ){
         if(!is.na(template$septicInOutTable)){
             tableInOut = read.csv(template$septicInOutTable)
@@ -1474,6 +1475,11 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 tmp = tmp[!is.na(tmp)]
                 if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
             });
+            tableInMaxWithdrawList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+                tmp = tableInOut$dailymax[ii]
+                tmp = tmp[!is.na(tmp)]
+                if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+            });
             indexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
                 return <- tableOutIndex[ii][1]
             });
@@ -1481,6 +1487,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             for(ii in seq_along(indexList)){
                 patchInfo_septicSource[[ indexList[ii] ]] = tableInIndexList[[ii]]
                 patchInfo_septicSourceMODE[[ indexList[ii] ]] = tableInModeList[[ii]]
+                patchInfo_septicMaxWithdraw[[ indexList[ii] ]] = tableInMaxWithdrawList[[ii]]
                 patchInfo[[ indexList[ii] ]]['septicQfrac'] = 1 #make sure it has septic release
             }# end of for loop ii
         }#if
@@ -1490,12 +1497,13 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
     ## ... irrigation (re-use some variables here)
     patchInfo_irrigationSource = vector(mode='list',length(fullLength))
     patchInfo_irrigationSourceMODE = vector(mode='list',length(fullLength))
+    patchInfo_irrigationMaxWithdraw = vector(mode='list',length(fullLength))
     if( length(template$irrigationInOutTable)>0 ){
         if( !is.na(template$irrigationInOutTable) ){
             tableInOut = read.csv(template$irrigationInOutTable)
-            tableOutIndex = match(tableInOut$irrigrationPatchID,patch_info_patchID)
+            tableOutIndex = match(tableInOut$irrigationPatchID,patch_info_patchID)
             tableInIndex = match(tableInOut$sourcePatchID,patch_info_patchID)
-            
+            # .. group by output patch
             tableInIndexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
                 tmp = tableInIndex[ii]
                 tmp = tmp[!is.na(tmp)]
@@ -1506,6 +1514,11 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                 tmp = tmp[!is.na(tmp)]
                 if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
             });
+            tableInMaxWithdrawList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
+                tmp = tableInOut$dailymax[ii]
+                tmp = tmp[!is.na(tmp)]
+                if(length(tmp)>0){return <- tmp;}else{return <- NULL;}
+            });
             indexList = tapply(seq_along(tableOutIndex),tableOutIndex,function(ii){
                 return <- tableOutIndex[ii][1]
             });
@@ -1513,7 +1526,8 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
             for(ii in seq_along(indexList)){
                 patchInfo_irrigationSource[[ indexList[ii] ]] = tableInIndexList[[ii]]
                 patchInfo_irrigationSourceMODE[[ indexList[ii] ]] = tableInModeList[[ii]]
-                patchInfo[[ indexList[ii] ]]['irrigateQfrac'] = 1 # make sure it irrigates
+                patchInfo_irrigationMaxWithdraw[[ indexList[ii] ]] = tableInMaxWithdrawList[[ii]]
+                patchInfo[[ indexList[ii] ]]['irrigateQfrac'] = 1 # just make it positive; irrigation in the patch is still constrainted by lawn fraction
             }# end of for loop ii
         }# if
     }# vector of source patch index in "patch_info_patchID"
@@ -1800,7 +1814,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 				drainIN_patch_info['patchID',],
 				drainIN_patch_info['zoneID',],
 				drainIN_patch_info['hillID',],
-				sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+				sprintf('%.3f',patchInfo_septicMaxWithdraw[[ii]]),
 				sprintf('%.3f',patchInfo_septicSourceMODE[[ii]]), #<<--- check here
 				sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=subsurfaceflow_table_buff,sep='\n')}
 			
@@ -1812,7 +1826,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
 				drainIN_patch_info['patchID',],
 				drainIN_patch_info['zoneID',],
 				drainIN_patch_info['hillID',],
-				sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+				sprintf('%.3f',patchInfo_irrigationMaxWithdraw[[ii]]),
 				sprintf('%.3f',patchInfo_irrigationSourceMODE[[ii]]), #<<--- check here
 				sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=subsurfaceflow_table_buff,sep='\n')}
                 
@@ -2038,7 +2052,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                     drainIN_patch_info['patchID',],
                     drainIN_patch_info['zoneID',],
                     drainIN_patch_info['hillID',],
-                    sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+                    sprintf('%.3f',patchInfo_septicMaxWithdraw[[ii]]),
                     sprintf('%.3f',patchInfo_septicSourceMODE[[ii]]), #<<--- check here
                     sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=surfaceflow_table_buff,sep='\n')}
                 
@@ -2050,7 +2064,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                     drainIN_patch_info['patchID',],
                     drainIN_patch_info['zoneID',],
                     drainIN_patch_info['hillID',],
-                    sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+                    sprintf('%.3f',patchInfo_irrigationMaxWithdraw[[ii]]),
                     sprintf('%.3f',patchInfo_irrigationSourceMODE[[ii]]), #<<--- check here
                     sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=surfaceflow_table_buff,sep='\n')}
                 
@@ -2092,7 +2106,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                     drainIN_patch_info['patchID',],
                     drainIN_patch_info['zoneID',],
                     drainIN_patch_info['hillID',],
-                    sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+                    sprintf('%.3f',patchInfo_septicMaxWithdraw[[ii]]),
                     sprintf('%.3f',patchInfo_septicSourceMODE[[ii]]), #<<--- check here
                     sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=surfaceflow_table_buff,sep='\n')}
                 
@@ -2104,7 +2118,7 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
                     drainIN_patch_info['patchID',],
                     drainIN_patch_info['zoneID',],
                     drainIN_patch_info['hillID',],
-                    sprintf('%.3f',rep(maxWithdrawalDailyWater_mmd,num_Source)),
+                    sprintf('%.3f',patchInfo_irrigationMaxWithdraw[[ii]]),
                     sprintf('%.3f',patchInfo_irrigationSourceMODE[[ii]]), #<<--- check here
                     sprintf('%.3f',rep(1/num_Source,num_Source)),sep=' '), file=surfaceflow_table_buff,sep='\n')}
                 
