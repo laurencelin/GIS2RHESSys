@@ -15,32 +15,6 @@ num_hill=0;
 num_zone=0;
 num_patch=0;
 
-# title=c(
-	# "worldID","numBaisn",
-	# "basinID","basinX","basinY","basinZ","basinDefID","basinLatitude","basinBase","numHill",
-	
-	# "hillID","hillX","hillY","hillZ","hillDefID","hillgws","hillgwno3","hillBase","numZone",
-	
-	# "zoneID","zoneX","zoneY","zoneZ","zoneDefID","zoneArea","zoneSlope","zoneAspect","zoneIso","zoneEH","zoneWH", "zoneBase","zoneBaseID","numPatch",
-	
-	# "patchID","patchX","patchY","patchZ","patchSoilID","patchLandID","patchArea","patchSlope","patchLNA","patchKsat","patchMpar",
-	# "patchRZstorage","patchUnsat","patchSat",
-	# "patchSnowEZ","patchSnowZ","patchSnowT","patchSnowAge","patchSnowED", 
-	# "patchLittercfrac","patchLitterStorage","patchLitterc1","patchLittern1","patchLitterc2","patchLitterc3","patchLitterc4",
-	# "patchSoilc1","patchSoilsminn","patchSoilNO3","patchSoilc2","patchSoilc3","patchSoilc4","patchBase","numStrate",
-	
-	# "strateID","stratePlantID","stratecfrac","strateGap","strateRZ","strateSnowStored","strateRainStored",
-	# "stratecpool","strateleafc","stratedleafc","strateleafcstore","strateleafctrans","stratelstemc","stratelstemcstore","stratelstemctrans",
-	# "stratedstemc","stratedstemcstore","stratedstemctrans","stratelrootc","stratelrootcstore","stratelrootctrans",
-	# "stratedrootc","stratedrootcstore","stratedrootctrans","stratefrootc","stratefrootcstore","stratefrootctrans",
-	# "stratecwdc","strateEPVleafcalloc",
-	# "stratenpool","strateleafn","stratedleafn","strateleafnstore","strateleafntrans","stratelstemn","stratelstemnstore","stratelstemntrans",
-	# "stratedstemn","stratedstemnstore","stratedstemntrans","stratelrootn","stratelrootnstore","stratelrootntrans",
-	# "stratedrootn","stratedrootnstore","stratedrootntrans","stratefrootn","stratefrootnstore","stratefrootntrans",
-	# "stratecwdn","strateRetransn","epv_wstress_days","epv_max_fparabs","epv_min_vwc","strateBase"
-# )
-# write(title,file=paste("worldfile.",region,".sp500Table.csv",sep=""),sep=",",ncolumns=2+8+9+14+34+55, append=F)
-
 title=c(
 	"worldID",
 	"basinID","x","y","z","basinDefID","latitude","basinBase", #8
@@ -70,8 +44,14 @@ write(title,file=output,sep=",",ncolumns=8+8+13+33+55, append=F)
 
 #skip headers
 if(skip>0){w=readLines(con,n=skip,warn=F)}
-#w=readLines(con,n=58,warn=F)# header in old RHESSys worldfile
-#w=readLines(con,n=1,warn=F)# header in new RHESSys worldfile
+
+# https://stackoverflow.com/questions/25707647/merge-multiple-spaces-to-single-space-remove-trailing-leading-spaces
+w = read.table(text=sapply(readLines(con,warn=F),function(x){ gsub("(?<=[\\s])\\s*|^\\s+|\\s+$", "", x, perl=TRUE)}))
+colnames(w) = c('value','key')
+
+w[1:10,]
+
+while()
 
 
 # world
