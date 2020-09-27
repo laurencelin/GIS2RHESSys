@@ -172,15 +172,15 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
 	}#if else
 	
     ## spatial aggregation for outputs
-    spatailAGG=NULL;tryCatch({
-        tmpnum = as.numeric(template$spatailAGG)
+    spatialAGG=NULL;tryCatch({
+        tmpnum = as.numeric(template$spatialAGG)
         if(is.na(tmpnum)){
-            rast = readRAST(template$spatailAGG);
-            spatailAGG <- rast@data[[1]][mask]
+            rast = readRAST(template$spatialAGG);
+            spatialAGG <- rast@data[[1]][mask]
         }else{
-            spatailAGG <- rep(tmpnum, sum(mask))
+            spatialAGG <- rep(tmpnum, sum(mask))
         }},
-        error = function(e){ spatailAGG <<- emptyMAP }
+        error = function(e){ spatialAGG <<- emptyMAP }
     )#tryCatch
 
     treeRootzScaler=NULL;tryCatch({
@@ -1411,8 +1411,8 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         return <- mean(patch[ii])
     })
 
-    if(sum(is.na(spatailAGG))==0){
-        patchSPAGG=tapply(spatailAGG,INDEX=outputOrder, FUN=most);
+    if(sum(is.na(spatialAGG))==0){
+        patchSPAGG=tapply(spatialAGG,INDEX=outputOrder, FUN=most);
         patchSPAGGindex = match(patchSPAGG, unique(patchSPAGG))-1;
     }else{
         patchSPAGG=NULL;
