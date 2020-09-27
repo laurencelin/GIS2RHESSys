@@ -177,6 +177,7 @@ source('https://raw.githubusercontent.com/laurencelin/Date_analysis/master/LIB_m
         if(is.na(tmpnum)){
             rast = readRAST(template$spatialAGG);
             spatialAGG <- rast@data[[1]][mask]
+            print("it is on spatialAGG")
         }else{
             spatialAGG <- rep(tmpnum, sum(mask))
         }},
