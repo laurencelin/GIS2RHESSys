@@ -1412,8 +1412,9 @@ if(as.numeric(templateACTION$outputWorldfile[2])>0 ){
         return <- mean(patch[ii])
     })
 
-    if(sum(is.na(spatialAGG))==0){
+    if(sum(is.na(spatialAGG))< length(spatialAGG)){
         patchSPAGG=tapply(spatialAGG,INDEX=outputOrder, FUN=most);
+        patchSPAGG[is.na(patchSPAGG)] = min(patchSPAGG,na.rm=T)-1
         patchSPAGGindex = match(patchSPAGG, unique(patchSPAGG))-1;
     }else{
         patchSPAGG=NULL;
